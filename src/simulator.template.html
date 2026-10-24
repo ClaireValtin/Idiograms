@@ -1,460 +1,151 @@
-<title>Chromosome RHG Simulator</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
-<style>
-/* Palette: graphite neutrals with black and white, turquoise primary, orange for actions and highlights, green for genes.
-   Layout: sticky app bar with page tabs, then a working surface of flat cards on a cool grey ground. */
-:root{
-  --bg:#f3f4f5; --surface:#ffffff; --surface-2:#f7f8f9; --fg:#0c0e10; --muted:#5d636b; --line:#e2e4e7;
-  --turq:#0e9f96; --turq-ink:#0b7a73; --turq-soft:#e0f5f3; --on-turq:#ffffff;
-  --orange:#ea580c; --orange-hover:#c2410c; --orange-soft:#fff1e8; --on-orange:#ffffff;
-  --green:#15803d;
-  --accent:var(--turq-ink); --accent-soft:var(--turq-soft); --hl:#f97316;
-  --ink:#111315; --paper:#ffffff; --outline:#1f2226;
-  --r25:#6a6f76; --r50:#b3b7bc; --r75:#dcdee1;
-  --g25:#c9ccd0; --g50:#8c9097; --g75:#50545a;
-  --acen:#5fd4c7; --gvar:#8c9097; --stalk:#e6e8ea;
-  --f-display:"Geist",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --f-body:"Geist",system-ui,-apple-system,"Segoe UI",sans-serif;
-  --f-mono:"Geist Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
-}
-@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#0a0b0c; --surface:#131517; --surface-2:#1a1d20; --fg:#f2f3f4; --muted:#9aa0a7; --line:#272a2e;
-  --turq:#2dd4bf; --turq-ink:#2dd4bf; --turq-soft:#0f2e2b; --on-turq:#04201d;
-  --orange:#fb8a3c; --orange-hover:#fdba74; --orange-soft:#2e1a0c; --on-orange:#1b0e05;
-  --green:#4ade80;
-  --hl:#fb923c;
-  --ink:#0f1112; --paper:#eceef0; --outline:#c9cdd1;
-  --r25:#5b6067; --r50:#a3a8ae; --r75:#c9cdd1;
-  --g25:#b6babf; --g50:#7c8187; --g75:#45494e;
-  --acen:#2cc4b3; --gvar:#7c8187; --stalk:#d9dcdf; color-scheme:dark;
-}}
-:root[data-theme="dark"]{
-  --bg:#0a0b0c; --surface:#131517; --surface-2:#1a1d20; --fg:#f2f3f4; --muted:#9aa0a7; --line:#272a2e;
-  --turq:#2dd4bf; --turq-ink:#2dd4bf; --turq-soft:#0f2e2b; --on-turq:#04201d;
-  --orange:#fb8a3c; --orange-hover:#fdba74; --orange-soft:#2e1a0c; --on-orange:#1b0e05;
-  --green:#4ade80;
-  --hl:#fb923c;
-  --ink:#0f1112; --paper:#eceef0; --outline:#c9cdd1;
-  --r25:#5b6067; --r50:#a3a8ae; --r75:#c9cdd1;
-  --g25:#b6babf; --g50:#7c8187; --g75:#45494e;
-  --acen:#2cc4b3; --gvar:#7c8187; --stalk:#d9dcdf; color-scheme:dark;
-}
-*{box-sizing:border-box}
-[hidden]{display:none!important}
-body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
-a{color:var(--accent)}
-/* app bar */
-.appbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--line)}
-.appbar-in{max-width:1180px;margin:0 auto;padding-inline:16px;height:58px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.brand{display:flex;align-items:center;gap:10px;font:650 16px var(--f-body);letter-spacing:-.02em;color:var(--fg);text-decoration:none;white-space:nowrap}
-.brand-mark{width:9px;height:24px;border-radius:5px;flex:none;background:linear-gradient(var(--fg) 0 20%,var(--turq) 20% 32%,var(--fg) 32% 46%,var(--bg) 46% 52%,var(--fg) 52% 66%,var(--orange) 66% 76%,var(--fg) 76%)}
-.tabs{display:flex;gap:2px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:3px}
-.tabs a{display:inline-flex;align-items:center;gap:6px;font:500 13.5px var(--f-body);color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:7px;white-space:nowrap}
-.tabs a:hover{color:var(--fg)}
-.tabs a[aria-current="page"]{background:var(--fg);color:var(--bg)}
-.tabs .sm{display:none}
-@media (max-width:760px){.tabs .lg{display:none}.tabs .sm{display:inline}}
-@media (max-width:560px){.brand .brand-name{display:none}}
-/* page frame */
-.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:32px 56px;display:flex;flex-direction:column;gap:20px}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;font:500 12px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--turq-ink);margin-bottom:10px}
-.eyebrow::before{content:"";width:7px;height:7px;border-radius:2px;background:var(--orange)}
-header h1,h1{font-family:var(--f-display);font-weight:650;font-size:clamp(28px,4.4vw,44px);line-height:1.05;margin:0;text-wrap:balance;letter-spacing:-.035em}
-header p{margin:12px 0 0;color:var(--muted);max-width:68ch;font-size:15.5px}
-.hero-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-top:18px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:14px}
-/* buttons */
-.btn-scope{display:inline-flex;align-items:center;gap:8px;font:600 14px var(--f-body);color:var(--on-orange);background:var(--orange);border:0;border-radius:10px;padding:9px 15px;text-decoration:none;white-space:nowrap;cursor:pointer;box-shadow:0 1px 0 rgba(0,0,0,.08)}
-.btn-scope:hover{background:var(--orange-hover)}
-.btn-scope svg{flex:none}
-.btn-ghost{font:500 14px var(--f-body);color:var(--fg);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:1px}
-.btn-ghost:hover{border-color:var(--fg)}
-.btn{font:600 14px var(--f-body);border:0;background:var(--turq);color:var(--on-turq);padding:10px 14px;border-radius:10px;cursor:pointer}
-.btn:hover{filter:brightness(1.07)}
-/* shared controls */
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;padding:3px;background:var(--surface-2);flex-wrap:wrap;gap:2px}
-.seg button{font:500 13px var(--f-body);border:0;background:transparent;color:var(--muted);padding:5px 12px;border-radius:7px;cursor:pointer}
-.seg button:hover{color:var(--fg)}
-.seg button[aria-pressed="true"]{background:var(--turq);color:var(--on-turq)}
-.toggle{display:inline-flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;user-select:none}
-.toggle input{accent-color:var(--turq);width:16px;height:16px;margin:0}
-input[type=range]{accent-color:var(--turq)}
-.seg button:focus-visible,.chip:focus-visible,.chips button:focus-visible,.btn:focus-visible,.btn-scope:focus-visible,.tabs a:focus-visible,.toggle input:focus-visible,input:focus-visible,.kg-chr:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
-.notes{padding:18px 20px}
-.notes h2{font:600 17px var(--f-display);letter-spacing:-.01em;margin:0 0 10px}
-.notes ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:7px;max-width:92ch;font-size:14px;color:var(--fg)}
-.notes li::marker{color:var(--turq)}
-
-@media (max-width:560px){.tabs svg{display:none}.tabs a{padding:6px 9px}}
-/* ---- page ---- */
-.main{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:start}
-@media (max-width:880px){.main{grid-template-columns:minmax(0,1fr)}}
-.stage{padding:10px;min-width:0}
-.field{position:relative;border-radius:10px;overflow:hidden;background:#dcd8cf}
-.field canvas{display:block;width:100%;height:auto}
-.caption{display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px 12px;font:12px var(--f-mono);color:var(--muted);padding:8px 4px 0}
-.panel{padding:16px;display:flex;flex-direction:column;gap:16px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
-@media (max-width:880px){.panel{position:static}}
-.ctl{display:flex;flex-direction:column;gap:4px}
-.ctl-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
-.ctl label,.ctl .lab{font-size:13.5px;font-weight:500}
-.ctl output{font:12px var(--f-mono);color:var(--muted);font-variant-numeric:tabular-nums}
-.ctl .help{font-size:12.5px;color:var(--muted);margin:0}
-.chips{display:grid;grid-template-columns:repeat(8,1fr);gap:4px}
-.chips button{font:500 12.5px var(--f-mono);border:1px solid var(--line);background:transparent;color:var(--fg);padding:4px 0;border-radius:5px;cursor:pointer}
-.toggles{display:flex;flex-direction:column;gap:8px}
-input[type=range]{width:100%;margin:2px 0}
-.chips button{border-radius:7px;background:var(--surface)}
-.chips button:hover{border-color:var(--muted)}
-.chips button[aria-pressed="true"]{background:var(--fg);border-color:var(--fg);color:var(--bg)}
-.ctl label,.ctl .lab{font-weight:550}
+<title>Microscope</title>
+<style>/*__SHARED_CSS__*/
+.main{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:12px;align-items:start}
+@media (max-width:900px){.main{grid-template-columns:minmax(0,1fr)}}
+.stage{padding:8px;min-width:0}
+.field{position:relative;border-radius:8px;overflow:hidden;background:#dcd8cf;line-height:0}
+.field canvas{display:block;max-width:100%}
+.caption{display:flex;justify-content:space-between;flex-wrap:wrap;gap:2px 12px;font:11.5px var(--f-mono);color:var(--muted);padding:6px 4px 0}
+.panel{padding:12px;display:flex;flex-direction:column;gap:12px;position:sticky;top:60px}
+@media (max-width:900px){.panel{position:static}}
 .panel .seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr}
-.panel .seg button{padding:6px 6px;text-align:center}
-
+.panel .seg button{padding:5px 4px;text-align:center}
+.chips{display:grid;grid-template-columns:repeat(8,1fr);gap:3px}
+.chips .chip{padding:3px 0;text-align:center}
+.sliders{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.sub{display:flex;flex-direction:column;gap:4px}
 </style>
-
-<nav class="appbar" aria-label="Site">
-  <div class="appbar-in">
-    <a class="brand" href="__IDEO_HREF__"__IDEO_TGT__><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Idiograms</span></a>
-    <div class="tabs">
-      <a href="__IDEO_HREF__"__IDEO_TGT__ ><span class="lg">Idiogram reference</span><span class="sm">Idiograms</span></a>
-      <a href="__SIM_HREF__"__SIM_TGT__ aria-current="page"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg><span class="lg">Microscope simulator</span><span class="sm">Simulator</span></a>
-      <a href="__ABN_HREF__"__ABN_TGT__><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="3"/><path d="M8.12 8.12 12 12"/><path d="M20 4 8.12 15.88"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/></svg><span class="lg">Abnormalities</span><span class="sm">Abnormal</span></a>
-    </div>
-  </div>
-</nav>
-<div class="wrap">
-  <header>
-    <div class="eyebrow">Simulated brightfield · RHG · human chromosomes</div>
-    <h1>Chromosomes as they look under the microscope</h1>
-    <p>Synthetic metaphase images built from the GRCh38 idiogram (about the ISCN 700-band level): two sister chromatids, bands that merge as the chromosome condenses, uneven stain, bending, optical blur and grain. Look at one chromosome closely or at a whole simulated karyogram. Each "New spread" draws different homologues. It is a model of what you would see, not a photograph.</p>
-  </header>
-
+<!--__NAV__-->
+<main class="page">
   <div class="main">
     <div class="card stage">
-      <div class="field"><canvas id="cv" aria-label="Simulated R-banded chromosomes" role="img"></canvas></div>
+      <div class="field" id="fieldBox"><canvas id="cv" role="img" aria-label="Simulated banded chromosomes"></canvas></div>
       <div class="caption"><span id="capLeft"></span><span id="capRight"></span></div>
     </div>
-
-    <aside class="card panel" aria-label="Simulation controls">
-      <div class="ctl">
-        <span class="lab">View</span>
-        <div class="seg" role="group" aria-label="View">
-          <button data-view="single" aria-pressed="true">One chromosome</button>
-          <button data-view="karyo" aria-pressed="false">Karyogram</button>
-        </div>
+    <aside class="card panel" aria-label="Microscope controls">
+      <div class="row2">
+        <div class="sub"><span class="lab">Banding</span>
+          <div class="seg" role="group" aria-label="Banding"><button data-mode="R" aria-pressed="true">R</button><button data-mode="G" aria-pressed="false">G</button></div></div>
+        <div class="sub"><span class="lab">View</span>
+          <div class="seg" role="group" aria-label="View"><button data-view="single" aria-pressed="true">Pair</button><button data-view="karyo" aria-pressed="false">Karyogram</button></div></div>
       </div>
-      <div class="ctl" id="chrCtl">
-        <span class="lab">Chromosome</span>
-        <div class="chips" id="chips" role="group" aria-label="Chromosome"></div>
+      <div class="sub" id="chrCtl"><span class="lab">Chromosome</span><div class="chips" id="chips" role="group" aria-label="Chromosome"></div></div>
+      <div class="sub" id="sexCtl" hidden><span class="lab">Sex chromosomes</span>
+        <div class="seg" role="group" aria-label="Sex chromosomes"><button data-sex="XX" aria-pressed="true">46,XX</button><button data-sex="XY" aria-pressed="false">46,XY</button></div></div>
+      <button class="btn" id="reseed">New cell</button>
+      <div class="sliders">
+        <div class="slider"><label for="res" title="Approximate band level">Bands</label><output id="resOut"></output><input type="range" id="res" min="300" max="700" step="25" value="400"></div>
+        <div class="slider"><label for="focus">Focus</label><output id="focusOut"></output><input type="range" id="focus" min="0" max="3" step="0.1" value="0.6"></div>
+        <div class="slider"><label for="stain">Staining</label><output id="stainOut"></output><input type="range" id="stain" min="0.5" max="1.7" step="0.05" value="1"></div>
+        <div class="slider"><label for="sep">Chromatids</label><output id="sepOut"></output><input type="range" id="sep" min="0" max="1" step="0.05" value="0.15"></div>
+        <div class="slider"><label for="bend">Bending</label><output id="bendOut"></output><input type="range" id="bend" min="0" max="1" step="0.05" value="0.45"></div>
+        <div class="slider"><label for="field">Field</label><output id="fieldOut"></output><input type="range" id="field" min="0" max="1" step="0.05" value="0.5"></div>
       </div>
-      <div class="ctl" id="sexCtl" hidden>
-        <span class="lab">Sex chromosomes</span>
-        <div class="seg" role="group" aria-label="Sex chromosomes">
-          <button data-sex="XX" aria-pressed="true">46,XX</button>
-          <button data-sex="XY" aria-pressed="false">46,XY</button>
-        </div>
+      <div class="row2">
+        <div class="sub"><span class="lab">Image</span>
+          <div class="seg" role="group" aria-label="Image type"><button data-color="giemsa" aria-pressed="false">Giemsa</button><button data-color="gray" aria-pressed="true">Grey</button></div></div>
+        <div class="sub"><span class="lab" title="1q12, 9q12, 16q11.2, Yq12, acrocentric short arms">Heterochromatin</span>
+          <div class="seg" role="group" aria-label="Heterochromatin tone"><button data-het="typical" aria-pressed="true" title="Typical">Typ</button><button data-het="pale" aria-pressed="false">Pale</button><button data-het="dark" aria-pressed="false">Dark</button></div></div>
       </div>
-
-      <button class="btn" id="reseed">New spread</button>
-
-      <div class="ctl">
-        <div class="ctl-top"><label for="res">Condensation</label><output id="resOut">~550 bands</output></div>
-        <input type="range" id="res" min="300" max="700" step="25" value="350">
-        <p class="help">Low = short metaphase, sub-bands merge. High = long prometaphase.</p>
-      </div>
-      <div class="ctl">
-        <div class="ctl-top"><label for="focus">Focus</label><output id="focusOut">slightly soft</output></div>
-        <input type="range" id="focus" min="0" max="3" step="0.1" value="2.5">
-      </div>
-      <div class="ctl">
-        <div class="ctl-top"><label for="stain">Staining</label><output id="stainOut">normal</output></div>
-        <input type="range" id="stain" min="0.5" max="1.7" step="0.05" value="1">
-      </div>
-      <div class="ctl">
-        <div class="ctl-top"><label for="sep">Chromatid separation</label><output id="sepOut">visible</output></div>
-        <input type="range" id="sep" min="0" max="1" step="0.05" value="0">
-      </div>
-      <div class="ctl">
-        <div class="ctl-top"><label for="bend">Bending</label><output id="bendOut">moderate</output></div>
-        <input type="range" id="bend" min="0" max="1" step="0.05" value="0.45">
-      </div>
-
-      <div class="ctl">
-        <span class="lab">Image</span>
-        <div class="seg" role="group" aria-label="Image type">
-          <button data-color="giemsa" aria-pressed="false">Giemsa</button>
-          <button data-color="gray" aria-pressed="true">Grayscale</button>
-        </div>
-      </div>
-      <div class="ctl">
-        <span class="lab">Heterochromatin tone</span>
-        <div class="seg" role="group" aria-label="Heterochromatin tone">
-          <button data-qh="0.12" aria-pressed="true">Pale</button>
-          <button data-qh="0.45" aria-pressed="false">Intermediate</button>
-          <button data-qh="0.85" aria-pressed="false">Dark</button>
-        </div>
-        <p class="help">1q12, 9q12, 16q11.2, Yq12 and acrocentric satellites.</p>
-      </div>
-
-      <div class="toggles" id="singleToggles">
-        <label class="toggle"><input type="checkbox" id="pair" checked><span>Show the homologue pair</span></label>
-        <label class="toggle"><input type="checkbox" id="ideo" checked><span>Show idiogram for reference</span></label>
+      <div class="grp" id="singleToggles" style="gap:14px">
+        <label class="toggle"><input type="checkbox" id="pair" checked><span>Homologue pair</span></label>
+        <label class="toggle"><input type="checkbox" id="ideo" checked><span>Idiogram</span></label>
       </div>
     </aside>
   </div>
-
-  <section class="card notes">
-    <h2>What is modelled, and what is guessed</h2>
-    <ul>
-      <li><b>Banding.</b> Starts from the NCBI GRCh38 idiogram (ISCN units), which ISCN 2024 says best fits the 700-band level, inverted to the R pattern. Condensation is simulated by smoothing that profile, so at lower band levels neighbouring sub-bands merge the way they do on real slides. This is an approximation of condensation, not a physical model of it.</li>
-      <li><b>Intensity.</b> Each R-positive band gets a random ±12% intensity change so they are not all identical. Real differences between R-positive bands are not in the source data, so these values are illustrative. Terminal R-positive bands are drawn slightly darker, consistent with R-banded chromosome ends being "almost always positive".</li>
-      <li><b>Heterochromatin.</b> 1q12, 9q12, 16q11.2, Yq12 and the acrocentric satellites and short arms vary in size between homologues here, as they do in people; ISCN 2024 (section 2.2.2) describes them as variable in size and staining intensity with R-banding too. I could not find a source describing their RHG staining, so their tone is a setting. The default "Pale" is my inference from heat denaturation affecting AT-rich regions more; treat it as unverified.</li>
-      <li><b>Acrocentrics.</b> Stalks (p12 of 13, 14, 15, 21 and 22) are drawn thinner and paler, and their length varies between homologues, which is normal. The short arms are drawn at about half their ISCN idiogram length, because idiograms draw them larger than they usually appear on slides. That scaling is my judgement, not a measured value.</li>
-      <li><b>Geometry.</b> Two sister chromatids joined at a primary constriction, a curved axis, small width irregularities and rounded ends. Twisted or crossing chromatids, splayed chromatid ends, overlapping chromosomes and nuclei in the field are not simulated. Relative lengths follow ISCN units, so chromosome sizes are proportional to each other.</li>
-      <li><b>Magnification.</b> In the one-chromosome view, small chromosomes are enlarged to fill the field; the caption states the magnification relative to chromosome 1. The karyogram keeps every chromosome at the same scale, aligned on the centromere.</li>
-      <li><b>Optics.</b> Giemsa colour uses Beer–Lambert absorbance with a purple-leaning spectrum. Grayscale mimics a karyotyping camera. Blur, grain, vignetting and debris are cosmetic.</li>
-      <li>Sources for the R-banding behaviour: <a href="https://www.intechopen.com/chapters/75292" target="_blank" rel="noopener">Chromosome Banding and Mechanism of Chromosome Aberrations (IntechOpen)</a>, <a href="https://www.sciencedirect.com/topics/medicine-and-dentistry/chromosome-banding-pattern" target="_blank" rel="noopener">Chromosome Banding Pattern (ScienceDirect Topics)</a>.</li>
-    </ul>
-  </section>
-</div>
-
+</main>
+<!--__FAQ__-->
 <script>
+/*__SHARED_JS__*/
 const DATA = __DATA__;
-const ORDER = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","X","Y"];
-const TOTAL1 = 15100;
+/*__SCOPE_JS__*/
+const ORDER = SITE.ORDER, TOTAL1 = DATA["1"]["850"].at(-1)[2];
 const ROWS = [["1","2","3","4","5"],["6","7","8","9","10","11","12","X"],["13","14","15","16","17","18"],["19","20","21","22","Y"]];
+const S = {view:"single", chr:SITE.initialChr("1"), sex:"XY", seed:1+Math.floor(Math.random()*9999), mode:SITE.store.get("scopeMode","R")==="G"?"G":"R",
+  res:400, focus:0.6, stain:1, sep:0.15, bend:0.45, field:0.5, color:"gray", het:"typical", pair:true, ideo:true};
+const cv=document.getElementById("cv"), box=document.getElementById("fieldBox");
+const cenU = c => { const b=DATA[c]["850"]; const ac=b.filter(x=>x[5]==="acen"); return (ac[0][1]+ac.at(-1)[2])/2; };
 
-// ---------- utils ----------
-function rng(seed){ let a=seed>>>0; return ()=>{ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return ((t^t>>>14)>>>0)/4294967296; }; }
-function makeNoise1D(r,n=64){ const v=Array.from({length:n+1},()=>r()*2-1); return x=>{ x=Math.max(0,Math.min(0.9999,x))*n; const i=Math.floor(x), f=x-i, s=f*f*(3-2*f); return v[i]*(1-s)+v[i+1]*s; }; }
-function makeNoise2D(r,size=96){
-  const g=new Float32Array(size*size); for(let i=0;i<g.length;i++) g[i]=r();
-  return (x,y)=>{ const xi=Math.floor(x), yi=Math.floor(y), xf=x-xi, yf=y-yi;
-    const m=v=>((v%size)+size)%size, a=g[m(yi)*size+m(xi)], b=g[m(yi)*size+m(xi+1)], c=g[m(yi+1)*size+m(xi)], d=g[m(yi+1)*size+m(xi+1)];
-    const sx=xf*xf*(3-2*xf), sy=yf*yf*(3-2*yf); return (a*(1-sx)+b*sx)*(1-sy)+(c*(1-sx)+d*sx)*sy; };
-}
-function gaussBlur1D(src,sigma){
-  if(sigma<0.3) return Float32Array.from(src);
-  const rad=Math.ceil(sigma*3), k=[]; let s=0; for(let i=-rad;i<=rad;i++){ const w=Math.exp(-i*i/(2*sigma*sigma)); k.push(w); s+=w; }
-  const out=new Float32Array(src.length), n=src.length;
-  for(let i=0;i<n;i++){ let acc=0; for(let j=-rad;j<=rad;j++){ const idx=i+j<0?0:i+j>=n?n-1:i+j; acc+=src[idx]*k[j+rad]; } out[i]=acc/s; }
-  return out;
-}
-function blur2D(buf,w,h,sigma){
-  if(sigma<0.3) return;
-  const rad=Math.ceil(sigma*2.5), k=new Float32Array(rad*2+1); let s=0;
-  for(let i=-rad;i<=rad;i++){ k[i+rad]=Math.exp(-i*i/(2*sigma*sigma)); s+=k[i+rad]; } for(let i=0;i<k.length;i++) k[i]/=s;
-  const tmp=new Float32Array(w*h);
-  for(let y=0;y<h;y++){ const o=y*w; for(let x=0;x<w;x++){ let a=0; for(let j=-rad;j<=rad;j++){ const xx=x+j<0?0:x+j>=w?w-1:x+j; a+=buf[o+xx]*k[j+rad]; } tmp[o+x]=a; } }
-  for(let x=0;x<w;x++){ for(let y=0;y<h;y++){ let a=0; for(let j=-rad;j<=rad;j++){ const yy=y+j<0?0:y+j>=h?h-1:y+j; a+=tmp[yy*w+x]*k[j+rad]; } buf[y*w+x]=a; } }
-}
-
-// ---------- banding profile ----------
-const STAIN_R = {gneg:1, gpos25:0.66, gpos50:0.42, gpos75:0.24, gpos100:0.08, acen:0.5, stalk:0.22};
-function buildProfile(chr, r, het, sigmaUnits){
-  let pos=0; const bands=[];
-  for(const b of DATA[chr]["850"]){
-    let len=b[2]-b[1];
-    if(b[5]==="gvar") len*=0.72+r()*0.62;      // heteromorphism of heterochromatin blocks
-    if(b[5]==="stalk") len*=0.7+r()*0.7;       // stalk length varies too
-    if(b[0].startsWith("p") && (b[5]==="gvar"||b[5]==="stalk")) len*=0.55;   // acrocentric short arms: ISCN idiograms draw them larger than they usually appear
-    bands.push({name:b[0],s:pos,e:pos+len,st:b[5]}); pos+=len;
-  }
-  const total=Math.max(1,Math.round(pos)), prof=new Float32Array(total), stalk=new Float32Array(total);
-  for(let i=0;i<bands.length;i++){
-    const b=bands[i]; let v = b.st==="gvar" ? het : STAIN_R[b.st];
-    if(b.st==="gneg") v*=0.88+r()*0.24;
-    if((i===0||i===bands.length-1) && b.st==="gneg") v=Math.min(1.15,v*1.12);
-    for(let x=Math.floor(b.s);x<Math.min(total,Math.ceil(b.e));x++){ prof[x]=v; if(b.st==="stalk") stalk[x]=1; }
-  }
-  const q=bands.find(b=>b.name.startsWith("q"));
-  return {prof:gaussBlur1D(prof,sigmaUnits), stalk:gaussBlur1D(stalk,Math.max(20,sigmaUnits*0.6)), total, cen:q?q.s:total/2};
-}
-
-// ---------- geometry ----------
-function chromosomeAxis(r, Lpx, bend){
-  const n1=makeNoise1D(r,6), n2=makeNoise1D(r,14);
-  const th0=(r()-0.5)*0.5*bend, steps=Math.max(8,Math.ceil(Lpx)), pts=[];
-  let x=0,y=0,th=th0;
-  for(let i=0;i<=steps;i++){ const t=i/steps; th=th0+bend*(0.9*n1(t)+0.25*n2(t)); pts.push({x,y,th,t}); x+=Math.sin(th)*Lpx/steps; y+=Math.cos(th)*Lpx/steps; }
-  const xs=pts.map(p=>p.x); return {pts,cx:(Math.min(...xs)+Math.max(...xs))/2,h:pts[pts.length-1].y};
-}
-// Splat both sister chromatids of one chromosome into the occupancy/stain buffers.
-// place(ax,P) returns {ox,oy} so callers can centre it or align its centromere.
-function splatChromosome(buf, r, spec){
-  const {W,H,occ,stn}=buf, {chr,L,rad,bend,sep,het,sigmaUnits,place}=spec;
-  const P=buildProfile(chr,r,het,sigmaUnits*(1+(r()-0.5)*0.15));
-  const len=L*(P.total/DATA[chr]["850"].at(-1)[2]);
-  const ax=chromosomeAxis(r,len,bend);
-  const tc=P.cen/P.total, {ox,oy}=place(ax,tc), wN=makeNoise1D(r,40);
-  for(let c=0;c<2;c++){
-    const side=c===0?-1:1, jit=makeNoise1D(r,30), sN=makeNoise1D(r,24);
-    for(let i=0;i<ax.pts.length;i++){
-      const p=ax.pts[i], t=p.t;
-      const dc=(t-tc)/0.022, cenF=Math.exp(-dc*dc);
-      const endF=Math.min(1,Math.min(t,1-t)/0.012);
-      const st=P.stalk[Math.min(P.total-1,Math.floor(t*P.total))];
-      const sepD=rad*(0.35+1.05*sep)*(1-0.85*cenF)*(1-0.8*st)*(0.92+0.1*sN(t))*(0.6+0.4*endF);
-      const rr=rad*(1-0.42*cenF)*(1-0.68*st)*(1+0.07*wN(t)+0.04*jit(t))*(0.82+0.18*endF);
-      const nx=Math.cos(p.th), ny=-Math.sin(p.th);
-      const px=ox+p.x+nx*sepD*side, py=oy+p.y+ny*sepD*side;
-      const v=P.prof[Math.min(P.total-1,Math.floor(t*P.total))]*(0.95+0.1*jit(t*1.7));
-      const x0=Math.max(0,Math.floor(px-rr)), x1=Math.min(W-1,Math.ceil(px+rr)), y0=Math.max(0,Math.floor(py-rr)), y1=Math.min(H-1,Math.ceil(py+rr));
-      for(let y=y0;y<=y1;y++){ const dy=y-py; for(let x=x0;x<=x1;x++){ const dx=x-px, u2=(dx*dx+dy*dy)/(rr*rr); if(u2>=1) continue;
-        const o=Math.sqrt(1-u2), k=y*W+x; if(o>occ[k]){ occ[k]=o; stn[k]=v; } } }
-    }
-  }
-  return {ax,ox,oy,len,tc};
-}
-
-// ---------- rendering ----------
-const cv=document.getElementById("cv"), ctx=cv.getContext("2d");
-const S={view:"single",chr:"1",sex:"XX",seed:1,res:350,focus:2.5,stain:1,sep:0,bend:0.45,color:"gray",qh:0.12,pair:true,ideo:true};
-
-function finish(buf,r,rad,dpr){
-  const {W,H,occ,stn}=buf, A=new Float32Array(W*H), tex=makeNoise2D(r,96);
-  const floor=0.16, gscale=Math.max(2,rad*0.55);
-  for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const k=y*W+x; if(!occ[k]) continue;
-    const g=0.72+0.5*tex(x/gscale,y/gscale)+0.15*tex(x/(gscale*0.4)+50,y/(gscale*0.4));
-    A[k]=Math.pow(occ[k],0.8)*(floor+(1-floor)*stn[k])*g*1.25*S.stain; }
-  const nDeb=6+Math.floor(r()*8);
-  for(let d=0;d<nDeb;d++){ const px=r()*W, py=r()*H, rr=(0.8+r()*2.4)*dpr, a=0.3+r()*0.8;
-    for(let y=Math.max(0,Math.floor(py-rr));y<Math.min(H,py+rr);y++) for(let x=Math.max(0,Math.floor(px-rr));x<Math.min(W,px+rr);x++){ const u=((x-px)**2+(y-py)**2)/(rr*rr); if(u<1) A[y*W+x]+=a*(1-u); } }
-  blur2D(A,W,H,(0.7+S.focus*1.6)*dpr*Math.min(1,rad/(7*dpr)+0.35));
-  const img=ctx.createImageData(W,H), D=img.data, gray=S.color==="gray";
-  const bg=gray?[226,226,226]:[238,234,226], K=gray?[1.55,1.55,1.55]:[1.05,1.85,0.72];
-  const cx=W/2, cy=H/2, vmax=Math.hypot(cx,cy);
-  for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const k=y*W+x, a=A[k];
-    const vig=1-0.16*Math.pow(Math.hypot(x-cx,y-cy)/vmax,2.2), grain=(r()-0.5)*7, j=k*4, grn=gray?grain:grain*0.6;
-    D[j]=bg[0]*vig*Math.exp(-a*K[0])+grain; D[j+1]=bg[1]*vig*Math.exp(-a*K[1])+grn; D[j+2]=bg[2]*vig*Math.exp(-a*K[2])+grain; D[j+3]=255; }
-  ctx.putImageData(img,0,0);
-}
-
-function render(){
-  const t0=performance.now();
-  const cssW=cv.parentElement.clientWidth;
-  const cssH = S.view==="karyo" ? Math.round(Math.max(520,cssW*1.1)) : Math.round(Math.min(860,Math.max(560,cssW*1.25)));
-  const dpr=Math.min(2,window.devicePixelRatio||1), W=Math.round(cssW*dpr), H=Math.round(cssH*dpr);
-  cv.width=W; cv.height=H; cv.style.height=cssH+"px";
-  const r=rng(S.seed*7919+13), buf={W,H,occ:new Float32Array(W*H),stn:new Float32Array(W*H)};
-  const frac=(S.res-300)/400, sigmaUnits=16000/S.res;
-  let cap="", rad;
+function scene(){
+  const cssW=box.clientWidth, frac=(S.res-300)/400;
   if(S.view==="single"){
+    const cssH=Math.round(Math.min(780,Math.max(500,cssW*1.0)));
     const chr=S.chr, total=DATA[chr]["850"].at(-1)[2];
-    const L1=(cssH-110)*(0.52+0.48*frac)*dpr;                 // chromosome 1 length at this condensation
-    const z=Math.min(2.0,Math.max(1,(0.78*(cssH-60)*dpr)/(L1*total/TOTAL1)));   // enlarge small chromosomes
-    const L=L1*z*total/TOTAL1; rad=L1/(27+31*frac)*z;
-    const nHom = (S.pair && chr!=="Y") ? 2 : 1;
-    const slots = S.ideo ? (nHom===2?[0.27,0.55]:[0.4]) : (nHom===2?[0.33,0.67]:[0.5]);
-    for(let h=0;h<nHom;h++){
-      const cond=1+(r()-0.5)*0.08;
-      splatChromosome(buf,r,{chr,L:L*cond,rad,bend:S.bend*1.1,sep:S.sep,het:S.qh,sigmaUnits,
-        place:(ax)=>({ox:slots[h]*W-ax.cx, oy:(H-ax.h)/2+(r()-0.5)*20*dpr})});
-    }
-    finish(buf,r,rad,dpr);
-    if(S.ideo) drawIdiogram(chr,W,H,dpr,L);
-    cap=`${nHom===2?"Homologue pair":"Single chromosome"} ${chr} · RHG · ~${S.res} bands${z>1.05?` · ×${z.toFixed(1)} vs chr 1`:""}`;
-  } else {
-    // karyogram: shared scale, centromeres aligned per row
-    const labelH=16*dpr, gapY=14*dpr, topPad=10*dpr;
-    const rows=ROWS.map(row=>row.filter(c=>c!=="Y"||S.sex==="XY"));
-    const ext=rows.map(row=>{ let p=0,q=0; for(const c of row){ const b=DATA[c]["850"], cen=b.find(x=>x[0].startsWith("q"))[1]; p=Math.max(p,cen); q=Math.max(q,b.at(-1)[2]-cen); } return {p,q}; });
-    const sumUnits=ext.reduce((a,e)=>a+e.p+e.q,0)*1.12;
-    const k=(H-topPad-rows.length*(labelH+gapY))/sumUnits;
-    const L1=TOTAL1*k; rad=L1/(27+31*frac);
-    let yTop=topPad; ctx.clearRect(0,0,W,H);
-    const labels=[];
-    rows.forEach((row,ri)=>{
-      const e=ext[ri], cenY=yTop+e.p*k*1.06;
-      const nChr=row.reduce((a,c)=>a+((c==="X"&&S.sex==="XY")||c==="Y"?1:2),0);
-      const unit=W/(nChr+row.length*0.9+0.6);
-      let x=unit*0.8;
-      for(const c of row){
-        const n=((c==="X"&&S.sex==="XY")||c==="Y")?1:2, xs=[];
-        for(let h=0;h<n;h++){
-          const cx=x+unit*0.5; xs.push(cx);
-          splatChromosome(buf,r,{chr:c,L:DATA[c]["850"].at(-1)[2]*k*(1+(r()-0.5)*0.06),rad,bend:S.bend*0.35,sep:S.sep,het:S.qh,sigmaUnits,
-            place:(ax,tc)=>{ const i=Math.round(tc*(ax.pts.length-1)), pc=ax.pts[i]; return {ox:cx-pc.x, oy:cenY-pc.y}; }});
-          x+=unit;
-        }
-        labels.push({t:c,x:(xs[0]+xs[xs.length-1])/2,y:yTop+(e.p+e.q)*k*1.12+labelH*0.7});
-        x+=unit*0.9;
-      }
-      yTop+=(e.p+e.q)*k*1.12+labelH+gapY;
-    });
-    finish(buf,r,rad,dpr);
-    ctx.fillStyle="#2b2f33"; ctx.font=`500 ${11*dpr}px "IBM Plex Mono", ui-monospace, monospace`; ctx.textAlign="center"; ctx.textBaseline="middle";
-    for(const l of labels) ctx.fillText(l.t,l.x,l.y);
-    cap=`Karyogram 46,${S.sex} · RHG · ~${S.res} bands · shared scale`;
+    const L1=(cssH-90)*(0.52+0.48*frac);                                   // chromosome 1 at this condensation
+    const zOf=t=>Math.min(2.2,Math.max(1,(0.8*(cssH-50))/(L1*t/TOTAL1)));   // enlarge small chromosomes
+    const z=zOf(total);
+    const k=L1*z/TOTAL1, rad=L1*z/(27+31*frac);
+    const n=(S.pair && chr!=="Y")?2:1, slots=S.ideo?(n===2?[0.3,0.58]:[0.44]):(n===2?[0.36,0.64]:[0.5]);
+    const items=slots.map(f=>({pieces:SCOPE.whole(chr),x:f*cssW,y:cssH/2,anchor:"mid",k,bend:1.1}));
+    return {key:`s|${chr}|${n}|${S.ideo}|${cssW}`,cssW,cssH,rad,items,labels:[],z:z/zOf(TOTAL1),k};
   }
-  document.getElementById("capLeft").textContent=cap;
-  document.getElementById("capRight").textContent=`seed ${S.seed} · ${Math.round(performance.now()-t0)} ms`;
+  const cssH=Math.round(Math.max(520,cssW*1.05)), labelH=15, gapY=10, top=8;
+  const rows=ROWS.map(r=>r.filter(c=>c!=="Y"||S.sex==="XY"));
+  const ext=rows.map(r=>{ let p=0,q=0; for(const c of r){ const m=cenU(c); p=Math.max(p,m); q=Math.max(q,DATA[c]["850"].at(-1)[2]-m); } return {p,q}; });
+  const k=(cssH-top-rows.length*(labelH+gapY))/(ext.reduce((a,e)=>a+e.p+e.q,0)*1.1), rad=TOTAL1*k/(27+31*frac);
+  const items=[], labels=[]; let y=top;
+  rows.forEach((r,ri)=>{
+    const e=ext[ri], cy=y+e.p*k*1.05, single=c=>(c==="X"&&S.sex==="XY")||c==="Y";
+    const nChr=r.reduce((a,c)=>a+(single(c)?1:2),0), unit=cssW/(nChr+r.length*0.9+0.6);
+    let x=unit*0.8;
+    for(const c of r){ const xs=[];
+      for(let h=0;h<(single(c)?1:2);h++){ xs.push(x+unit*0.5); items.push({pieces:SCOPE.whole(c),x:x+unit*0.5,y:cy,anchor:"cen",k,bend:0.35}); x+=unit; }
+      labels.push({t:c,x:(xs[0]+xs.at(-1))/2,y:y+(e.p+e.q)*k*1.1+labelH*0.75}); x+=unit*0.9; }
+    y+=(e.p+e.q)*k*1.1+labelH+gapY;
+  });
+  return {key:`k|${S.sex}|${cssW}`,cssW,cssH,rad,items,labels,clean:true};
 }
-
-function drawIdiogram(chr,W,H,dpr,L){
-  const lv = S.res>=625?"850":S.res>=475?"550":"400";
-  const bands=DATA[chr][lv], total=bands.at(-1)[2], len=L*(total/DATA[chr]["850"].at(-1)[2]);
-  const w=12*dpr, x=W*0.83, y0=(H-len)/2, sc=len/total;
-  const col=s=>s==="gneg"?"#2a2330":s==="gpos25"?"#6c6572":s==="gpos50"?"#a59eab":s==="gpos75"?"#cfc9d3":s==="acen"?"#5fd4c7":s==="gvar"?"#b9b2bf":s==="stalk"?"#e3dfe6":"#f6f4f7";
+const FILLS={R:{gneg:"#2a2330",gpos25:"#6c6572",gpos50:"#a59eab",gpos75:"#cfc9d3",gpos100:"#f6f4f7"},G:{gneg:"#f6f4f7",gpos25:"#cfc9d3",gpos50:"#a59eab",gpos75:"#6c6572",gpos100:"#2a2330"}};
+function drawIdiogram(ctx,Sx,sc){
+  const chr=S.chr, lv=S.res>=625?"850":S.res>=475?"550":"400", bands=DATA[chr][lv], total=bands.at(-1)[2];
+  const len=total*sc.k*Sx, w=11*Sx, x=sc.cssW*0.84*Sx, y0=(sc.cssH*Sx-len)/2, u=len/total, F=FILLS[S.mode];
+  const col=s=>F[s]||(s==="acen"?"#5fd4c7":s==="gvar"?"#b9b2bf":s==="stalk"?"#e3dfe6":"#f6f4f7");
   ctx.save();
-  ctx.fillStyle="rgba(250,248,244,0.82)"; ctx.fillRect(x-w-8*dpr, y0-26*dpr, w+84*dpr, len+44*dpr);
-  ctx.beginPath(); ctx.roundRect(x-w/2,y0,w,len,Math.min(w/2,6*dpr)); ctx.clip();
-  for(const b of bands){ ctx.fillStyle=col(b[5]); ctx.fillRect(x-w/2,y0+b[1]*sc,w,Math.max(0.6,(b[2]-b[1])*sc)); }
-  ctx.restore(); ctx.save();
-  ctx.strokeStyle="#2a2330"; ctx.lineWidth=1*dpr; ctx.beginPath(); ctx.roundRect(x-w/2,y0,w,len,Math.min(w/2,6*dpr)); ctx.stroke();
-  ctx.fillStyle="#2b2f33"; ctx.font=`${10*dpr}px "IBM Plex Mono", ui-monospace, monospace`; ctx.textBaseline="middle";
-  let last=-1e9; const gap=13*dpr;
-  for(const b of DATA[chr]["400"]){ if(b[5]==="acen") continue; const yy=y0+((b[1]+b[2])/2)*(len/DATA[chr]["400"].at(-1)[2]); if(yy-last<gap) continue; ctx.fillText(b[0],x+w/2+6*dpr,yy); last=yy; }
-  ctx.fillStyle="#0b7a73"; ctx.font=`600 ${11*dpr}px "IBM Plex Sans", system-ui, sans-serif`; ctx.textAlign="center";
-  ctx.fillText(`Idiogram ${lv==="850"?"~700":lv}`,x+22*dpr,y0-12*dpr);
+  ctx.fillStyle="rgba(250,248,244,0.85)"; ctx.beginPath(); ctx.roundRect(x-w-8*Sx,y0-24*Sx,w+70*Sx,len+36*Sx,6*Sx); ctx.fill();
+  ctx.beginPath(); ctx.roundRect(x-w/2,y0,w,len,Math.min(w/2,5*Sx)); ctx.save(); ctx.clip();
+  for(const b of bands){ ctx.fillStyle=col(b[5]); ctx.fillRect(x-w/2,y0+b[1]*u,w,Math.max(0.6,(b[2]-b[1])*u)); }
+  ctx.restore(); ctx.strokeStyle="#2a2330"; ctx.lineWidth=Sx; ctx.stroke();
+  ctx.fillStyle="#2b2f33"; ctx.font=`${9.5*Sx}px "Geist Mono", ui-monospace, monospace`; ctx.textBaseline="middle"; ctx.textAlign="left";
+  let last=-1e9; const b4=DATA[chr]["400"], u4=len/b4.at(-1)[2];
+  for(const b of b4){ if(b[5]==="acen") continue; const yy=y0+(b[1]+b[2])/2*u4; if(yy-last<12*Sx) continue; ctx.fillText(b[0],x+w/2+5*Sx,yy); last=yy; }
+  ctx.fillStyle="#0b7a73"; ctx.font=`600 ${10.5*Sx}px "Geist", system-ui, sans-serif`; ctx.textAlign="center";
+  ctx.fillText(`${S.mode} · ${lv==="850"?"~700":lv}`,x+20*Sx,y0-12*Sx);
   ctx.restore();
 }
-
-// ---------- controls ----------
-const words={
-  focus:v=>v<0.4?"sharp":v<1.2?"slightly soft":v<2.2?"soft":"out of focus",
-  stain:v=>v<0.8?"light":v<1.2?"normal":v<1.45?"heavy":"overstained",
-  sep:v=>v<0.2?"closed":v<0.7?"visible":"wide",
-  bend:v=>v<0.15?"straight":v<0.6?"moderate":"strong"
-};
-let pending=0;
-function schedule(){ cancelAnimationFrame(pending); pending=requestAnimationFrame(()=>setTimeout(render,0)); }
-function bindRange(id,key,fmt){ const el=document.getElementById(id), out=document.getElementById(id+"Out");
-  const upd=()=>{ S[key]=parseFloat(el.value); out.textContent=fmt(S[key]); }; upd();
-  el.addEventListener("input",()=>{ upd(); schedule(); }); }
-bindRange("res","res",v=>`~${v} bands`);
-bindRange("focus","focus",words.focus);
-bindRange("stain","stain",words.stain);
-bindRange("sep","sep",words.sep);
-bindRange("bend","bend",words.bend);
-function segBind(attr,key,parse=v=>v,after){ document.querySelectorAll(`[data-${attr}]`).forEach(b=>b.addEventListener("click",()=>{ S[key]=parse(b.dataset[attr]); document.querySelectorAll(`[data-${attr}]`).forEach(x=>x.setAttribute("aria-pressed",String(x===b))); if(after) after(); schedule(); })); }
-function syncHash(){ try{ history.replaceState(null,"",S.view==="karyo"?"#karyogram":"#chr"+S.chr); }catch(e){} }
-function syncView(){
-  document.getElementById("chrCtl").hidden=S.view!=="single";
-  document.getElementById("singleToggles").hidden=S.view!=="single";
-  document.getElementById("sexCtl").hidden=S.view!=="karyo";
-  document.querySelectorAll("[data-view]").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.view===S.view)));
-  syncHash();
+function draw(q=1){
+  const sc=scene();
+  const o={mode:S.mode,res:S.res,focus:S.focus,stain:S.stain,sep:S.sep,bend:S.bend,het:S.het,color:S.color,field:S.field,clean:!!sc.clean,seed:S.seed,q};
+  const res=SCOPE.render(cv,sc,o,(S.view==="single"&&S.ideo)?(ctx,Sx)=>drawIdiogram(ctx,Sx,sc):null);
+  const band=S.mode==="R"?"RHG":"GTG";
+  document.getElementById("capLeft").textContent = S.view==="single"
+    ? `${S.pair&&S.chr!=="Y"?"Pair":"Chromosome"} ${S.chr} · ${band} · ~${S.res} bands${sc.z>1.05?` · ×${sc.z.toFixed(1)} vs chr 1`:""}`
+    : `46,${S.sex} · ${band} · ~${S.res} bands · one scale`;
+  document.getElementById("capRight").textContent=`cell ${S.seed} · ${res.ms} ms${q<1?" · preview":""}`;
 }
-segBind("view","view",v=>v,syncView);
-segBind("sex","sex");
-segBind("color","color");
-segBind("qh","qh",parseFloat);
+const words={res:v=>`~${v}`, focus:v=>v<0.4?"sharp":v<1.2?"good":v<2.2?"soft":"blurred",
+  stain:v=>v<0.8?"light":v<1.2?"normal":v<1.45?"heavy":"over", sep:v=>v<0.2?"closed":v<0.7?"open":"wide",
+  bend:v=>v<0.15?"straight":v<0.6?"some":"strong", field:v=>v<0.15?"clean":v<0.6?"debris":"dirty"};
+for(const id of Object.keys(words)){ const inp=document.getElementById(id), out=document.getElementById(id+"Out");
+  const upd=()=>{ S[id]=parseFloat(inp.value); out.textContent=words[id](S[id]); }; upd();
+  SCOPE.bindPreview(inp,upd,draw); }
+function seg(attr,key,after){ document.querySelectorAll(`[data-${attr}]`).forEach(b=>b.addEventListener("click",()=>{ S[key]=b.dataset[attr];
+  document.querySelectorAll(`[data-${attr}]`).forEach(x=>x.setAttribute("aria-pressed",String(x===b))); if(after) after(); draw(); })); }
+const syncSeg=(attr,val)=>document.querySelectorAll(`[data-${attr}]`).forEach(x=>x.setAttribute("aria-pressed",String(x.dataset[attr]===val)));
+function syncView(){
+  document.getElementById("chrCtl").hidden=S.view!=="single"; document.getElementById("singleToggles").hidden=S.view!=="single";
+  document.getElementById("sexCtl").hidden=S.view!=="karyo"; syncSeg("view",S.view);
+}
+seg("view","view",syncView); seg("sex","sex"); seg("color","color"); seg("het","het");
+seg("mode","mode",()=>SITE.store.set("scopeMode",S.mode));
 const chips=document.getElementById("chips");
-for(const c of ORDER){ const b=document.createElement("button"); b.textContent=c; b.dataset.chr=c; b.setAttribute("aria-pressed",String(c===S.chr));
-  b.addEventListener("click",()=>{ S.chr=c; chips.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",String(x===b))); syncHash(); schedule(); }); chips.appendChild(b); }
-document.getElementById("pair").addEventListener("change",e=>{ S.pair=e.target.checked; schedule(); });
-document.getElementById("ideo").addEventListener("change",e=>{ S.ideo=e.target.checked; schedule(); });
-document.getElementById("reseed").addEventListener("click",()=>{ S.seed=Math.floor(Math.random()*9999)+1; schedule(); });
-
-const h=(location.hash||"").toLowerCase();
-if(h==="#karyogram") S.view="karyo";
-else { const c=h.replace(/^#chr/,"").toUpperCase(); if(ORDER.includes(c)) S.chr=c; }
-chips.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.chr===S.chr)));
-syncView();
-let rw=0; new ResizeObserver(()=>{ const w=cv.parentElement.clientWidth; if(Math.abs(w-rw)>4){ rw=w; schedule(); } }).observe(cv.parentElement);
-render();
+for(const c of ORDER){ const b=document.createElement("button"); b.className="chip"; b.textContent=c; b.dataset.chr=c;
+  b.addEventListener("click",()=>{ S.chr=c; SITE.rememberChr(c); chips.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",String(x===b))); draw(); }); chips.appendChild(b); }
+chips.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.chr===S.chr)));
+document.getElementById("pair").addEventListener("change",e=>{ S.pair=e.target.checked; draw(); });
+document.getElementById("ideo").addEventListener("change",e=>{ S.ideo=e.target.checked; draw(); });
+document.getElementById("reseed").addEventListener("click",()=>{ S.seed=1+Math.floor(Math.random()*9999); draw(); });
+window.addEventListener("hashchange",()=>{ const c=SITE.initialChr(S.chr); if(c!==S.chr){ S.chr=c; chips.querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",String(x.dataset.chr===c))); draw(); } });
+syncSeg("mode",S.mode); syncSeg("sex",S.sex); syncView(); SITE.rememberChr(S.chr);
+let rw=0; new ResizeObserver(()=>{ const w=box.clientWidth; if(Math.abs(w-rw)>4){ rw=w; draw(); } }).observe(box);
 </script>

@@ -1,0 +1,346 @@
+<title>FISH probes</title>
+<style>/*__SHARED_CSS__*/
+.fish{display:grid;grid-template-columns:290px minmax(0,1fr);gap:12px;align-items:start}
+@media (max-width:900px){.fish{grid-template-columns:minmax(0,1fr)}}
+.side{padding:8px;display:flex;flex-direction:column;gap:6px;position:sticky;top:60px;max-height:calc(100vh - 72px)}
+@media (max-width:900px){.side{position:static;max-height:none}}
+.side input[type=search]{width:100%}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.filters select{width:100%;min-width:0}
+.count{font:11px var(--f-mono);color:var(--muted);padding:0 2px}
+.list{overflow-y:auto;flex:1;min-height:0;margin:0 -4px;padding:0 4px}
+@media (max-width:900px){.list{max-height:240px}}
+.list h4{position:sticky;top:0;background:var(--surface);margin:0;padding:6px 4px 3px;font:500 10.5px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);z-index:1}
+.pr{display:flex;align-items:center;gap:6px;width:100%;text-align:left;border:0;background:none;padding:4px 6px;border-radius:6px;cursor:pointer;font-size:12.5px;line-height:1.3}
+.pr:hover{background:var(--surface-2)}
+.pr[aria-current="true"]{background:var(--turq-soft);color:var(--fg)}
+.pr .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pr .dots{flex:none;display:flex;gap:2px}
+.pr .dots i{width:7px;height:7px;border-radius:50%;display:block}
+.pr .vd{flex:none;font:10px var(--f-mono);color:var(--muted)}
+.mainc{display:flex;flex-direction:column;gap:12px;min-width:0}
+.head{padding:12px 14px;display:flex;flex-direction:column;gap:6px}
+.head h2{margin:0;font-size:18px;letter-spacing:-.015em;line-height:1.25}
+.meta{display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center;font-size:12.5px;color:var(--muted)}
+.badge{display:inline-block;font:500 11px var(--f-mono);padding:1px 6px;border-radius:5px;border:1px solid var(--line);color:var(--fg);background:var(--surface-2)}
+.badge.st{border-color:var(--turq);color:var(--turq-ink)}
+.badge.ven{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.note{font-size:12.5px;margin:0;color:var(--fg)}
+.comps{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12.5px}
+.comps span b{font-weight:600}
+.comps .sz{color:var(--muted);font-family:var(--f-mono);font-size:11.5px}
+.map{padding:8px 10px;overflow-x:auto}
+.map svg{display:block}
+.map text{font-family:var(--f-mono)}
+.pats{padding:10px 12px;display:flex;flex-direction:column;gap:10px}
+.phead{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px}
+.phead h3{margin:0;font-size:14px}
+.chans{display:flex;gap:4px;flex-wrap:wrap}
+.chans .chip{display:inline-flex;align-items:center;gap:4px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:8px}
+.pat{border:1px solid var(--line);border-radius:10px;padding:8px;display:flex;flex-direction:column;gap:5px;background:var(--surface);cursor:pointer;text-align:left}
+.pat:hover{border-color:var(--muted)}
+.pat[aria-pressed="true"]{border-color:var(--turq);box-shadow:0 0 0 1px var(--turq) inset}
+.pat .t{display:flex;justify-content:space-between;gap:6px;align-items:baseline}
+.pat .t b{font-size:13px;line-height:1.25}
+.src{flex:none;font:10px var(--f-mono);color:var(--muted);border:1px solid var(--line);border-radius:4px;padding:0 4px}
+.src.v{color:var(--turq-ink);border-color:var(--turq)}
+.cells{display:flex;gap:4px;justify-content:center;background:#050608;border-radius:7px;padding:4px;line-height:0}
+.cells figure{margin:0;position:relative}
+.cells figcaption{position:absolute;left:4px;top:3px;font:10px var(--f-mono);color:#9aa0a7;line-height:1}
+.code{font:600 15px var(--f-mono);letter-spacing:.01em}
+.iscn{font:11px var(--f-mono);color:var(--muted);word-break:break-word;line-height:1.35}
+.pn{font-size:12px;color:var(--fg);line-height:1.4}
+.ka{font:11.5px var(--f-mono)}
+.ka a{text-decoration:none}
+.meta-fish{padding:8px;display:flex;flex-direction:column;gap:6px}
+.fieldx{border-radius:8px;overflow-x:auto;background:#050608;line-height:0}
+.fieldx canvas{display:block}
+.mctl{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:0 4px}
+.mctl .slider{width:150px}
+.cap{font:11.5px var(--f-mono);color:var(--muted)}
+.empty{color:var(--muted);font-size:13px;padding:10px}
+</style>
+<!--__NAV__-->
+<main class="page">
+  <div class="fish">
+    <aside class="card side" aria-label="Probes">
+      <input type="search" id="q" placeholder="Search: BCR, 9q34, break-apart…" aria-label="Search probes" autocomplete="off" spellcheck="false">
+      <div class="filters">
+        <select id="fGroup" aria-label="Group"><option value="">All groups</option></select>
+        <select id="fVendor" aria-label="Vendor"><option value="">All vendors</option></select>
+      </div>
+      <div class="count" id="count"></div>
+      <nav class="list" id="list" aria-label="Probe list"></nav>
+    </aside>
+    <div class="mainc">
+      <section class="card head" id="head" aria-live="polite"></section>
+      <section class="card map" id="map" aria-label="Probe map"></section>
+      <section class="card pats" aria-label="Interphase signal patterns">
+        <div class="phead"><h3>Interphase nuclei</h3><button class="btn-sec" id="newCells">New cells</button><div class="chans" id="chans" role="group" aria-label="Channels"></div></div>
+        <div class="grid" id="grid"></div>
+      </section>
+      <section class="card meta-fish" aria-label="Metaphase FISH">
+        <div class="mctl"><h3 style="margin:0;font-size:14px">Metaphase</h3><span class="cap" id="mcap"></span><span style="flex:1"></span>
+          <div class="seg" role="group" aria-label="Probe set" id="setSeg"></div>
+          <div class="slider"><label for="mFocus">Focus</label><output id="mFocusOut"></output><input type="range" id="mFocus" min="0" max="3" step="0.1" value="0.5"></div>
+          <button class="btn-sec" id="mNew">New cell</button></div>
+        <div class="fieldx" id="mBox"><canvas id="mcv" role="img" aria-label="Simulated metaphase FISH"></canvas></div>
+      </section>
+    </div>
+  </div>
+</main>
+<!--__FAQ__-->
+<script>
+/*__SHARED_JS__*/
+const DATA = __DATA__;
+const PROBES = __PROBES__;
+const PGENES = __PROBEGENES__;
+/*__FISH_JS__*/
+/*__SCOPE_JS__*/
+const ORDER = SITE.ORDER;
+const REF = (() => { const lengths={}, cen={}; for(const c of ORDER){ const b=DATA[c]["850"]; lengths[c]=b.at(-1)[4]; cen[c]=b.find(x=>x[5]==="acen")[4]; } return {lengths,cen}; })();
+const COL = {O:[255,138,31],G:[62,224,90],R:[255,59,59],A:[56,214,255],Y:[255,210,63],B:[91,124,255]};
+const CNAME = {O:"orange",G:"green",R:"red",A:"aqua",Y:"gold",B:"blue"};
+const DESIGN = {BA:"Break-apart",DF:"Dual fusion",SF:"Single fusion",ES:"Extra signal","TC-DF":"Tri-colour dual fusion","TC-BA":"Tri-colour break-apart",CEP:"Enumeration (centromere)",TEL:"Subtelomere","LSI+control":"Locus + control","LSI+CEP":"Locus + centromere control",LSI:"Locus",Panel:"Panel",Deletion:"Deletion"};
+const rgb = (c,a=1) => `rgba(${COL[c].join(",")},${a})`;
+const esc = s => String(s??"").replace(/[&<>"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+const bandOf = (c,bp) => { const b=DATA[c]["850"].find(x=>bp>=x[3]&&bp<=x[4]); return b?c+b[0]:c; };
+const isCtrl = comp => /^D\d+Z\d|^D[XY]Z\d/.test(comp.locus||"");
+const shortName = p => p.name.replace(/^Vysis\s+/,"").replace(/^CytoCell\s+/,"").replace(/^XL\s+/,"XL ");
+const st = {id:null, seed:1+Math.floor(Math.random()*9999), mseed:1+Math.floor(Math.random()*9999), pat:0, set:null, ch:{D:true,O:true,G:true,R:true,A:true,Y:true,B:true}, mfocus:0.5};
+
+// ---------------------------------------------------------------- list
+const hay = new Map(PROBES.map(p=>[p.id,[p.name,p.id,p.vendor,p.group,DESIGN[p.design]||p.design,...p.codes,...p.comps.flatMap(c=>[c.label,c.locus,...c.segs.map(s=>"chr"+s[0]+" "+bandOf(s[0],(s[1]+s[2])/2))]),p.note].join(" ").toLowerCase()]));
+const groups=[...new Set(PROBES.map(p=>p.group))], vendors=[...new Set(PROBES.map(p=>p.vendor))];
+for(const g of groups) document.getElementById("fGroup").add(new Option(g,g));
+for(const v of vendors) document.getElementById("fVendor").add(new Option(v,v));
+function renderList(){
+  const q=document.getElementById("q").value.trim().toLowerCase().split(/\s+/).filter(Boolean), g=document.getElementById("fGroup").value, v=document.getElementById("fVendor").value;
+  const shown=PROBES.filter(p=>(!g||p.group===g)&&(!v||p.vendor===v)&&q.every(w=>hay.get(p.id).includes(w))).sort((a,b)=>groups.indexOf(a.group)-groups.indexOf(b.group));
+  const list=document.getElementById("list"); list.innerHTML="";
+  let last=null;
+  for(const p of shown){
+    if(p.group!==last){ const h=document.createElement("h4"); h.textContent=p.group; list.appendChild(h); last=p.group; }
+    const b=document.createElement("button"); b.className="pr"; b.dataset.id=p.id; b.title=p.name;
+    b.setAttribute("aria-current",String(p.id===st.id));
+    b.innerHTML=`<span class="dots">${[...new Set(p.comps.map(c=>c.color))].map(c=>`<i style="background:${rgb(c)}"></i>`).join("")}</span><span class="nm">${esc(shortName(p))}</span><span class="vd">${p.vendor.startsWith("Vysis")?"":p.vendor.startsWith("Cyto")?"OGT":"MS"}</span>`;
+    b.addEventListener("click",()=>select(p.id,true));
+    list.appendChild(b);
+  }
+  document.getElementById("count").textContent=`${shown.length} of ${PROBES.length} probes`;
+  if(!shown.length) list.innerHTML='<p class="empty">No probe matches. The catalogue tab lists every vendor.</p>';
+}
+["q","fGroup","fVendor"].forEach(id=>document.getElementById(id).addEventListener("input",renderList));
+
+// ---------------------------------------------------------------- header
+function renderHead(p){
+  const vendorUrl = p.url ? `<a href="${esc(p.url)}" target="_blank" rel="noopener">source ↗</a>` : "";
+  const comps=p.comps.map(c=>`<span><span class="dot" style="background:${rgb(c.color)}"></span><b>${esc(c.label)}</b> <span class="sz">${esc(c.size||"")}</span>${c.note?` <span class="muted">· ${esc(c.note)}</span>`:""}</span>`).join("");
+  const nsets=FISH.sets(p).length;
+  document.getElementById("head").innerHTML=`
+    <h2>${esc(p.name)}</h2>
+    <div class="meta"><span class="badge ven">${esc(p.vendor)}</span><span class="badge">${esc(DESIGN[p.design]||p.design)}</span>${p.status.map(s=>`<span class="badge st">${esc(s)}</span>`).join("")}
+      <span class="mono">${p.codes.map(esc).join(" · ")}</span>${vendorUrl}<a href="#${p.id}" title="Link to this probe">#</a></div>
+    <div class="comps">${comps}</div>
+    ${nsets>1?`<p class="note muted">${nsets} probe sets, hybridised separately: codes are written per set, separated by |.</p>`:""}
+    ${p.note?`<p class="note">${esc(p.note)}</p>`:""}`;
+}
+
+// ---------------------------------------------------------------- probe map
+const NS="http://www.w3.org/2000/svg";
+const el=(t,a={},par)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(par)par.appendChild(e);return e;};
+const IDEO_FILL={gneg:"var(--paper)",gpos25:"var(--g25)",gpos50:"var(--g50)",gpos75:"var(--g75)",gpos100:"var(--ink)",acen:"var(--acen)",gvar:"var(--gvar)",stalk:"var(--stalk)"};
+function windows(p){
+  // probe components grouped by chromosome, then split where they are more than 8 Mb apart
+  const segs=[]; p.comps.forEach((c,i)=>c.segs.forEach(s=>segs.push({c:s[0],s:s[1],e:s[2],i})));
+  const by={}; for(const s of segs)(by[s.c]=by[s.c]||[]).push(s);
+  const out=[];
+  for(const c of ORDER){ if(!by[c]) continue; const ss=by[c].sort((a,b)=>a.s-b.s); let cur=null;
+    for(const s of ss){ if(cur && s.s-cur.e<8e6){ cur.e=Math.max(cur.e,s.e); cur.segs.push(s); } else { cur={c,s:s.s,e:s.e,segs:[s]}; out.push(cur); } } }
+  for(const w of out){ const span=w.e-w.s, pad=Math.max(250e3,span*0.18); w.a=Math.max(0,w.s-pad); w.b=Math.min(REF.lengths[w.c],w.e+pad); }
+  return out;
+}
+function renderMap(p){
+  const box=document.getElementById("map"), W=Math.max(560,box.clientWidth-20), ws=windows(p);
+  const rowH=[], L=150, X0=L+28, TW=W-X0-8;
+  const svg=el("svg",{width:W,role:"img","aria-label":"Probe positions on GRCh38"});
+  let y=6;
+  for(const w of ws){
+    // chromosome strip (400-band level) with the window outlined
+    const bands=DATA[w.c]["400"], tot=bands.at(-1)[4], sx=v=>8+v/tot*(L-8), top=y+16;
+    const t=el("text",{x:8,y:y+10,"font-size":11,fill:"var(--fg)","font-weight":600},svg); t.textContent=`chr${w.c} · ${bandOf(w.c,(w.s+w.e)/2)}`;
+    const g=el("g",{},svg);
+    for(const b of bands) el("rect",{x:sx(b[3]),y:top,width:Math.max(0.5,sx(b[4])-sx(b[3])),height:9,fill:IDEO_FILL[b[5]]||"var(--paper)"},g);
+    el("rect",{x:8,y:top,width:L-8,height:9,fill:"none",stroke:"var(--outline)","stroke-width":0.8,rx:3},svg);
+    const wx0=sx(w.a), wx1=Math.max(sx(w.b),wx0+2);
+    el("rect",{x:wx0-1,y:top-3,width:wx1-wx0+2,height:15,fill:"none",stroke:"var(--orange)","stroke-width":1.5},svg);
+    // zoom
+    const zx=v=>X0+(v-w.a)/(w.b-w.a)*TW;
+    el("path",{d:`M${wx1+1},${top-3} L${X0},${y+2} M${wx1+1},${top+12} L${X0},${y+70}`,stroke:"var(--line)",fill:"none"},svg);
+    // axis
+    const ay=y+12, span=w.b-w.a, step=[1e4,2e4,5e4,1e5,2e5,5e5,1e6,2e6,5e6].find(s=>span/s<=8)||1e7;
+    el("line",{x1:X0,x2:X0+TW,y1:ay,y2:ay,stroke:"var(--line)"},svg);
+    for(let v=Math.ceil(w.a/step)*step; v<=w.b; v+=step){ const x=zx(v); el("line",{x1:x,x2:x,y1:ay-3,y2:ay+3,stroke:"var(--muted)"},svg);
+      const tt=el("text",{x,y:ay-5,"font-size":9.5,fill:"var(--muted)","text-anchor":"middle"},svg); tt.textContent=(v/1e6).toFixed(step<1e5?2:step<1e6?1:0)+(v+step>w.b?" Mb":""); }
+    // probe components, in lanes when they overlap
+    const lanes=[]; let cy=ay+8;
+    const segs=w.segs.slice().sort((a,b)=>a.s-b.s);
+    for(const s of segs){ let li=lanes.findIndex(e=>e<s.s); if(li<0){ li=lanes.length; lanes.push(0);} lanes[li]=s.e+ (w.b-w.a)*0.12;
+      const comp=p.comps[s.i], x=zx(s.s), x1=Math.max(zx(s.e),x+3), yy=cy+li*16;
+      el("rect",{x,y:yy,width:x1-x,height:8,rx:2,fill:rgb(comp.color),stroke:"rgba(0,0,0,.25)"},svg);
+      const lt=el("text",{x:x,y:yy+16,"font-size":9.5,fill:"var(--fg)"},svg); lt.textContent=comp.label;
+      el("title",{},lt).textContent=`${comp.label} · ${comp.size||""}`; }
+    cy+=lanes.length*16+8;
+    // genes
+    const gl=[];
+    for(const [sym,[c,s,e,strand]] of Object.entries(PGENES)){ if(c!==w.c||e<w.a||s>w.b) continue; gl.push({sym,s,e,strand}); }
+    gl.sort((a,b)=>a.s-b.s); const glanes=[];
+    for(const g of gl){ const x=zx(Math.max(g.s,w.a)), x1=Math.max(zx(Math.min(g.e,w.b)),x+2), labW=g.sym.length*6+6;
+      let li=glanes.findIndex(e=>e<x); if(li<0){ li=glanes.length; glanes.push(0);} glanes[li]=Math.max(x1,x+labW)+4;
+      const yy=cy+li*15;
+      el("line",{x1:x,x2:x1,y1:yy,y2:yy,stroke:"var(--green)","stroke-width":3},svg);
+      const ar=g.strand>0?`M${x1+1},${yy-3} L${x1+5},${yy} L${x1+1},${yy+3}`:`M${x-1},${yy-3} L${x-5},${yy} L${x-1},${yy+3}`;
+      el("path",{d:ar,fill:"var(--green)"},svg);
+      const tg=el("text",{x,y:yy+11,"font-size":9.5,fill:"var(--green)","font-style":"italic"},svg); tg.textContent=g.sym; }
+    cy+=glanes.length*15+6;
+    y=Math.max(cy,y+74)+8;
+  }
+  svg.setAttribute("height",y); svg.setAttribute("viewBox",`0 0 ${W} ${y}`);
+  box.innerHTML=""; box.appendChild(svg);
+}
+
+// ---------------------------------------------------------------- interphase nuclei
+function noise(r){ const N=64, g=new Float32Array(N*N); for(let i=0;i<g.length;i++) g[i]=r();
+  return (x,y)=>{ let xi=Math.floor(x), yi=Math.floor(y); const xf=x-xi, yf=y-yi; xi&=63; yi&=63; const x1=(xi+1)&63, y1=(yi+1)&63;
+    const a=g[yi*N+xi], b=g[yi*N+x1], c=g[y1*N+xi], d=g[y1*N+x1], sx=xf*xf*(3-2*xf), sy=yf*yf*(3-2*yf); return a+(b-a)*sx+(c-a)*sy+(a-b-c+d)*sx*sy; }; }
+function drawNucleus(cv,spots,comps,seed,size){
+  const dpr=Math.min(2,devicePixelRatio||1), S=Math.round(size*dpr); cv.width=S; cv.height=S; cv.style.width=size+"px"; cv.style.height=size+"px";
+  const ctx=cv.getContext("2d"), r=SCOPE.rng(seed), n=noise(r);
+  const cx=S/2+(r()-0.5)*S*0.04, cy=S/2+(r()-0.5)*S*0.04, rx=S*(0.39+0.05*r()), ry=rx*(0.78+0.17*r()), rot=r()*Math.PI, ca=Math.cos(rot), sa=Math.sin(rot);
+  const img=ctx.createImageData(S,S), D=img.data, nuc=[...Array(2+Math.floor(r()*2))].map(()=>({x:(r()-0.5)*0.9,y:(r()-0.5)*0.9,r:0.12+0.08*r()}));
+  const ts=S/18;
+  for(let y=0;y<S;y++) for(let x=0;x<S;x++){
+    const j=(y*S+x)*4, dx=x-cx, dy=y-cy, u=(dx*ca+dy*sa)/rx, v=(-dx*sa+dy*ca)/ry, d=Math.sqrt(u*u+v*v)+0.06*(n(x/ts,y/ts)-0.5);
+    let I=0;
+    if(st.ch.D && d<1.02){ I=(0.62+0.38*n(x/(ts*0.45)+20,y/(ts*0.45)+20))*(1-Math.pow(Math.min(1,d),6)*0.6)*Math.min(1,(1.02-d)/0.05);
+      for(const q of nuc){ const e=Math.hypot(u-q.x,v-q.y)/q.r; if(e<1) I*=0.55+0.45*e*e; } }
+    const gr=(r()-0.5)*5;
+    D[j]=5+I*42+gr; D[j+1]=7+I*72+gr; D[j+2]=11+I*190+gr; D[j+3]=255;
+  }
+  ctx.putImageData(img,0,0);
+  ctx.globalCompositeOperation="lighter";
+  const blob=(x,y,rad,c,a)=>{ if(!st.ch[c]) return; const g=ctx.createRadialGradient(x,y,0,x,y,rad); g.addColorStop(0,rgb(c,a)); g.addColorStop(0.45,rgb(c,a*0.75)); g.addColorStop(1,rgb(c,0)); ctx.fillStyle=g; ctx.beginPath(); ctx.arc(x,y,rad,0,Math.PI*2); ctx.fill(); };
+  // a signal is 2-3 overlapping blobs: real spots are granular, not perfect discs
+  const signal=(x,y,rad,c,a)=>{ blob(x,y,rad,c,a*0.7); blob(x+(r()-0.5)*rad*0.6,y+(r()-0.5)*rad*0.6,rad*(0.55+0.25*r()),c,a*(0.3+0.25*r())); };
+  const inside=()=>{ for(;;){ const a=r()*Math.PI*2, d=Math.sqrt(r())*0.8, u=Math.cos(a)*d, v=Math.sin(a)*d; return [cx+u*rx*ca-v*ry*sa, cy+u*rx*sa+v*ry*ca]; } };
+  const R0=S*0.036, placed=[];
+  const place=minD=>{ let best=null,bd=-1; for(let k=0;k<60;k++){ const p=inside(); const dmin=placed.reduce((m,q)=>Math.min(m,Math.hypot(p[0]-q[0],p[1]-q[1])),1e9); if(dmin>minD) return p; if(dmin>bd){bd=dmin;best=p;} } return best; };
+  for(const s of spots){
+    if(s.amp){ // amplification: a cluster of many small signals
+      const [x,y]=place(R0*6); placed.push([x,y]); const m=Math.min(28,Math.max(8,s.amp*1.6));
+      for(let i=0;i<m;i++){ const a=r()*Math.PI*2, d=Math.sqrt(r())*R0*4.5; for(const c of s.colors) signal(x+Math.cos(a)*d,y+Math.sin(a)*d,R0*0.75,c,0.8); }
+      continue; }
+    const [x,y]=place(R0*5.5); placed.push([x,y]);
+    const parts=s.parts||[{color:s.colors[0],kb:s.kb,comp:s.comps[0]}];
+    const doublet=r()<0.15;   // replicated (G2) signals can look split
+    const ang=r()*Math.PI*2;
+    parts.forEach((pt,i)=>{
+      const comp=comps[pt.comp], ctrl=comp&&isCtrl(comp), rad=R0*(ctrl?1.5:1)*(0.85+0.5*Math.min(1,Math.sqrt(pt.kb/500))), off=parts.length>1?R0*0.55:0;
+      const px=x+Math.cos(ang+i*2.4)*off, py=y+Math.sin(ang+i*2.4)*off;
+      signal(px,py,rad,pt.color,ctrl?0.95:0.85);
+      if(doublet) signal(px+Math.cos(ang+1.3)*rad*1.3,py+Math.sin(ang+1.3)*rad*1.3,rad*0.8,pt.color,0.7);
+    });
+  }
+  // non-specific background speckles
+  const cols=[...new Set(comps.map(c=>c.color))];
+  for(let i=0;i<2+Math.floor(r()*4);i++){ const [x,y]=inside(); blob(x,y,R0*0.45,cols[Math.floor(r()*cols.length)],0.3); }
+  ctx.globalCompositeOperation="source-over";
+}
+const probe=()=>PROBES.find(p=>p.id===st.id);
+function cellOf(pat){ return FISH.buildCell(REF,pat.events,"XX"); }
+const NORMAL=FISH.buildCell(REF,[],"XX");
+function renderPatterns(){
+  const p=probe(), grid=document.getElementById("grid"); grid.innerHTML="";
+  const sets=FISH.sets(p), size=sets.length>1?112:170;
+  p.patterns.forEach((pat,pi)=>{
+    const cell=cellOf(pat), code=FISH.code(p,cell), iscn=FISH.iscn(p,cell,NORMAL);
+    const card=document.createElement("button"); card.className="pat"; card.setAttribute("aria-pressed",String(pi===st.pat)); card.title="Show this pattern in metaphase";
+    const kar = pat.karyo ? `<div class="ka">${esc(pat.karyo)} · <a href="__HREF:abnormalities.html__#k=${encodeURIComponent("46,XX,"+pat.karyo)}" onclick="event.stopPropagation()">karyotype ›</a></div>` : "";
+    card.innerHTML=`<div class="t"><b>${esc(pat.name)}</b><span class="src ${pat.src==="vendor"?"v":""}" title="${pat.src==="vendor"?"Pattern described by the manufacturer":"Textbook pattern for this design"}">${pat.src}</span></div>
+      <div class="cells"></div><div class="code">${esc(code)}</div><div class="iscn">${esc(iscn)}</div>${kar}${pat.note?`<div class="pn">${esc(pat.note)}</div>`:""}`;
+    const cells=card.querySelector(".cells");
+    sets.forEach((s,si)=>{ const fig=document.createElement("figure"), cv=document.createElement("canvas"); fig.appendChild(cv);
+      if(sets.length>1){ const fc=document.createElement("figcaption"); fc.textContent=`set ${s}`; fig.appendChild(fc); }
+      cells.appendChild(fig);
+      drawNucleus(cv,FISH.signals(p,cell,s),p.comps,st.seed*131+pi*17+si*7,size); });
+    card.addEventListener("click",()=>{ st.pat=pi; grid.querySelectorAll(".pat").forEach((x,i)=>x.setAttribute("aria-pressed",String(i===pi))); renderMeta(); });
+    grid.appendChild(card);
+  });
+}
+function renderChans(){
+  const p=probe(), cols=[...new Set(p.comps.map(c=>c.color))];
+  const box=document.getElementById("chans"); box.innerHTML="";
+  for(const c of ["D",...cols]){ const b=document.createElement("button"); b.className="chip"; b.setAttribute("aria-pressed",String(st.ch[c]));
+    b.innerHTML=c==="D"?'<span class="dot" style="background:#3b5bdb"></span>DAPI':`<span class="dot" style="background:${rgb(c)}"></span>${CNAME[c]}`;
+    b.addEventListener("click",()=>{ st.ch[c]=!st.ch[c]; b.setAttribute("aria-pressed",String(st.ch[c])); renderPatterns(); }); box.appendChild(b); }
+}
+
+// ---------------------------------------------------------------- metaphase (fluorescence mode of the microscope engine)
+function renderMeta(q=1){
+  const p=probe(), pat=p.patterns[st.pat]||p.patterns[0], cell=cellOf(pat), sets=FISH.sets(p);
+  if(!sets.includes(st.set)) st.set=sets[0];
+  const seg=document.getElementById("setSeg"); seg.hidden=sets.length<2;
+  if(sets.length>1 && seg.childElementCount!==sets.length){ seg.innerHTML=""; for(const s of sets){ const b=document.createElement("button"); b.textContent=`Set ${s}`; b.dataset.set=s; b.addEventListener("click",()=>{ st.set=s; renderMeta(); }); seg.appendChild(b); } }
+  seg.querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",String(+b.dataset.set===st.set)));
+  const spots=FISH.signals(p,cell,st.set);
+  const chrs=new Set(p.comps.filter(c=>c.set===st.set).flatMap(c=>c.segs.map(s=>s[0])));
+  // chromosomes shown: every copy of the probed chromosomes, abnormal copies, and anything carrying a signal
+  const show=cell.copies.map((cp,i)=>({cp,i})).filter(({cp,i})=>!cp.amp && (chrs.has(cp.chr)||!cp.normal||spots.some(s=>s.copy===i)));
+  show.sort((a,b)=>ORDER.indexOf(a.cp.chr)-ORDER.indexOf(b.cp.chr) || (a.cp.normal?0:1)-(b.cp.normal?0:1));
+  const box=document.getElementById("mBox"), wrapW=box.clientWidth, cssH=Math.round(Math.max(300,Math.min(420,innerHeight*0.45)));
+  const pcs=show.map(({cp})=>SCOPE.pieces(cp.segs,"850")), lens=pcs.map(SCOPE.totalOf);
+  const cenU=pc=>{ let pos=0,a=null,b=0; for(const x of pc){ if(x.st==="acen"){ if(a===null)a=pos; b=pos+x.len; } pos+=x.len; } return a===null?pos/2:(a+b)/2; };
+  const cens=pcs.map(cenU), maxP=Math.max(1,...cens), maxQ=Math.max(1,...lens.map((l,i)=>l-cens[i]));
+  const T1=DATA["1"]["850"].at(-1)[2], k0=(cssH-44)/((maxP+maxQ)*1.08), L1=(cssH-60)*0.62, k=Math.min(k0, 2*L1/T1);
+  const rad=Math.max(3,T1*Math.min(k,L1/T1)/34*1.3), slotW=Math.max(rad*5,46), needW=show.length*slotW+slotW*0.6;
+  const cssW=Math.max(wrapW,Math.ceil(needW)), cy=Math.max(12,(cssH-20-(maxP+maxQ)*k)/2)+maxP*k;
+  let x=(cssW-needW)/2+slotW*0.8; const items=[], labels=[];
+  show.forEach(({cp,i},j)=>{
+    const sig=[]; for(const s of spots.filter(s=>s.copy===i)) for(const pt of (s.parts||[{color:s.colors[0],kb:s.kb,at:s.at}])) sig.push({u:SCOPE.unitAt(pcs[j],pt.at),color:pt.color,kb:pt.kb});
+    items.push({pieces:pcs[j],x,y:cy,anchor:"cen",k,bend:0.5,signals:sig}); labels.push({t:cp.label,x,y:cssH-7,bold:!cp.normal}); x+=slotW; });
+  const amps=spots.filter(s=>s.amp);
+  if(amps.length) items.push({dm:Math.min(60,amps[0].amp*3),colors:amps.flatMap(a=>a.colors),x:cssW/2,y:cssH*0.45,spread:Math.min(cssW,cssH)*0.42,rad});
+  const sc={key:`${p.id}|${st.pat}|${st.set}|${cssW}|${cssH}`,cssW,cssH,rad,items,labels};
+  const res=SCOPE.render(document.getElementById("mcv"),sc,{mode:"FL",res:550,focus:st.mfocus,stain:1,sep:0.25,bend:0.4,het:"typical",color:"gray",field:0.1,clean:true,seed:st.mseed,q});
+  document.getElementById("mcap").textContent=`${pat.name} · ${FISH.code(p,cell).split(" | ")[sets.indexOf(st.set)]||""}${amps.length?" · amplicons drawn as double minutes (they can also be intrachromosomal)":""}`;
+}
+const mf=document.getElementById("mFocus"), mfo=document.getElementById("mFocusOut");
+const updF=()=>{ st.mfocus=+mf.value; mfo.textContent=st.mfocus<0.4?"sharp":st.mfocus<1.2?"good":st.mfocus<2.2?"soft":"blurred"; }; updF();
+SCOPE.bindPreview(mf,updF,q=>renderMeta(q));
+document.getElementById("mNew").addEventListener("click",()=>{ st.mseed=1+Math.floor(Math.random()*9999); renderMeta(); });
+document.getElementById("newCells").addEventListener("click",()=>{ st.seed=1+Math.floor(Math.random()*9999); renderPatterns(); });
+
+// ---------------------------------------------------------------- selection
+function select(id,user){
+  const p=PROBES.find(x=>x.id===id); if(!p) return;
+  st.id=id; st.pat=Math.min(1,p.patterns.length-1); st.set=null;
+  SITE.store.set("probe",id);
+  try{ history.replaceState(null,"","#"+id); }catch(e){}
+  document.querySelectorAll(".pr").forEach(b=>b.setAttribute("aria-current",String(b.dataset.id===id)));
+  renderHead(p); renderMap(p); renderChans(); renderPatterns(); renderMeta();
+  if(!user) document.querySelector(`.pr[data-id="${id}"]`)?.scrollIntoView({block:"nearest"});
+}
+function fromHash(){
+  const h=decodeURIComponent((location.hash||"").slice(1));
+  if(PROBES.some(p=>p.id===h)) return h;
+  const stored=SITE.store.get("probe",null), m=h.match(/^chr(\w+)$/i);
+  if(m){ const c=m[1].toUpperCase(), on=p=>p.comps.some(x=>x.segs.some(s=>s[0]===c)&&!isCtrl(x));
+    const sp=PROBES.find(p=>p.id===stored); if(sp&&on(sp)) return stored;
+    return (PROBES.find(on)||PROBES[0]).id; }
+  return PROBES.some(p=>p.id===stored) ? stored : PROBES[0].id;
+}
+window.addEventListener("hashchange",()=>{ const id=fromHash(); if(id!==st.id) select(id); });
+renderList(); select(fromHash());
+let rw=0; new ResizeObserver(()=>{ const w=document.getElementById("map").clientWidth; if(Math.abs(w-rw)>8){ rw=w; renderMap(probe()); renderMeta(); } }).observe(document.getElementById("map"));
+</script>

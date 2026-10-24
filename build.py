@@ -30,6 +30,7 @@ PAGES = {
     "fish.html": ("fish.template.html", "FISH probes"),
     "catalogue.html": ("catalogue.template.html", "Probe catalogue"),
 }
+SHORT = {"index.html": "Ideo", "simulator.html": "Scope", "abnormalities.html": "Abn", "fish.html": "FISH", "catalogue.html": "Catalogue"}  # tab labels on phones
 FONTS = ('<link rel="preconnect" href="https://fonts.googleapis.com">\n'
          '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
          '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">\n')
@@ -58,7 +59,7 @@ def load_data():
 
 def nav(current, links):
     tabs = "".join(
-        f'<a href="{links[page]}" data-chr-link{" aria-current=\"page\"" if page == current else ""}>{label}</a>'
+        f'<a href="{links[page]}" data-chr-link{" aria-current=\"page\"" if page == current else ""}><span class="lg">{label}</span><span class="sm">{SHORT[page]}</span></a>'
         for page, (_, label) in PAGES.items())
     return ('<nav class="appbar" aria-label="Site"><div class="appbar-in">'
             f'<a class="brand" href="{links["index.html"]}"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Idiograms</span></a>'

@@ -231,7 +231,7 @@ const FISH = (() => {
         const oa = colors.indexOf(a[0]), ob = colors.indexOf(b[0]);
         return a.length - b.length || oa - ob;
       });
-      return keys.map(k => k.startsWith("amp") ? k : counts.get(k) + k).join("");
+      return keys.map(k => k.startsWith("amp") ? k : counts.get(k) + k).join("").replace(/([A-Z])amp/, "$1 amp");
     }).join(" | ");
   }
 

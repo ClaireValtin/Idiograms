@@ -52,7 +52,8 @@ button,input,select{font:inherit;color:inherit}
 .tabs a[aria-current="page"]{background:var(--fg);color:var(--bg)}
 .faq-btn{flex:none;display:inline-flex;align-items:center;gap:6px;font:500 13px var(--f-body);border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:5px 10px;cursor:pointer}
 .faq-btn:hover{border-color:var(--muted)}
-@media (max-width:620px){.brand-name{display:none}.faq-btn span{display:none}}
+.tabs .sm{display:none}
+@media (max-width:620px){.brand-name{display:none}.faq-btn span{display:none}.tabs .lg{display:none}.tabs .sm{display:inline}.tabs a{padding:6px 8px}}
 /* ---------- page frame ---------- */
 .page{max-width:1320px;margin:0 auto;padding:12px 16px 32px;display:flex;flex-direction:column;gap:12px}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:12px}
@@ -81,8 +82,8 @@ input[type=text],input[type=search],select{border:1px solid var(--line);border-r
 input[type=text]:focus,input[type=search]:focus,select:focus{outline:2px solid var(--turq);outline-offset:0}
 .seg button:focus-visible,.chip:focus-visible,.btn:focus-visible,.btn-sec:focus-visible,.tabs a:focus-visible,.toggle input:focus-visible,.faq-btn:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
 .slider{display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:baseline}
-.slider label{font-size:12.5px;font-weight:550}
-.slider output{font:11.5px var(--f-mono);color:var(--muted)}
+.slider label{font-size:12.5px;font-weight:550;white-space:nowrap}
+.slider output{font:11.5px var(--f-mono);color:var(--muted);white-space:nowrap}
 .slider input{grid-column:1/-1}
 .swatch{display:inline-block;width:12px;height:12px;border:1px solid var(--outline);vertical-align:-2px;margin-right:5px;border-radius:2px}
 .sw-gvar{background:repeating-linear-gradient(45deg,var(--gvar) 0 2px,var(--paper) 2px 5px)}
