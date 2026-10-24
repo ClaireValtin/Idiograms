@@ -1,0 +1,65 @@
+<dialog class="faq" id="faq" aria-labelledby="faqTitle">
+  <div class="faq-head"><h2 id="faqTitle">FAQ, sources and limits</h2><button class="btn-sec" id="faqClose" type="button">Close</button></div>
+  <div class="faq-body">
+    <details open><summary>Where do the bands come from, and are they accurate?</summary>
+      <ul>
+        <li>Band names, ISCN lengths, stain grades and GRCh38 coordinates are NCBI's human ideogram tables (400, 550 and GRCh38 ~700 bands), as repackaged in ideogram.js 1.53.0.</li>
+        <li>The ~700 level matches the UCSC hg38 cytoband table exactly: all 862 band names, boundaries and stain grades. The 400 level matches NCBI's file byte for byte. The 550 level matches too, except 21 sub-bands in seven places (7q11.2, 8q11.2, 11p11.1, 12q24.3, 18p11.3, Xp11.2, Yq11.2) where NCBI's file leaves gaps; those were stretched to fill their parent band. Every 400/550 boundary falls on a ~700 boundary.</li>
+        <li>UCSC and NCBI share one source, so this proves faithful copying, not that the bands are right. Cytogenetic band positions in GRCh38 come from FISH mapping and are typically good to about 1-2 Mb.</li>
+        <li>The finest level is the GRCh38 idiogram, which ISCN 2024 (section 2.4) says best fits the 700-band level. GRCh38 is more detailed than ISCN at 6p24 and 9q34; ISCN 850 is more detailed at 1q32, 2p21, 5q13.2, 6p22.3 and 6q21. ISCN 300- and 850-band idiograms are not drawn (not in the source data).</li>
+        <li>Sub-bands such as 9q34.12 exist only in GRCh38; a karyotype uses the band level actually resolved, e.g. t(9;22)(q34;q11.2).</li>
+      </ul>
+    </details>
+    <details><summary>Idiograms: how are they drawn?</summary>
+      <ul>
+        <li>The R pattern is the reciprocal of NCBI's G-stain grades, as ISCN treats R-banded idiograms. Intermediate greys are inverted G grades, not measured RHG intensities; every G-negative band has the same value in the source, so differences between R-positive bands (e.g. strongly staining T-bands) are not shown.</li>
+        <li>Variable heterochromatin (1q12, 9q12, 16q11.2, Yq12, acrocentric p11.2/p13) and stalks are hatched, not inverted: ISCN 2024 (2.2.2) describes them as variable in size and staining with every method.</li>
+        <li>The karyogram uses one scale for all chromosomes. Detail views are drawn tall enough for their labels, so they are not to scale with each other.</li>
+        <li>Landmark genes (74) use Ensembl release 110 GRCh38 coordinates, placed by interpolation within their band. They are orientation marks. IGH is marked at IGHM.</li>
+      </ul>
+    </details>
+    <details><summary>Microscope: what is modelled, and what is guessed?</summary>
+      <ul>
+        <li>It is a model, not a photograph. Bands start from the GRCh38 idiogram. Condensation is simulated by smoothing the band profile, so neighbouring sub-bands merge as they do on real slides.</li>
+        <li>R-banding: R-positive bands get a random ±12% intensity change; real differences between R-positive bands are not in the data. Terminal R bands are drawn slightly darker (R-banded ends are "almost always positive").</li>
+        <li>G-banding uses NCBI's G grades directly. Heterochromatin "Typical" draws 1q12 and 16q11.2 dark and 9q12 pale in G-banding, and all blocks pale in R-banding. These tones are inferences, not measured values; Pale and Dark let you change them.</li>
+        <li>Chromosomes are two sister chromatids with a primary constriction, uneven widths, fuzzy fibrous edges, slightly oblique band boundaries, splayed ends and occasional twists. Stalks are thinner and paler with small satellites; their length and the heterochromatin blocks vary between homologues, as they do in people. Acrocentric short arms are drawn at about half their idiogram length (a judgement, not a measurement).</li>
+        <li>Optics: Beer-Lambert absorbance for Giemsa colour, a grey camera mode, focus blur, a faint phase halo, uneven illumination, stain gradients, cytoplasm remnants, debris and grain. These are cosmetic.</li>
+        <li>Small chromosomes are enlarged in the one-chromosome view; the caption gives the magnification relative to chromosome 1. The karyogram keeps one scale.</li>
+      </ul>
+    </details>
+    <details><summary>Abnormalities: rules and limits</summary>
+      <ul>
+        <li>A breakpoint sits in the middle of the band you pick: ISCN places a break "in" a band without saying where.</li>
+        <li>You can type any band or sub-band from the 400, 550 or ~700 idiogram, or a parent band such as 22q11.2. p10 and q10 are the centromere.</li>
+        <li>Ordering follows ISCN 2024 section 4.3: normal sex chromosomes first (an abnormal X or Y is left out of the sex complement), then sex-chromosome abnormalities, then autosomes in numerical order, numerical before structural. Sex-chromosome gains and losses are written constitutionally (47,XXY; 45,X).</li>
+        <li>Supported: t, der(…)t, del, dup, inv, i, r, add, gains and losses, and a cell count in brackets. Not supported: insertions, dicentrics, markers, three-way translocations, inverted duplications and mosaics.</li>
+        <li>Derivatives keep the banding of the chromosome each piece came from; the coloured strip shows which.</li>
+      </ul>
+    </details>
+    <details><summary>FISH probes: where do the designs come from?</summary>
+      <ul>
+        <li>Vysis (Abbott) designs come from Abbott's own pages: the per-product hybridisation text and probe tables on molecular.abbott (chromosome search, chromosomes 2-12, X, Y), the probe-map images (sizes, gaps, flanking markers), the Vysis CLL FISH Probe Kit package insert (30-608712/R4) and the 2019 US ordering list. Pages for chromosomes 1 and 13-22 have been removed from Abbott's site; for those probes the layout comes from the probe maps, which Abbott still serves.</li>
+        <li>CytoCell and MetaSystems probes are included only for haematology targets Vysis does not sell (KMT2A partner fusions, CBFB::MYH11, MECOM, RUNX1, TCF3, CRLF2, P2RY8, JAK2, NUP98, PAX5, ABL1/ABL2, IGK, IGL, TCL1, TRB, TLX1, TLX3, IGH::CCND3, IGH::MAFB). Their layout is from each product page. MetaSystems pages give no probe sizes, so those positions are illustrative.</li>
+        <li>Probe positions are approximate: each probe is placed on GRCh38 from the genes and sizes on the vendor map (Ensembl canonical transcripts). They show where a probe lies; use the vendor's map for exact clones.</li>
+        <li>Signal patterns are derived: the page applies the rearrangement to a diploid cell and reads which probe segments end up together. A build check compares each derived pattern with its expected signal code: the manufacturer's own code for patterns marked "vendor", the textbook code for that design for patterns marked "standard". All of them agree.</li>
+        <li>A fragment smaller than ~40 kb, or under 12% of its probe, is treated as invisible. Different probes closer than 1.8 Mb read as one fused signal. These thresholds are approximations.</li>
+        <li>The ISCN nuc ish strings follow the ISCN conventions for interphase FISH (counts, "con", "sep", "amp"). They were written before the ISCN 2024 text could be checked; treat them as a starting point.</li>
+        <li>Not for diagnostic use. Vysis, CytoCell, ZytoLight, MetaSystems, Kreatech and Empire Genomics are trademarks of their owners; this site is not affiliated with any of them. Always follow the package insert of the kit you use.</li>
+      </ul>
+    </details>
+    <details><summary>Probe catalogue: what is in it?</summary>
+      <ul>
+        <li>Human FISH probes listed on vendor websites in October 2026: Vysis (Abbott ordering list 2019 and current chromosome pages), CytoCell (OGT product search, including myProbes custom designs), ZytoVision, MetaSystems, Leica (Kreatech) and Empire Genomics.</li>
+        <li>Leica and Empire Genomics publish product URLs rather than structured names; those names were rebuilt from the URL and are marked. Availability differs between countries.</li>
+        <li>Rows with a "FISH" link open the same probe on the FISH page.</li>
+      </ul>
+    </details>
+    <details><summary>Using the site</summary>
+      <ul>
+        <li>Add #chr9 (or #chrX…) to a page address to open that chromosome; the FISH page accepts #probe-id. The chromosome you last opened is remembered across tabs.</li>
+        <li>Everything runs in the browser and works offline once loaded.</li>
+      </ul>
+    </details>
+  </div>
+</dialog>
