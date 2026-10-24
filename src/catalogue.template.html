@@ -1,0 +1,91 @@
+<title>Probe catalogue</title>
+<style>/*__SHARED_CSS__*/
+.filters{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:8px 12px}
+.filters input[type=search]{flex:1 1 260px;min-width:0}
+.vend{display:flex;flex-wrap:wrap;gap:4px}
+.vend .chip small{opacity:.7;margin-left:3px}
+.tbl{overflow:clip;border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th{position:sticky;top:48px;background:var(--surface);text-align:left;font:500 10.5px var(--f-mono);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);padding:7px 8px;border-bottom:1px solid var(--line);white-space:nowrap;z-index:1}
+th button{all:unset;cursor:pointer}
+th button:hover{color:var(--fg)}
+td{padding:5px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+tr:hover td{background:var(--surface-2)}
+td.v{white-space:nowrap;color:var(--muted);font-size:11.5px}
+td.n a{color:var(--fg);text-decoration:none;font-weight:500}
+td.n a:hover{color:var(--accent);text-decoration:underline}
+td.n .rb{color:var(--muted);font-size:11px;margin-left:4px}
+td.c,td.t{font:11.5px var(--f-mono);color:var(--muted)}
+td.c{max-width:220px}
+td.l{white-space:nowrap}
+td.l i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:2px;box-shadow:0 0 0 1px rgba(0,0,0,.2) inset}
+td.s{white-space:nowrap}
+td.s span{font:10.5px var(--f-mono);border:1px solid var(--line);border-radius:4px;padding:0 4px;margin-right:2px}
+td.f a{font:11.5px var(--f-mono);white-space:nowrap}
+.foot{display:flex;align-items:center;justify-content:center;gap:12px;padding:10px;font:12px var(--f-mono);color:var(--muted)}
+@media (max-width:760px){td.c,th.c,td.t,th.t{display:none}}
+</style>
+<!--__NAV__-->
+<main class="page">
+  <div class="card filters">
+    <input type="search" id="q" placeholder="Search name, gene, band, catalogue number…" aria-label="Search the catalogue" autocomplete="off" spellcheck="false">
+    <select id="fChr" aria-label="Chromosome"><option value="">Any chromosome</option></select>
+    <select id="fStatus" aria-label="Regulatory status"><option value="">Any status</option></select>
+    <label class="toggle"><input type="checkbox" id="fCustom" checked><span>Custom designs</span></label>
+    <div class="vend" id="vend" role="group" aria-label="Vendors"></div>
+  </div>
+  <div class="card tbl">
+    <table>
+      <thead><tr><th><button data-sort="vendor">Vendor</button></th><th><button data-sort="name">Probe</button></th><th class="c">Catalogue no.</th><th class="t">Target</th><th>Colours</th><th>Status</th><th></th></tr></thead>
+      <tbody id="rows"></tbody>
+    </table>
+    <div class="foot"><span id="cnt"></span><button class="btn-sec" id="more" hidden>Show more</button></div>
+  </div>
+</main>
+<!--__FAQ__-->
+<script>
+/*__SHARED_JS__*/
+const CAT = __CATALOGUE__;
+const ITEMS = CAT.rows.map(r=>Object.fromEntries(CAT.keys.map((k,i)=>[k,r[i]])));
+const COL = {O:"#ff8a1f",G:"#3ee05a",R:"#ff3b3b",A:"#38d6ff",Y:"#ffd23f",B:"#5b7cff"};
+const CN = {O:"orange",G:"green",R:"red",A:"aqua",Y:"gold",B:"blue"};
+const esc = s => String(s??"").replace(/[&<>"]/g,ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+const SHORT = v => v.replace(/ \(.*\)$/,"");
+const vendors=Object.keys(CAT.counts);
+const st={vendors:new Set(vendors), sort:"vendor", dir:1, limit:150};
+// older gene names still used in product names, so a search for the current symbol finds them too
+const ALIAS=[[/\babl(?![0-9])/i,"abl1"],[/\bmll(?![0-9])/i,"kmt2a"],[/\baml1\b/i,"runx1"],[/\beto\b/i,"runx1t1"],[/\bevi1\b/i,"mecom"],[/\bher-?2/i,"erbb2"],[/\bn-?myc\b/i,"mycn"],[/\btel\b(?!o|v)/i,"etv6"],[/\be2a\b/i,"tcf3"],[/\bbcl1\b/i,"ccnd1"],[/\bp53\b/i,"tp53"],[/\bp16\b/i,"cdkn2a"],[/\bcbf[βb]\b/i,"cbfb"],[/\bmmset|whsc1\b/i,"nsd2"],[/\bcen\s?(\d+|x|y)\b/i,"cep"],[/\bcep\s?(\d+|x|y)\b/i,"cen centromere"]];
+for(const it of ITEMS){ const base=[it.vendor,it.name,...(it.codes||[]),it.targets,it.area,...(it.chroms||[]).map(c=>"chr"+c)].join(" ");
+  it.hay=(base+" "+ALIAS.filter(([re])=>re.test(it.name)).map(a=>a[1]).join(" ")).toLowerCase(); }
+const vbox=document.getElementById("vend");
+for(const v of vendors){ const b=document.createElement("button"); b.className="chip"; b.setAttribute("aria-pressed","true"); b.innerHTML=`${esc(SHORT(v))}<small>${CAT.counts[v]}</small>`; b.title=v;
+  b.addEventListener("click",()=>{ st.vendors.has(v)?st.vendors.delete(v):st.vendors.add(v); if(!st.vendors.size) vendors.forEach(x=>st.vendors.add(x));
+    vbox.querySelectorAll(".chip").forEach((x,i)=>x.setAttribute("aria-pressed",String(st.vendors.has(vendors[i])))); st.limit=150; render(); }); vbox.appendChild(b); }
+for(const c of SITE.ORDER) document.getElementById("fChr").add(new Option("chr"+c,c));
+for(const s of [...new Set(ITEMS.flatMap(i=>i.status||[]))].sort()) document.getElementById("fStatus").add(new Option(s,s));
+const onChr=(it,c)=> (it.chroms||[]).includes(c) || new RegExp(`(^|[^0-9a-z])${c}[pq]\\d|(cep|cen)\\s?${c}(?![0-9])|chromosome ${c}(?![0-9])`,"i").test(it.name+" "+(it.targets||""));
+function filtered(){
+  const q=document.getElementById("q").value.trim().toLowerCase().split(/\s+/).filter(Boolean), c=document.getElementById("fChr").value, s=document.getElementById("fStatus").value, cu=document.getElementById("fCustom").checked;
+  const out=ITEMS.filter(it=>st.vendors.has(it.vendor) && (cu||!it.custom) && (!s||(it.status||[]).includes(s)) && (!c||onChr(it,c)) && q.every(w=>it.hay.includes(w)));
+  const key=st.sort; out.sort((a,b)=>(a[key]||"").localeCompare(b[key]||"",undefined,{numeric:true,sensitivity:"base"})*st.dir || a.name.localeCompare(b.name,undefined,{numeric:true}));
+  return out;
+}
+function render(){
+  const all=filtered(), rows=all.slice(0,st.limit);
+  document.getElementById("rows").innerHTML = rows.map(it=>`<tr>
+    <td class="v">${esc(SHORT(it.vendor))}</td>
+    <td class="n">${it.url?`<a href="${esc(it.url)}" target="_blank" rel="noopener">${esc(it.name)}</a>`:esc(it.name)}${it.slug_name?'<span class="rb" title="Name rebuilt from the product URL">≈</span>':""}${it.custom?'<span class="rb" title="Custom design (myProbes)">custom</span>':""}</td>
+    <td class="c">${esc((it.codes||[]).join(", "))}</td>
+    <td class="t">${esc(it.targets||"")}</td>
+    <td class="l">${(it.labels||[]).map(l=>COL[l]?`<i style="background:${COL[l]}" title="${CN[l]}"></i>`:esc(l)).join("")}</td>
+    <td class="s">${(it.status||[]).map(s=>`<span>${esc(s)}</span>`).join("")}</td>
+    <td class="f">${it.fish?`<a href="__HREF:fish.html__#${esc(it.fish)}" title="Open the signal patterns">FISH ›</a>`:""}</td></tr>`).join("") || '<tr><td colspan="7" class="muted" style="padding:16px">No probe matches.</td></tr>';
+  document.getElementById("cnt").textContent=`${rows.length} of ${all.length} shown · ${ITEMS.length} in total`;
+  document.getElementById("more").hidden = all.length<=st.limit;
+}
+document.getElementById("more").addEventListener("click",()=>{ st.limit+=300; render(); });
+["q","fChr","fStatus","fCustom"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{ st.limit=150; render(); }));
+document.querySelectorAll("[data-sort]").forEach(b=>b.addEventListener("click",()=>{ const k=b.dataset.sort; st.dir = st.sort===k ? -st.dir : 1; st.sort=k; render(); }));
+const hq=decodeURIComponent((location.hash||"").replace(/^#q=/,"")); if(location.hash.startsWith("#q=")) document.getElementById("q").value=hq;
+render();
+</script>

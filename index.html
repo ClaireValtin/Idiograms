@@ -3,13 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Human R-Band Idiograms</title>
+<title>Idiograms</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap">
-<style>
-/* Palette: graphite neutrals with black and white, turquoise primary, orange for actions and highlights, green for genes.
-   Layout: sticky app bar with page tabs, then a working surface of flat cards on a cool grey ground. */
+</head>
+<body>
+
+<style>/* Shared by every page. Palette: graphite neutrals, turquoise primary, orange for highlights.
+   Layout: one thin app bar with the tool tabs and the FAQ button, then the tool itself. */
 :root{
   --bg:#f3f4f5; --surface:#ffffff; --surface-2:#f7f8f9; --fg:#0c0e10; --muted:#5d636b; --line:#e2e4e7;
   --turq:#0e9f96; --turq-ink:#0b7a73; --turq-soft:#e0f5f3; --on-turq:#ffffff;
@@ -20,16 +22,15 @@
   --r25:#6a6f76; --r50:#b3b7bc; --r75:#dcdee1;
   --g25:#c9ccd0; --g50:#8c9097; --g75:#50545a;
   --acen:#5fd4c7; --gvar:#8c9097; --stalk:#e6e8ea;
-  --f-display:"Geist",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-body:"Geist",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:"Geist Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  --sig-O:#ff8a1f; --sig-G:#3ee05a; --sig-R:#ff3b3b; --sig-A:#38d6ff; --sig-Y:#ffd23f; --sig-B:#5b7cff;
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#0a0b0c; --surface:#131517; --surface-2:#1a1d20; --fg:#f2f3f4; --muted:#9aa0a7; --line:#272a2e;
   --turq:#2dd4bf; --turq-ink:#2dd4bf; --turq-soft:#0f2e2b; --on-turq:#04201d;
   --orange:#fb8a3c; --orange-hover:#fdba74; --orange-soft:#2e1a0c; --on-orange:#1b0e05;
-  --green:#4ade80;
-  --hl:#fb923c;
+  --green:#4ade80; --hl:#fb923c;
   --ink:#0f1112; --paper:#eceef0; --outline:#c9cdd1;
   --r25:#5b6067; --r50:#a3a8ae; --r75:#c9cdd1;
   --g25:#b6babf; --g50:#7c8187; --g75:#45494e;
@@ -39,8 +40,7 @@
   --bg:#0a0b0c; --surface:#131517; --surface-2:#1a1d20; --fg:#f2f3f4; --muted:#9aa0a7; --line:#272a2e;
   --turq:#2dd4bf; --turq-ink:#2dd4bf; --turq-soft:#0f2e2b; --on-turq:#04201d;
   --orange:#fb8a3c; --orange-hover:#fdba74; --orange-soft:#2e1a0c; --on-orange:#1b0e05;
-  --green:#4ade80;
-  --hl:#fb923c;
+  --green:#4ade80; --hl:#fb923c;
   --ink:#0f1112; --paper:#eceef0; --outline:#c9cdd1;
   --r25:#5b6067; --r50:#a3a8ae; --r75:#c9cdd1;
   --g25:#b6babf; --g50:#7c8187; --g75:#45494e;
@@ -48,81 +48,88 @@
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
-body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
 a{color:var(--accent)}
-/* app bar */
-.appbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--line)}
-.appbar-in{max-width:1180px;margin:0 auto;padding-inline:16px;height:58px;display:flex;align-items:center;justify-content:space-between;gap:12px}
-.brand{display:flex;align-items:center;gap:10px;font:650 16px var(--f-body);letter-spacing:-.02em;color:var(--fg);text-decoration:none;white-space:nowrap}
-.brand-mark{width:9px;height:24px;border-radius:5px;flex:none;background:linear-gradient(var(--fg) 0 20%,var(--turq) 20% 32%,var(--fg) 32% 46%,var(--bg) 46% 52%,var(--fg) 52% 66%,var(--orange) 66% 76%,var(--fg) 76%)}
-.tabs{display:flex;gap:2px;background:var(--surface-2);border:1px solid var(--line);border-radius:10px;padding:3px}
-.tabs a{display:inline-flex;align-items:center;gap:6px;font:500 13.5px var(--f-body);color:var(--muted);text-decoration:none;padding:6px 12px;border-radius:7px;white-space:nowrap}
-.tabs a:hover{color:var(--fg)}
+button,input,select{font:inherit;color:inherit}
+/* ---------- app bar ---------- */
+.appbar{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--line)}
+.appbar-in{max-width:1320px;margin:0 auto;padding:0 16px;height:48px;display:flex;align-items:center;gap:12px}
+.brand{display:flex;align-items:center;gap:8px;font:650 15px var(--f-body);letter-spacing:-.02em;color:var(--fg);text-decoration:none;white-space:nowrap;flex:none}
+.brand-mark{width:8px;height:22px;border-radius:4px;flex:none;background:linear-gradient(var(--fg) 0 20%,var(--turq) 20% 32%,var(--fg) 32% 46%,var(--bg) 46% 52%,var(--fg) 52% 66%,var(--orange) 66% 76%,var(--fg) 76%)}
+.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none;flex:1 1 auto;min-width:0}
+.tabs::-webkit-scrollbar{display:none}
+.tabs a{display:inline-flex;align-items:center;font:500 13px var(--f-body);color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:7px;white-space:nowrap}
+.tabs a:hover{color:var(--fg);background:var(--surface-2)}
 .tabs a[aria-current="page"]{background:var(--fg);color:var(--bg)}
+.faq-btn{flex:none;display:inline-flex;align-items:center;gap:6px;font:500 13px var(--f-body);border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:5px 10px;cursor:pointer}
+.faq-btn:hover{border-color:var(--muted)}
 .tabs .sm{display:none}
-@media (max-width:760px){.tabs .lg{display:none}.tabs .sm{display:inline}}
-@media (max-width:560px){.brand .brand-name{display:none}}
-/* page frame */
-.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:32px 56px;display:flex;flex-direction:column;gap:20px}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;font:500 12px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--turq-ink);margin-bottom:10px}
-.eyebrow::before{content:"";width:7px;height:7px;border-radius:2px;background:var(--orange)}
-header h1,h1{font-family:var(--f-display);font-weight:650;font-size:clamp(28px,4.4vw,44px);line-height:1.05;margin:0;text-wrap:balance;letter-spacing:-.035em}
-header p{margin:12px 0 0;color:var(--muted);max-width:68ch;font-size:15.5px}
-.hero-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px;margin-top:18px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:14px}
-/* buttons */
-.btn-scope{display:inline-flex;align-items:center;gap:8px;font:600 14px var(--f-body);color:var(--on-orange);background:var(--orange);border:0;border-radius:10px;padding:9px 15px;text-decoration:none;white-space:nowrap;cursor:pointer;box-shadow:0 1px 0 rgba(0,0,0,.08)}
-.btn-scope:hover{background:var(--orange-hover)}
-.btn-scope svg{flex:none}
-.btn-ghost{font:500 14px var(--f-body);color:var(--fg);text-decoration:none;border-bottom:1px solid var(--line);padding-bottom:1px}
-.btn-ghost:hover{border-color:var(--fg)}
-.btn{font:600 14px var(--f-body);border:0;background:var(--turq);color:var(--on-turq);padding:10px 14px;border-radius:10px;cursor:pointer}
-.btn:hover{filter:brightness(1.07)}
-/* shared controls */
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:10px;padding:3px;background:var(--surface-2);flex-wrap:wrap;gap:2px}
-.seg button{font:500 13px var(--f-body);border:0;background:transparent;color:var(--muted);padding:5px 12px;border-radius:7px;cursor:pointer}
+@media (max-width:620px){.brand-name{display:none}.faq-btn span{display:none}.tabs .lg{display:none}.tabs .sm{display:inline}.tabs a{padding:6px 8px}}
+/* ---------- page frame ---------- */
+.page{max-width:1320px;margin:0 auto;padding:12px 16px 32px;display:flex;flex-direction:column;gap:12px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px}
+.bar{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;padding:8px 12px}
+.lab{font:500 11px var(--f-mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.grp{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.muted{color:var(--muted)}
+.mono{font-family:var(--f-mono)}
+/* ---------- controls ---------- */
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:8px;padding:2px;background:var(--surface-2);gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;color:var(--muted);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:13px;font-weight:500}
 .seg button:hover{color:var(--fg)}
 .seg button[aria-pressed="true"]{background:var(--turq);color:var(--on-turq)}
-.toggle{display:inline-flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;user-select:none}
-.toggle input{accent-color:var(--turq);width:16px;height:16px;margin:0}
-input[type=range]{accent-color:var(--turq)}
-.seg button:focus-visible,.chip:focus-visible,.chips button:focus-visible,.btn:focus-visible,.btn-scope:focus-visible,.tabs a:focus-visible,.toggle input:focus-visible,input:focus-visible,.kg-chr:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
-.notes{padding:18px 20px}
-.notes h2{font:600 17px var(--f-display);letter-spacing:-.01em;margin:0 0 10px}
-.notes ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:7px;max-width:92ch;font-size:14px;color:var(--fg)}
-.notes li::marker{color:var(--turq)}
+.chip{font:500 12.5px var(--f-mono);padding:3px 9px;border-radius:7px;border:1px solid var(--line);background:var(--surface);cursor:pointer}
+.chip:hover{border-color:var(--muted)}
+.chip[aria-pressed="true"]{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.btn{font-weight:600;font-size:13px;border:0;background:var(--turq);color:var(--on-turq);padding:6px 12px;border-radius:8px;cursor:pointer}
+.btn:hover{filter:brightness(1.07)}
+.btn:disabled{opacity:.45;cursor:not-allowed;filter:none}
+.btn-sec{font-weight:600;font-size:13px;border:1px solid var(--line);background:var(--surface);padding:5px 11px;border-radius:8px;cursor:pointer}
+.btn-sec:hover{border-color:var(--muted)}
+.toggle{display:inline-flex;align-items:center;gap:6px;font-size:13px;cursor:pointer;user-select:none}
+.toggle input{accent-color:var(--turq);width:15px;height:15px;margin:0}
+input[type=range]{accent-color:var(--turq);width:100%;margin:0}
+input[type=text],input[type=search],select{border:1px solid var(--line);border-radius:8px;background:var(--surface-2);padding:5px 9px;font-size:13px}
+input[type=text]:focus,input[type=search]:focus,select:focus{outline:2px solid var(--turq);outline-offset:0}
+.seg button:focus-visible,.chip:focus-visible,.btn:focus-visible,.btn-sec:focus-visible,.tabs a:focus-visible,.toggle input:focus-visible,.faq-btn:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+.slider{display:grid;grid-template-columns:1fr auto;gap:2px 8px;align-items:baseline}
+.slider label{font-size:12.5px;font-weight:550;white-space:nowrap}
+.slider output{font:11.5px var(--f-mono);color:var(--muted);white-space:nowrap}
+.slider input{grid-column:1/-1}
+.swatch{display:inline-block;width:12px;height:12px;border:1px solid var(--outline);vertical-align:-2px;margin-right:5px;border-radius:2px}
+.sw-gvar{background:repeating-linear-gradient(45deg,var(--gvar) 0 2px,var(--paper) 2px 5px)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;vertical-align:-1px;margin-right:3px;box-shadow:0 0 0 1px rgba(0,0,0,.25) inset}
+/* ---------- FAQ dialog ---------- */
+dialog.faq{width:min(820px,calc(100vw - 24px));max-height:calc(100vh - 48px);border:1px solid var(--line);border-radius:14px;padding:0;background:var(--surface);color:var(--fg)}
+dialog.faq::backdrop{background:rgba(0,0,0,.45)}
+.faq-head{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 18px;border-bottom:1px solid var(--line);background:var(--surface)}
+.faq-head h2{margin:0;font-size:16px}
+.faq-body{padding:6px 18px 18px;font-size:13.5px}
+.faq-body details{border-bottom:1px solid var(--line);padding:8px 0}
+.faq-body summary{cursor:pointer;font-weight:600;font-size:14px}
+.faq-body ul{margin:8px 0 2px;padding-left:18px;display:flex;flex-direction:column;gap:6px}
+.faq-body li::marker{color:var(--turq)}
+.faq-body p{margin:8px 0}
 
-@media (max-width:560px){.tabs svg{display:none}.tabs a{padding:6px 9px}}
-/* ---- page ---- */
-.kg{padding:14px 16px 10px;display:flex;flex-direction:column;gap:8px}
-.kg-head{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
-.kg-head h2{font:600 17px var(--f-display);margin:0}
-.kg-scroll{overflow-x:auto}
-.kg-rows{display:flex;flex-direction:column;gap:20px;padding-top:14px;min-width:min-content}
-.kg-row{display:flex;align-items:flex-start;justify-content:safe center;gap:40px}
-@media (max-width:620px){.kg-row{justify-content:flex-start;gap:24px}}
-.kg-group{display:flex;align-items:flex-start;gap:6px;padding-top:4px;border-top:1px solid var(--line);position:relative}
+.kg{padding:8px 10px 4px;overflow-x:auto}
+.kg-row{display:flex;align-items:flex-start;justify-content:safe center;gap:14px;min-width:min-content;padding-top:12px}
+.kg-group{display:flex;align-items:flex-start;gap:2px;border-top:1px solid var(--line);padding-top:3px;position:relative}
 .kg-group::before{content:attr(data-g);position:absolute;top:-1px;left:0;transform:translateY(-100%);font:10px var(--f-mono);color:var(--muted)}
-.kg-chr{display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:1px solid transparent;border-radius:4px;padding:3px 4px 2px;cursor:pointer;color:var(--fg)}
+.kg-chr{display:flex;flex-direction:column;align-items:center;gap:1px;background:none;border:1px solid transparent;border-radius:4px;padding:2px 2px 1px;cursor:pointer}
 .kg-chr:hover{background:var(--accent-soft)}
 .kg-chr[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
-.kg-chr span{font:500 11px var(--f-mono)}
-.controls{display:flex;flex-wrap:wrap;gap:12px 24px;align-items:center;padding:12px 14px}
-.ctl-group{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
-.ctl-label{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-right:2px}
-.toggle.off{opacity:.45;cursor:default}
-.main{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:start}
-@media (max-width:860px){.main{grid-template-columns:minmax(0,1fr)}}
-.plate{padding:14px 8px 8px;min-width:0}
-.plate-title{font:600 20px var(--f-display);margin:0}
-.plate-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:4px 16px;margin:0 8px 6px}
+.kg-chr span{font:500 10.5px var(--f-mono)}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 290px;gap:12px;align-items:start}
+@media (max-width:880px){.main{grid-template-columns:minmax(0,1fr)}}
+.plate{padding:8px 6px 6px;min-width:0}
+.plate-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 12px;margin:0 6px 4px}
+.plate-head h2{font-size:17px;margin:0;letter-spacing:-.01em}
 .plate-scroll{overflow-x:auto}
 .plate-inner{display:flex;justify-content:space-around;gap:4px;min-width:min-content}
-.scroll-hint{display:none;font-size:12px;color:var(--muted);text-align:center;margin:6px 0 0}
-@media (max-width:620px){.scroll-hint{display:block}}
 .level{display:flex;flex-direction:column;align-items:center}
-.level h3{font:600 15px var(--f-display);margin:0;letter-spacing:.02em}
-.level .sub{font:12px var(--f-mono);color:var(--muted)}
+.level h3{font:600 13px var(--f-body);margin:0}
+.level .sub{font:11px var(--f-mono);color:var(--muted)}
 svg text{font-family:var(--f-mono)}
 .band{cursor:pointer}
 .band.hl{stroke:var(--hl);stroke-width:2.5px}
@@ -130,172 +137,198 @@ svg text{font-family:var(--f-mono)}
 .lbl.hl{fill:var(--fg);font-weight:500}
 .lead{stroke:var(--line);stroke-width:1;fill:none}
 .lead.hl{stroke:var(--hl)}
-.gene{font-size:10px;fill:var(--accent);cursor:default}
-.gene-tick{stroke:var(--accent);stroke-width:1.5}
-.panel{padding:16px;display:flex;flex-direction:column;gap:14px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
-@media (max-width:860px){.panel{position:static}}
-.panel h3{margin:0;font:600 22px var(--f-display)}
-.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 12px;font-size:13.5px;margin:0}
+.gene{font-size:10px;fill:var(--green);cursor:default}
+.gene-tick{stroke:var(--green);stroke-width:1.5}
+.panel{padding:12px;display:flex;flex-direction:column;gap:10px;position:sticky;top:60px}
+@media (max-width:880px){.panel{position:static}}
+.panel h3{margin:0;font-size:20px;letter-spacing:-.02em}
+.kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:3px 10px;font-size:13px;margin:0}
 .kv dt{color:var(--muted)}
 .kv dd{margin:0;font-variant-numeric:tabular-nums}
-.pill{display:inline-block;font:500 12px var(--f-mono);padding:2px 8px;border-radius:4px;border:1px solid var(--line)}
-.swatch{display:inline-block;width:14px;height:14px;border:1px solid var(--outline);vertical-align:-2px;margin-right:6px;border-radius:2px}
-.sw-gvar{background:repeating-linear-gradient(45deg,var(--gvar) 0 2px,var(--paper) 2px 5px)}
-.legend{display:flex;flex-direction:column;gap:6px;font-size:13px}
-.legend-title{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.hint{color:var(--muted);font-size:13.5px;margin:0}
-.warn{font-size:13px;color:var(--muted);border-left:2px solid var(--gvar);padding-left:8px;margin:0}
-@media (prefers-reduced-motion:no-preference){.band{transition:stroke .12s}}
-.chip{font:500 13px var(--f-mono);padding:4px 11px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--fg);cursor:pointer}
-.chip:hover{border-color:var(--muted)}
-.chip[aria-pressed="true"]{background:var(--fg);border-color:var(--fg);color:var(--bg)}
-.gene{fill:var(--green)} .gene-tick{stroke:var(--green)}
-.plate-title{font-weight:650;letter-spacing:-.02em}
-.plate-head{align-items:center;margin:2px 8px 10px}
-.panel h3{font-weight:650;letter-spacing:-.02em}
-.kg-head h2{font-weight:600;letter-spacing:-.01em}
-.ctl-label{font-family:var(--f-mono);font-size:11.5px}
-
+.pill{display:inline-block;font:500 11.5px var(--f-mono);padding:1px 7px;border-radius:4px;border:1px solid var(--line)}
+.legend{display:grid;grid-template-columns:1fr 1fr;gap:3px 10px;font-size:12px}
+.warn{font-size:12.5px;color:var(--muted);border-left:2px solid var(--gvar);padding-left:8px;margin:0}
+.search{display:flex;gap:6px;align-items:center;margin-left:auto}
+.search input{width:200px}
+.search .msg{font-size:12px;color:var(--orange)}
+.go{font-size:13px;text-decoration:none;border:1px solid var(--line);border-radius:8px;padding:4px 9px;color:var(--fg);background:var(--surface);white-space:nowrap}
+.go:hover{border-color:var(--muted)}
+@media (max-width:700px){.search{margin-left:0;width:100%}.search input{flex:1}}
 </style>
-<style>body{margin:0}</style>
-</head>
-<body>
-
-<nav class="appbar" aria-label="Site">
-  <div class="appbar-in">
-    <a class="brand" href="index.html?v=8c3354e9"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Idiograms</span></a>
-    <div class="tabs">
-      <a href="index.html?v=8c3354e9" aria-current="page"><span class="lg">Idiogram reference</span><span class="sm">Idiograms</span></a>
-      <a href="simulator.html?v=8c3354e9" ><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg><span class="lg">Microscope simulator</span><span class="sm">Simulator</span></a>
-      <a href="abnormalities.html?v=8c3354e9"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="6" r="3"/><path d="M8.12 8.12 12 12"/><path d="M20 4 8.12 15.88"/><circle cx="6" cy="18" r="3"/><path d="M14.8 14.8 20 20"/></svg><span class="lg">Abnormalities</span><span class="sm">Abnormal</span></a>
+<nav class="appbar" aria-label="Site"><div class="appbar-in"><a class="brand" href="index.html?v=4e2991d6"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Idiograms</span></a><div class="tabs"><a href="index.html?v=4e2991d6" data-chr-link aria-current="page"><span class="lg">Idiograms</span><span class="sm">Ideo</span></a><a href="simulator.html?v=4e2991d6" data-chr-link><span class="lg">Microscope</span><span class="sm">Scope</span></a><a href="abnormalities.html?v=4e2991d6" data-chr-link><span class="lg">Abnormalities</span><span class="sm">Abn</span></a><a href="fish.html?v=4e2991d6" data-chr-link><span class="lg">FISH probes</span><span class="sm">FISH</span></a><a href="catalogue.html?v=4e2991d6" data-chr-link><span class="lg">Probe catalogue</span><span class="sm">Catalogue</span></a></div><button class="faq-btn" id="faqBtn" type="button" aria-haspopup="dialog"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg><span>FAQ</span></button></div></nav>
+<main class="page">
+  <div class="card bar" role="group" aria-label="Display options">
+    <div class="seg" role="group" aria-label="Banding">
+      <button data-mode="R" aria-pressed="true">R-banding</button>
+      <button data-mode="G" aria-pressed="false">G-banding</button>
     </div>
+    <div class="grp"><span class="lab">Karyogram</span>
+      <button class="chip kgl" data-lv="400" aria-pressed="true">400</button><button class="chip kgl" data-lv="550" aria-pressed="false">550</button><button class="chip kgl" data-lv="850" aria-pressed="false" title="GRCh38, closest to ISCN 700">~700</button>
+    </div>
+    <div class="grp"><span class="lab">Detail</span>
+      <button class="chip lvc" data-lv="400" aria-pressed="true">400</button><button class="chip lvc" data-lv="550" aria-pressed="true">550</button><button class="chip lvc" data-lv="850" aria-pressed="true" title="GRCh38, closest to ISCN 700">~700</button>
+    </div>
+    <label class="toggle"><input type="checkbox" id="showGenes" checked><span>Genes</span></label>
+    <form class="search" id="search" role="search">
+      <input type="search" id="q" placeholder="Band or gene: 9q34, ABL1" aria-label="Find a band or gene" autocomplete="off" spellcheck="false">
+      <button class="btn-sec" type="submit">Go</button><span class="msg" id="qmsg" aria-live="polite"></span>
+    </form>
   </div>
-</nav>
-<div class="wrap">
-  <header>
-    <div class="eyebrow" id="eyebrow">ISCN idiograms · RHG pattern · GRCh38</div>
-    <h1>Human chromosomes in <span id="h1mode">R&#8209;banding</span> at 400, 550 and ~700 bands</h1>
-    <p>R-banding by heat denaturation reverses the G-band pattern: G-pale bands stain dark and G-dark bands stain pale. Band names are the same in both methods. Use the switch to flip every view between R- and G-banding. Pick a chromosome in the karyogram, then hover or tap a band to see the same region at the other resolutions.</p>
-    <div class="hero-actions"><a class="btn-scope" href="simulator.html?v=8c3354e9#karyogram"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg><span>Open the microscope simulator</span></a><span class="hint">See how these chromosomes look on a real RHG slide.</span></div>
-  </header>
 
-  <section class="card kg" aria-label="Karyogram overview">
-    <div class="kg-head">
-      <div><h2 id="kgTitle">Karyogram, R-banded</h2><p class="hint">Aligned on the centromere, one shared scale. Click a chromosome to open it below.</p></div>
-      <div class="ctl-group">
-        <span class="ctl-label">Level</span>
-        <button class="chip kgl" id="kg400" data-lv="400" aria-pressed="true">400</button>
-        <button class="chip kgl" id="kg550" data-lv="550" aria-pressed="false">550</button>
-        <button class="chip kgl" id="kg850" data-lv="850" aria-pressed="false" title="GRCh38 idiogram, closest to the ISCN 700-band level">~700</button>
-      </div>
-    </div>
-    <div class="kg-scroll"><div class="kg-rows" id="kg"></div></div>
-  </section>
-
-  <div class="card controls" role="group" aria-label="Display options">
-    <div class="ctl-group">
-      <span class="ctl-label">Banding</span>
-      <div class="seg" role="group" aria-label="Banding method">
-        <button id="modeR" data-mode="R" aria-pressed="true">R-banding</button>
-        <button id="modeG" data-mode="G" aria-pressed="false">G-banding</button>
-      </div>
-    </div>
-    <div class="ctl-group">
-      <span class="ctl-label">Levels shown</span>
-      <button class="chip lvc" id="lv400" data-lv="400" aria-pressed="true">400</button>
-      <button class="chip lvc" id="lv550" data-lv="550" aria-pressed="true">550</button>
-      <button class="chip lvc" id="lv850" data-lv="850" aria-pressed="true" title="GRCh38 idiogram, closest to the ISCN 700-band level">~700</button>
-    </div>
-    <label class="toggle" id="genesToggle"><input type="checkbox" id="showGenes" checked><span>Landmark genes</span></label>
-  </div>
+  <section class="card kg" aria-label="Karyogram"><div class="kg-row" id="kg"></div></section>
 
   <div class="main">
     <div class="card plate">
-      <div class="plate-head"><h2 class="plate-title" id="plateTitle">Chromosome X</h2><a class="btn-scope" id="simLink" href="simulator.html?v=8c3354e9#chrX"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 18h8"/><path d="M3 22h18"/><path d="M14 22a7 7 0 1 0 0-14h-1"/><path d="M9 14h2"/><path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z"/><path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3"/></svg><span>View chr X under the microscope</span></a></div>
+      <div class="plate-head"><h2 id="plateTitle">Chromosome 1</h2>
+        <div class="grp"><a class="go" id="simLink" href="simulator.html?v=4e2991d6">Microscope ›</a><a class="go" id="fishLink" href="fish.html?v=4e2991d6">FISH probes ›</a></div></div>
       <div class="plate-scroll"><div class="plate-inner" id="plate"></div></div>
-      <p class="scroll-hint">Swipe sideways to see every level</p>
     </div>
     <aside class="card panel" aria-live="polite">
-      <div id="info"><p class="hint">Hover or tap a band. The same genomic interval is outlined at every level shown.</p></div>
+      <div id="info"></div>
       <div class="legend" id="legend"></div>
     </aside>
   </div>
-
-  <section class="card notes">
-    <h2>How this was drawn, and its limits</h2>
-    <ul>
-      <li>Band names, ISCN lengths and G-stain grades come from NCBI's human ideogram data (GRCh38), as packaged in <a href="https://github.com/eweitz/ideogram" target="_blank" rel="noopener">ideogram.js</a>. The R pattern is the reciprocal of that G pattern, which is how ISCN treats R-banded idiograms.</li>
-      <li>Grey steps for intermediate bands are an inversion of NCBI's G-stain grades, not measured RHG intensities. Every G-negative band has the same value in the source, so differences in intensity between R-positive bands (including the strongly staining T-bands) are not shown.</li>
-      <li>Variable heterochromatin (1q12, 9q12, 16q11.2, Yq12, acrocentric p11.2 and p13) and stalks are not inverted. ISCN 2024 (section 2.2.2) describes these regions as variable in size and staining intensity with Q-, G-, R-, C- and T-banding, so they are drawn with a separate hatch rather than a guessed tone.</li>
-      <li>At the 550 level the source file leaves gaps in seven places: 7q11.2, 8q11.2, 11p11.1, 12q24.3, 18p11.3, Xp11.2 and Yq11.2. The sub-bands in each were stretched to fill their parent 400-level band, so their relative sizes there are approximate.</li>
-      <li>In the karyogram, all chromosomes share one scale in ISCN units. In the detail view each chromosome is drawn to a height that leaves room for its labels, so detail views are not to scale with each other.</li>
-      <li><b>The finest level is the GRCh38 idiogram, labelled ~700.</b> ISCN 2024 (section 2.4) states that the GRCh38 idiograms best fit the ISCN 700-band level. GRCh38 is more detailed than ISCN at 6p24 and 9q34.1, and ISCN 850 is more detailed at 1q32, 2p21, 5q13.2, 6p22.3 and 6q21. It was labelled 850 in earlier versions of this page, following NCBI's file names.</li>
-      <li><b>Band names in karyotypes.</b> Sub-bands such as 9q34.12 or 6p24.3 exist only in GRCh38. An ISCN karyotype uses the band level actually resolved, e.g. t(9;22)(q34;q11.2). Gene positions on this page use GRCh38 names.</li>
-      <li>ISCN also defines 300- and 850-band idiograms. They are not in this dataset, so they are not drawn. Landmark genes (2 to 6 per chromosome, 74 in all) use Ensembl release 110 GRCh38 gene coordinates, placed by interpolation within their band. They are orientation marks, not precise positions. The IGH mark sits at IGHM, inside the IGH locus.</li>
-    </ul>
-  </section>
-</div>
+</main>
+<dialog class="faq" id="faq" aria-labelledby="faqTitle">
+  <div class="faq-head"><h2 id="faqTitle">FAQ, sources and limits</h2><button class="btn-sec" id="faqClose" type="button">Close</button></div>
+  <div class="faq-body">
+    <details open><summary>Where do the bands come from, and are they accurate?</summary>
+      <ul>
+        <li>Band names, ISCN lengths, stain grades and GRCh38 coordinates are NCBI's human ideogram tables (400, 550 and GRCh38 ~700 bands), as repackaged in ideogram.js 1.53.0.</li>
+        <li>The ~700 level matches the UCSC hg38 cytoband table exactly: all 862 band names, boundaries and stain grades. The 400 level matches NCBI's file byte for byte. The 550 level matches too, except 21 sub-bands in seven places (7q11.2, 8q11.2, 11p11.1, 12q24.3, 18p11.3, Xp11.2, Yq11.2) where NCBI's file leaves gaps; those were stretched to fill their parent band. Every 400/550 boundary falls on a ~700 boundary.</li>
+        <li>UCSC and NCBI share one source, so this proves faithful copying, not that the bands are right. Cytogenetic band positions in GRCh38 come from FISH mapping and are typically good to about 1-2 Mb.</li>
+        <li>The finest level is the GRCh38 idiogram, which ISCN 2024 (section 2.4) says best fits the 700-band level. GRCh38 is more detailed than ISCN at 6p24 and 9q34; ISCN 850 is more detailed at 1q32, 2p21, 5q13.2, 6p22.3 and 6q21. ISCN 300- and 850-band idiograms are not drawn (not in the source data).</li>
+        <li>Sub-bands such as 9q34.12 exist only in GRCh38; a karyotype uses the band level actually resolved, e.g. t(9;22)(q34;q11.2).</li>
+      </ul>
+    </details>
+    <details><summary>Idiograms: how are they drawn?</summary>
+      <ul>
+        <li>The R pattern is the reciprocal of NCBI's G-stain grades, as ISCN treats R-banded idiograms. Intermediate greys are inverted G grades, not measured RHG intensities; every G-negative band has the same value in the source, so differences between R-positive bands (e.g. strongly staining T-bands) are not shown.</li>
+        <li>Variable heterochromatin (1q12, 9q12, 16q11.2, Yq12, acrocentric p11.2/p13) and stalks are hatched, not inverted: ISCN 2024 (2.2.2) describes them as variable in size and staining with every method.</li>
+        <li>The karyogram uses one scale for all chromosomes. Detail views are drawn tall enough for their labels, so they are not to scale with each other.</li>
+        <li>Landmark genes (74) use Ensembl release 110 GRCh38 coordinates, placed by interpolation within their band. They are orientation marks. IGH is marked at IGHM.</li>
+      </ul>
+    </details>
+    <details><summary>Microscope: what is modelled, and what is guessed?</summary>
+      <ul>
+        <li>It is a model, not a photograph. Bands start from the GRCh38 idiogram. Condensation is simulated by smoothing the band profile, so neighbouring sub-bands merge as they do on real slides.</li>
+        <li>R-banding: R-positive bands get a random ±12% intensity change; real differences between R-positive bands are not in the data. Terminal R bands are drawn slightly darker (R-banded ends are "almost always positive").</li>
+        <li>G-banding uses NCBI's G grades directly. Heterochromatin "Typical" draws 1q12 and 16q11.2 dark and 9q12 pale in G-banding, and all blocks pale in R-banding. These tones are inferences, not measured values; Pale and Dark let you change them.</li>
+        <li>Chromosomes are two sister chromatids with a primary constriction, uneven widths, fuzzy fibrous edges, slightly oblique band boundaries, splayed ends and occasional twists. Stalks are thinner and paler with small satellites; their length and the heterochromatin blocks vary between homologues, as they do in people. Acrocentric short arms are drawn at about half their idiogram length (a judgement, not a measurement).</li>
+        <li>Optics: Beer-Lambert absorbance for Giemsa colour, a grey camera mode, focus blur, a faint phase halo, slight colour fringing, uneven illumination, stain gradients, cytoplasm remnants, interphase nuclei at the edge of the field (the Field slider), debris and grain. These are cosmetic.</li>
+        <li>While a slider moves, the image is drawn at reduced resolution; it is redrawn sharp when you let go.</li>
+        <li>Small chromosomes are enlarged in the one-chromosome view; the caption gives the magnification relative to chromosome 1. The karyogram keeps one scale.</li>
+      </ul>
+    </details>
+    <details><summary>Abnormalities: rules and limits</summary>
+      <ul>
+        <li>A breakpoint sits in the middle of the band you pick: ISCN places a break "in" a band without saying where.</li>
+        <li>You can type any band or sub-band from the 400, 550 or ~700 idiogram, or a parent band such as 22q11.2. p10 and q10 are the centromere.</li>
+        <li>Ordering follows ISCN 2024 section 4.3: normal sex chromosomes first (an abnormal X or Y is left out of the sex complement), then sex-chromosome abnormalities, then autosomes in numerical order, numerical before structural. Sex-chromosome gains and losses are written constitutionally (47,XXY; 45,X).</li>
+        <li>Supported: t, der(…)t, del, dup, inv, i, r, add, gains and losses, and a cell count in brackets. Not supported: insertions, dicentrics, markers, three-way translocations, inverted duplications and mosaics.</li>
+        <li>Derivatives keep the banding of the chromosome each piece came from; the coloured strip shows which.</li>
+      </ul>
+    </details>
+    <details><summary>FISH probes: where do the designs come from?</summary>
+      <ul>
+        <li>Vysis (Abbott) designs come from Abbott's own pages: the per-product hybridisation text and probe tables on molecular.abbott (chromosome search, chromosomes 2-12, X, Y), the probe-map images (sizes, gaps, flanking markers), the Vysis CLL FISH Probe Kit package insert (30-608712/R4) and the 2019 US ordering list. Pages for chromosomes 1 and 13-22 have been removed from Abbott's site; for those probes the layout comes from the probe maps, which Abbott still serves.</li>
+        <li>CytoCell and MetaSystems probes are included only for haematology targets Vysis does not sell (KMT2A partner fusions, CBFB::MYH11, MECOM, RUNX1, TCF3, CRLF2, P2RY8, JAK2, NUP98, PAX5, ABL1/ABL2, IGK, IGL, TCL1, TRB, TLX1, TLX3, IGH::CCND3, IGH::MAFB). Their layout is from each product page. MetaSystems pages give no probe sizes, so those positions are illustrative.</li>
+        <li>Probe positions are approximate: each probe is placed on GRCh38 from the genes and sizes on the vendor map (Ensembl canonical transcripts). They show where a probe lies; use the vendor's map for exact clones.</li>
+        <li>Signal patterns are derived: the page applies the rearrangement to a diploid cell and reads which probe segments end up together. A build check compares each derived pattern with its expected signal code: the manufacturer's own code for patterns marked "vendor", the textbook code for that design for patterns marked "standard". All of them agree.</li>
+        <li>Interphase nuclei put each signal at a random position. About one signal in seven is drawn as a split doublet (a replicated G2 signal) and a few faint non-specific speckles are added: the usual scoring pitfalls. "New cells" draws other nuclei.</li>
+        <li>The metaphase view uses the microscope model in fluorescence: DAPI-stained chromosomes (DAPI bands follow the G pattern) with each signal on both sister chromatids. It shows the probed chromosomes, every abnormal chromosome and any chromosome carrying a signal. Amplicons are drawn as double minutes; in tumours they are often intrachromosomal (HSR) instead.</li>
+        <li>A fragment smaller than ~40 kb, or under 12% of its probe, is treated as invisible. Different probes closer than 1.8 Mb read as one fused signal. These thresholds are approximations.</li>
+        <li>The ISCN nuc ish strings follow the ISCN conventions for interphase FISH (counts, "con", "sep", "amp"). They were written before the ISCN 2024 text could be checked; treat them as a starting point.</li>
+        <li>Not for diagnostic use. Vysis, CytoCell, ZytoLight, MetaSystems, Kreatech and Empire Genomics are trademarks of their owners; this site is not affiliated with any of them. Always follow the package insert of the kit you use.</li>
+      </ul>
+    </details>
+    <details><summary>Probe catalogue: what is in it?</summary>
+      <ul>
+        <li>Human FISH probes listed on vendor websites in October 2026: Vysis (Abbott ordering list 2019 and current chromosome pages), CytoCell (OGT product search, including myProbes custom designs), ZytoVision, MetaSystems, Leica (Kreatech) and Empire Genomics.</li>
+        <li>Leica and Empire Genomics publish product URLs rather than structured names; those names were rebuilt from the URL and are marked. Availability differs between countries.</li>
+        <li>Rows with a "FISH" link open the same probe on the FISH page.</li>
+      </ul>
+    </details>
+    <details><summary>Using the site</summary>
+      <ul>
+        <li>Add #chr9 (or #chrX…) to a page address to open that chromosome; the FISH page accepts #probe-id. The chromosome you last opened is remembered across tabs.</li>
+        <li>Everything runs in the browser and works offline once loaded.</li>
+      </ul>
+    </details>
+  </div>
+</dialog>
 
 <script>
-const SIM_HREF = "simulator.html?v=8c3354e9";
+// Shared by every page: FAQ dialog, remembered chromosome, small helpers.
+const SITE = (() => {
+  const faq = document.getElementById("faq");
+  document.getElementById("faqBtn").addEventListener("click", () => faq.showModal());
+  document.getElementById("faqClose").addEventListener("click", () => faq.close());
+  faq.addEventListener("click", e => { if (e.target === faq) faq.close(); });
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem("idiograms:" + k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem("idiograms:" + k, JSON.stringify(v)); } catch (e) {} },
+  };
+  const ORDER = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","X","Y"];
+  // chromosome from #chrN, else the one last opened on any page
+  function initialChr(fallback) {
+    const h = (location.hash || "").replace(/^#chr/i, "").toUpperCase();
+    if (ORDER.includes(h)) return h;
+    const s = store.get("chr", null);
+    return ORDER.includes(s) ? s : fallback;
+  }
+  function rememberChr(c) { store.set("chr", c); try { history.replaceState(null, "", "#chr" + c); } catch (e) {} }
+  // keep the remembered chromosome on links between tools
+  document.querySelectorAll(".tabs a[data-chr-link]").forEach(a => a.addEventListener("click", () => {
+    const c = store.get("chr", null); if (ORDER.includes(c) && !a.href.includes("#")) a.href += "#chr" + c;
+  }));
+  return { store, ORDER, initialChr, rememberChr };
+})();
+
 const DATA = {"1":{"400":[["p36.3",0,451,1,7100000,"gneg"],["p36.2",451,682,7100001,15900000,"gpos100"],["p36.1",682,1259,15900001,27600000,"gneg"],["p35",1259,1583,27600001,34300000,"gpos100"],["p34.3",1583,1779,34300001,39600000,"gneg"],["p34.2",1779,1999,39600001,43700000,"gpos25"],["p34.1",1999,2184,43700001,46300000,"gneg"],["p33",2184,2519,46300001,50200000,"gpos75"],["p32",2519,3050,50200001,60800000,"gneg"],["p31",3050,4598,60800001,84400000,"gpos100"],["p22",4598,5430,84400001,94300000,"gneg"],["p21",5430,6274,94300001,106700000,"gpos100"],["p13",6274,7094,106700001,117200000,"gneg"],["p12",7094,7279,117200001,120400000,"gpos50"],["p11",7279,7394,120400001,123400000,"acen"],["q11",7394,7554,123400001,125100000,"acen"],["q12",7554,8672,125100001,143200000,"gvar"],["q21",8672,9350,143200001,155100000,"gneg"],["q22",9350,9685,155100001,156600000,"gpos50"],["q23",9685,10160,156600001,165500000,"gneg"],["q24",10160,10565,165500001,173000000,"gpos100"],["q25",10565,11005,173000001,185800000,"gneg"],["q31",11005,12207,185800001,198700000,"gpos100"],["q32",12207,13272,198700001,214400000,"gneg"],["q41",13272,13920,214400001,223900000,"gpos100"],["q42",13920,14406,223900001,236400000,"gneg"],["q43",14406,14776,236400001,243500000,"gpos75"],["q44",14776,15100,243500001,248956422,"gneg"]],"550":[["p36.3",0,451,1,7100000,"gneg"],["p36.2",451,682,7100001,15900000,"gpos100"],["p36.1",682,1259,15900001,27600000,"gneg"],["p35",1259,1583,27600001,34300000,"gpos100"],["p34.3",1583,1779,34300001,39600000,"gneg"],["p34.2",1779,1999,39600001,43700000,"gpos25"],["p34.1",1999,2184,43700001,46300000,"gneg"],["p33",2184,2519,46300001,50200000,"gpos75"],["p32.3",2519,2723,50200001,55600000,"gneg"],["p32.2",2723,2825,55600001,58500000,"gpos50"],["p32.1",2825,3050,58500001,60800000,"gneg"],["p31.3",3050,3387,60800001,68500000,"gpos50"],["p31.2",3387,3705,68500001,69300000,"gneg"],["p31.1",3705,4598,69300001,84400000,"gpos100"],["p22.3",4598,4933,84400001,87900000,"gneg"],["p22.2",4933,5148,87900001,91500000,"gpos75"],["p22.1",5148,5430,91500001,94300000,"gneg"],["p21",5430,6274,94300001,106700000,"gpos100"],["p13.3",6274,6560,106700001,111200000,"gneg"],["p13.2",6560,6827,111200001,115500000,"gpos50"],["p13.1",6827,7094,115500001,117200000,"gneg"],["p12",7094,7279,117200001,120400000,"gpos50"],["p11",7279,7394,120400001,123400000,"acen"],["q11",7394,7554,123400001,125100000,"acen"],["q12",7554,8672,125100001,143200000,"gvar"],["q21.1",8672,8915,143200001,147500000,"gneg"],["q21.2",8915,9094,147500001,150600000,"gpos50"],["q21.3",9094,9350,150600001,155100000,"gneg"],["q22",9350,9685,155100001,156600000,"gpos50"],["q23",9685,10160,156600001,165500000,"gneg"],["q24",10160,10565,165500001,173000000,"gpos100"],["q25",10565,11005,173000001,185800000,"gneg"],["q31",11005,12207,185800001,198700000,"gpos100"],["q32.1",12207,12757,198700001,207100000,"gneg"],["q32.2",12757,12988,207100001,211300000,"gpos25"],["q32.3",12988,13272,211300001,214400000,"gneg"],["q41",13272,13920,214400001,223900000,"gpos100"],["q42.1",13920,14212,223900001,230500000,"gneg"],["q42.2",14212,14296,230500001,234600000,"gpos50"],["q42.3",14296,14406,234600001,236400000,"gneg"],["q43",14406,14776,236400001,243500000,"gpos75"],["q44",14776,15100,243500001,248956422,"gneg"]],"850":[["p36.33",0,100,1,2300000,"gneg"],["p36.32",100,244,2300001,5300000,"gpos25"],["p36.31",244,344,5300001,7100000,"gneg"],["p36.23",344,459,7100001,9100000,"gpos25"],["p36.22",459,660,9100001,12500000,"gneg"],["p36.21",660,861,12500001,15900000,"gpos50"],["p36.13",861,1206,15900001,20100000,"gneg"],["p36.12",1206,1321,20100001,23600000,"gpos25"],["p36.11",1321,1521,23600001,27600000,"gneg"],["p35.3",1521,1651,27600001,29900000,"gpos25"],["p35.2",1651,1780,29900001,32300000,"gneg"],["p35.1",1780,1895,32300001,34300000,"gpos25"],["p34.3",1895,2210,34300001,39600000,"gneg"],["p34.2",2210,2411,39600001,43700000,"gpos25"],["p34.1",2411,2770,43700001,46300000,"gneg"],["p33",2770,2986,46300001,50200000,"gpos75"],["p32.3",2986,3273,50200001,55600000,"gneg"],["p32.2",3273,3416,55600001,58500000,"gpos50"],["p32.1",3416,3732,58500001,60800000,"gneg"],["p31.3",3732,3976,60800001,68500000,"gpos50"],["p31.2",3976,4206,68500001,69300000,"gneg"],["p31.1",4206,4852,69300001,84400000,"gpos100"],["p22.3",4852,5210,84400001,87900000,"gneg"],["p22.2",5210,5440,87900001,91500000,"gpos75"],["p22.1",5440,5741,91500001,94300000,"gneg"],["p21.3",5741,5957,94300001,99300000,"gpos75"],["p21.2",5957,6029,99300001,101800000,"gneg"],["p21.1",6029,6244,101800001,106700000,"gpos100"],["p13.3",6244,6459,106700001,111200000,"gneg"],["p13.2",6459,6660,111200001,115500000,"gpos50"],["p13.1",6660,6861,115500001,117200000,"gneg"],["p12",6861,7048,117200001,120400000,"gpos50"],["p11.2",7048,7119,120400001,121700000,"gneg"],["p11.1",7119,7335,121700001,123400000,"acen"],["q11",7335,7579,123400001,125100000,"acen"],["q12",7579,8483,125100001,143200000,"gvar"],["q21.1",8483,8756,143200001,147500000,"gneg"],["q21.2",8756,8957,147500001,150600000,"gpos50"],["q21.3",8957,9244,150600001,155100000,"gneg"],["q22",9244,9459,155100001,156600000,"gpos50"],["q23.1",9459,9832,156600001,159100000,"gneg"],["q23.2",9832,10048,159100001,160500000,"gpos50"],["q23.3",10048,10349,160500001,165500000,"gneg"],["q24.1",10349,10507,165500001,167200000,"gpos50"],["q24.2",10507,10679,167200001,170900000,"gneg"],["q24.3",10679,10894,170900001,173000000,"gpos75"],["q25.1",10894,11009,173000001,176100000,"gneg"],["q25.2",11009,11196,176100001,180300000,"gpos50"],["q25.3",11196,11598,180300001,185800000,"gneg"],["q31.1",11598,11827,185800001,190800000,"gpos100"],["q31.2",11827,11942,190800001,193800000,"gneg"],["q31.3",11942,12172,193800001,198700000,"gpos100"],["q32.1",12172,12617,198700001,207100000,"gneg"],["q32.2",12617,12803,207100001,211300000,"gpos25"],["q32.3",12803,13033,211300001,214400000,"gneg"],["q41",13033,13320,214400001,223900000,"gpos100"],["q42.11",13320,13406,223900001,224400000,"gneg"],["q42.12",13406,13607,224400001,226800000,"gpos25"],["q42.13",13607,13966,226800001,230500000,"gneg"],["q42.2",13966,14153,230500001,234600000,"gpos50"],["q42.3",14153,14397,234600001,236400000,"gneg"],["q43",14397,14756,236400001,243500000,"gpos75"],["q44",14756,15100,243500001,248956422,"gneg"]]},"2":{"400":[["p25",0,475,1,12000000,"gneg"],["p24",475,931,12000001,23800000,"gpos100"],["p23",931,1558,23800001,31800000,"gneg"],["p22",1558,2145,31800001,41500000,"gpos100"],["p21",2145,2650,41500001,47500000,"gneg"],["p16",2650,3439,47500001,61000000,"gpos100"],["p15",3439,3682,61000001,63900000,"gneg"],["p14",3682,3976,63900001,68400000,"gpos50"],["p13",3976,4572,68400001,74800000,"gneg"],["p12",4572,5068,74800001,83100000,"gpos100"],["p11.2",5068,5534,83100001,91800000,"gneg"],["p11.1",5534,5665,91800001,93900000,"acen"],["q11.1",5665,5828,93900001,96000000,"acen"],["q11.2",5828,6181,96000001,102100000,"gneg"],["q12",6181,6602,102100001,108700000,"gpos100"],["q13",6602,6928,108700001,112200000,"gneg"],["q14.1",6928,7254,112200001,118100000,"gpos50"],["q14.2",7254,7336,118100001,121600000,"gneg"],["q14.3",7336,7662,121600001,129100000,"gpos50"],["q21",7662,8314,129100001,136100000,"gneg"],["q22",8314,9048,136100001,147900000,"gpos100"],["q23",9048,9374,147900001,154000000,"gneg"],["q24",9374,10202,154000001,168900000,"gpos100"],["q31",10202,10854,168900001,182100000,"gneg"],["q32",10854,11792,182100001,196600000,"gpos100"],["q33",11792,12362,196600001,208200000,"gneg"],["q34",12362,12811,208200001,214500000,"gpos100"],["q35",12811,13164,214500001,220700000,"gneg"],["q36",13164,13653,220700001,230100000,"gpos100"],["q37",13653,14400,230100001,242193529,"gneg"]],"550":[["p25.3",0,193,1,4400000,"gneg"],["p25.2",193,282,4400001,6900000,"gpos50"],["p25.1",282,475,6900001,12000000,"gneg"],["p24",475,931,12000001,23800000,"gpos100"],["p23",931,1558,23800001,31800000,"gneg"],["p22",1558,2145,31800001,41500000,"gpos100"],["p21",2145,2650,41500001,47500000,"gneg"],["p16",2650,3439,47500001,61000000,"gpos100"],["p15",3439,3682,61000001,63900000,"gneg"],["p14",3682,3976,63900001,68400000,"gpos50"],["p13",3976,4572,68400001,74800000,"gneg"],["p12",4572,5068,74800001,83100000,"gpos100"],["p11.2",5068,5534,83100001,91800000,"gneg"],["p11.1",5534,5665,91800001,93900000,"acen"],["q11.1",5665,5828,93900001,96000000,"acen"],["q11.2",5828,6181,96000001,102100000,"gneg"],["q12",6181,6602,102100001,108700000,"gpos100"],["q13",6602,6928,108700001,112200000,"gneg"],["q14.1",6928,7254,112200001,118100000,"gpos50"],["q14.2",7254,7336,118100001,121600000,"gneg"],["q14.3",7336,7662,121600001,129100000,"gpos50"],["q21.1",7662,7920,129100001,131700000,"gneg"],["q21.2",7920,8177,131700001,134300000,"gpos25"],["q21.3",8177,8314,134300001,136100000,"gneg"],["q22",8314,9048,136100001,147900000,"gpos100"],["q23",9048,9374,147900001,154000000,"gneg"],["q24.1",9374,9650,154000001,158900000,"gpos75"],["q24.2",9650,9868,158900001,162900000,"gneg"],["q24.3",9868,10202,162900001,168900000,"gpos75"],["q31",10202,10854,168900001,182100000,"gneg"],["q32.1",10854,11271,182100001,188500000,"gpos75"],["q32.2",11271,11427,188500001,191100000,"gneg"],["q32.3",11427,11792,191100001,196600000,"gpos75"],["q33",11792,12362,196600001,208200000,"gneg"],["q34",12362,12811,208200001,214500000,"gpos100"],["q35",12811,13164,214500001,220700000,"gneg"],["q36",13164,13653,220700001,230100000,"gpos100"],["q37.1",13653,13930,230100001,234700000,"gneg"],["q37.2",13930,14027,234700001,236400000,"gpos50"],["q37.3",14027,14400,236400001,242193529,"gneg"]],"850":[["p25.3",0,388,1,4400000,"gneg"],["p25.2",388,566,4400001,6900000,"gpos50"],["p25.1",566,954,6900001,12000000,"gneg"],["p24.3",954,1193,12000001,16500000,"gpos75"],["p24.2",1193,1312,16500001,19000000,"gneg"],["p24.1",1312,1565,19000001,23800000,"gpos75"],["p23.3",1565,1789,23800001,27700000,"gneg"],["p23.2",1789,1908,27700001,29800000,"gpos25"],["p23.1",1908,2027,29800001,31800000,"gneg"],["p22.3",2027,2296,31800001,36300000,"gpos75"],["p22.2",2296,2415,36300001,38300000,"gneg"],["p22.1",2415,2609,38300001,41500000,"gpos50"],["p21",2609,2966,41500001,47500000,"gneg"],["p16.3",2966,3220,47500001,52600000,"gpos100"],["p16.2",3220,3294,52600001,54700000,"gneg"],["p16.1",3294,3548,54700001,61000000,"gpos100"],["p15",3548,3757,61000001,63900000,"gneg"],["p14",3757,3935,63900001,68400000,"gpos50"],["p13.3",3935,4114,68400001,71300000,"gneg"],["p13.2",4114,4248,71300001,73300000,"gpos50"],["p13.1",4248,4353,73300001,74800000,"gneg"],["p12",4353,4860,74800001,83100000,"gpos100"],["p11.2",4860,5307,83100001,91800000,"gneg"],["p11.1",5307,5545,91800001,93900000,"acen"],["q11.1",5545,5724,93900001,96000000,"acen"],["q11.2",5724,6022,96000001,102100000,"gneg"],["q12.1",6022,6261,102100001,105300000,"gpos50"],["q12.2",6261,6395,105300001,106700000,"gneg"],["q12.3",6395,6559,106700001,108700000,"gpos25"],["q13",6559,6812,108700001,112200000,"gneg"],["q14.1",6812,7036,112200001,118100000,"gpos50"],["q14.2",7036,7334,118100001,121600000,"gneg"],["q14.3",7334,7602,121600001,129100000,"gpos50"],["q21.1",7602,7826,129100001,131700000,"gneg"],["q21.2",7826,8050,131700001,134300000,"gpos25"],["q21.3",8050,8169,134300001,136100000,"gneg"],["q22.1",8169,8437,136100001,141500000,"gpos100"],["q22.2",8437,8497,141500001,143400000,"gneg"],["q22.3",8497,8646,143400001,147900000,"gpos100"],["q23.1",8646,8735,147900001,149000000,"gneg"],["q23.2",8735,8795,149000001,149600000,"gpos25"],["q23.3",8795,9078,149600001,154000000,"gneg"],["q24.1",9078,9361,154000001,158900000,"gpos75"],["q24.2",9361,9585,158900001,162900000,"gneg"],["q24.3",9585,9928,162900001,168900000,"gpos75"],["q31.1",9928,10435,168900001,177100000,"gneg"],["q31.2",10435,10599,177100001,179700000,"gpos50"],["q31.3",10599,10733,179700001,182100000,"gneg"],["q32.1",10733,11091,182100001,188500000,"gpos75"],["q32.2",11091,11225,188500001,191100000,"gneg"],["q32.3",11225,11538,191100001,196600000,"gpos75"],["q33.1",11538,11925,196600001,202500000,"gneg"],["q33.2",11925,12060,202500001,204100000,"gpos50"],["q33.3",12060,12283,204100001,208200000,"gneg"],["q34",12283,12641,208200001,214500000,"gpos100"],["q35",12641,13014,214500001,220700000,"gneg"],["q36.1",13014,13237,220700001,224300000,"gpos75"],["q36.2",13237,13297,224300001,225200000,"gneg"],["q36.3",13297,13595,225200001,230100000,"gpos100"],["q37.1",13595,13893,230100001,234700000,"gneg"],["q37.2",13893,13998,234700001,236400000,"gpos50"],["q37.3",13998,14400,236400001,242193529,"gneg"]]},"3":{"400":[["p26",0,257,1,8100000,"gpos100"],["p25",257,649,8100001,16300000,"gneg"],["p24",649,1355,16300001,30800000,"gpos100"],["p23",1355,1574,30800001,32000000,"gneg"],["p22",1574,1966,32000001,43600000,"gpos100"],["p21",1966,3302,43600001,54400000,"gneg"],["p14",3302,4103,54400001,69700000,"gpos100"],["p13",4103,4456,69700001,74100000,"gneg"],["p12",4456,5439,74100001,87100000,"gpos100"],["p11",5439,5573,87100001,90900000,"acen"],["q11.1",5573,5733,90900001,94000000,"acen"],["q11.2",5733,6034,94000001,98600000,"gvar"],["q12",6034,6175,98600001,103100000,"gneg"],["q13.1",6175,6665,103100001,111600000,"gpos100"],["q13.2",6665,6806,111600001,113700000,"gneg"],["q13.3",6806,7389,113700001,122200000,"gpos100"],["q21",7389,7926,122200001,129500000,"gneg"],["q22",7926,8255,129500001,139000000,"gpos100"],["q23",8255,8538,139000001,143100000,"gneg"],["q24",8538,9206,143100001,149200000,"gpos100"],["q25",9206,9639,149200001,161000000,"gneg"],["q26.1",9639,10147,161000001,167900000,"gpos100"],["q26.2",10147,10269,167900001,171200000,"gneg"],["q26.3",10269,10702,171200001,183000000,"gpos100"],["q27",10702,11022,183000001,188200000,"gneg"],["q28",11022,11352,188200001,192600000,"gpos75"],["q29",11352,11700,192600001,198295559,"gneg"]],"550":[["p26",0,257,1,8100000,"gpos100"],["p25",257,649,8100001,16300000,"gneg"],["p24.3",649,1010,16300001,23800000,"gpos100"],["p24.2",1010,1114,23800001,26300000,"gneg"],["p24.1",1114,1355,26300001,30800000,"gpos75"],["p23",1355,1574,30800001,32000000,"gneg"],["p22",1574,1966,32000001,43600000,"gpos100"],["p21.3",1966,2910,43600001,50600000,"gneg"],["p21.2",2910,3041,50600001,52300000,"gpos25"],["p21.1",3041,3302,52300001,54400000,"gneg"],["p14.3",3302,3575,54400001,58600000,"gpos50"],["p14.2",3575,3847,58600001,63800000,"gneg"],["p14.1",3847,4103,63800001,69700000,"gpos50"],["p13",4103,4456,69700001,74100000,"gneg"],["p12",4456,5439,74100001,87100000,"gpos100"],["p11",5439,5573,87100001,90900000,"acen"],["q11.1",5573,5733,90900001,94000000,"acen"],["q11.2",5733,6034,94000001,98600000,"gvar"],["q12",6034,6175,98600001,103100000,"gneg"],["q13.1",6175,6665,103100001,111600000,"gpos100"],["q13.2",6665,6806,111600001,113700000,"gneg"],["q13.3",6806,7389,113700001,122200000,"gpos100"],["q21",7389,7926,122200001,129500000,"gneg"],["q22",7926,8255,129500001,139000000,"gpos100"],["q23",8255,8538,139000001,143100000,"gneg"],["q24",8538,9206,143100001,149200000,"gpos100"],["q25.1",9206,9334,149200001,152300000,"gneg"],["q25.2",9334,9443,152300001,155300000,"gpos50"],["q25.3",9443,9639,155300001,161000000,"gneg"],["q26.1",9639,10147,161000001,167900000,"gpos100"],["q26.2",10147,10269,167900001,171200000,"gneg"],["q26.3",10269,10702,171200001,183000000,"gpos100"],["q27",10702,11022,183000001,188200000,"gneg"],["q28",11022,11352,188200001,192600000,"gpos75"],["q29",11352,11700,192600001,198295559,"gneg"]],"850":[["p26.3",0,175,1,2800000,"gpos50"],["p26.2",175,263,2800001,4000000,"gneg"],["p26.1",263,408,4000001,8100000,"gpos50"],["p25.3",408,642,8100001,11600000,"gneg"],["p25.2",642,759,11600001,13200000,"gpos25"],["p25.1",759,963,13200001,16300000,"gneg"],["p24.3",963,1269,16300001,23800000,"gpos100"],["p24.2",1269,1357,23800001,26300000,"gneg"],["p24.1",1357,1561,26300001,30800000,"gpos75"],["p23",1561,1751,30800001,32000000,"gneg"],["p22.3",1751,1926,32000001,36400000,"gpos50"],["p22.2",1926,2013,36400001,39300000,"gneg"],["p22.1",2013,2188,39300001,43600000,"gpos75"],["p21.33",2188,2451,43600001,44100000,"gneg"],["p21.32",2451,2626,44100001,44200000,"gpos50"],["p21.31",2626,3239,44200001,50600000,"gneg"],["p21.2",3239,3385,50600001,52300000,"gpos25"],["p21.1",3385,3676,52300001,54400000,"gneg"],["p14.3",3676,3910,54400001,58600000,"gpos50"],["p14.2",3910,4143,58600001,63800000,"gneg"],["p14.1",4143,4362,63800001,69700000,"gpos50"],["p13",4362,4566,69700001,74100000,"gneg"],["p12.3",4566,4814,74100001,79800000,"gpos75"],["p12.2",4814,4946,79800001,83500000,"gneg"],["p12.1",4946,5077,83500001,87100000,"gpos75"],["p11.2",5077,5135,87100001,87800000,"gneg"],["p11.1",5135,5266,87800001,90900000,"acen"],["q11.1",5266,5427,90900001,94000000,"acen"],["q11.2",5427,5602,94000001,98600000,"gvar"],["q12.1",5602,5762,98600001,100300000,"gneg"],["q12.2",5762,5850,100300001,101200000,"gpos25"],["q12.3",5850,5996,101200001,103100000,"gneg"],["q13.11",5996,6229,103100001,106500000,"gpos75"],["q13.12",6229,6361,106500001,108200000,"gneg"],["q13.13",6361,6594,108200001,111600000,"gpos50"],["q13.2",6594,6682,111600001,113700000,"gneg"],["q13.31",6682,6871,113700001,117600000,"gpos75"],["q13.32",6871,6973,117600001,119300000,"gneg"],["q13.33",6973,7148,119300001,122200000,"gpos75"],["q21.1",7148,7294,122200001,124100000,"gneg"],["q21.2",7294,7440,124100001,126100000,"gpos25"],["q21.3",7440,7674,126100001,129500000,"gneg"],["q22.1",7674,7936,129500001,134000000,"gpos25"],["q22.2",7936,8053,134000001,136000000,"gneg"],["q22.3",8053,8228,136000001,139000000,"gpos25"],["q23",8228,8461,139000001,143100000,"gneg"],["q24",8461,8811,143100001,149200000,"gpos100"],["q25.1",8811,9001,149200001,152300000,"gneg"],["q25.2",9001,9162,152300001,155300000,"gpos50"],["q25.31",9162,9264,155300001,157300000,"gneg"],["q25.32",9264,9366,157300001,159300000,"gpos50"],["q25.33",9366,9453,159300001,161000000,"gneg"],["q26.1",9453,9803,161000001,167900000,"gpos100"],["q26.2",9803,9949,167900001,171200000,"gneg"],["q26.31",9949,10183,171200001,176000000,"gpos75"],["q26.32",10183,10329,176000001,179300000,"gneg"],["q26.33",10329,10489,179300001,183000000,"gpos75"],["q27.1",10489,10620,183000001,184800000,"gneg"],["q27.2",10620,10737,184800001,186300000,"gpos25"],["q27.3",10737,10883,186300001,188200000,"gneg"],["q28",10883,11175,188200001,192600000,"gpos75"],["q29",11175,11700,192600001,198295559,"gneg"]]},"4":{"400":[["p16",0,843,1,11300000,"gneg"],["p15.3",843,1330,11300001,21300000,"gpos100"],["p15.2",1330,1449,21300001,27700000,"gneg"],["p15.1",1449,1857,27700001,35800000,"gpos100"],["p14",1857,2292,35800001,41200000,"gneg"],["p13",2292,2647,41200001,44600000,"gpos50"],["p12",2647,2950,44600001,48200000,"gneg"],["p11",2950,3095,48200001,50000000,"acen"],["q11",3095,3211,50000001,51800000,"acen"],["q12",3211,3649,51800001,58500000,"gneg"],["q13",3649,4422,58500001,75300000,"gpos100"],["q21",4422,5169,75300001,87100000,"gneg"],["q22",5169,5735,87100001,97900000,"gpos100"],["q23",5735,5838,97900001,100100000,"gneg"],["q24",5838,6353,100100001,106700000,"gpos50"],["q25",6353,6560,106700001,113200000,"gneg"],["q26",6560,7294,113200001,119900000,"gpos75"],["q27",7294,7577,119900001,122800000,"gneg"],["q28",7577,8440,122800001,138500000,"gpos100"],["q31.1",8440,8813,138500001,140600000,"gneg"],["q31.2",8813,9071,140600001,150200000,"gpos100"],["q31.3",9071,9431,150200001,154600000,"gneg"],["q32",9431,10050,154600001,169200000,"gpos100"],["q33",10050,10281,169200001,171000000,"gneg"],["q34",10281,10732,171000001,182300000,"gpos100"],["q35",10732,11170,182300001,190214555,"gneg"]],"550":[["p16",0,843,1,11300000,"gneg"],["p15.3",843,1330,11300001,21300000,"gpos100"],["p15.2",1330,1449,21300001,27700000,"gneg"],["p15.1",1449,1857,27700001,35800000,"gpos100"],["p14",1857,2292,35800001,41200000,"gneg"],["p13",2292,2647,41200001,44600000,"gpos50"],["p12",2647,2950,44600001,48200000,"gneg"],["p11",2950,3095,48200001,50000000,"acen"],["q11",3095,3211,50000001,51800000,"acen"],["q12",3211,3649,51800001,58500000,"gneg"],["q13.1",3649,3993,58500001,65500000,"gpos100"],["q13.2",3993,4147,65500001,69400000,"gneg"],["q13.3",4147,4422,69400001,75300000,"gpos75"],["q21.1",4422,4577,75300001,78000000,"gneg"],["q21.2",4577,4920,78000001,86000000,"gpos100"],["q21.3",4920,5169,86000001,87100000,"gneg"],["q22",5169,5735,87100001,97900000,"gpos100"],["q23",5735,5838,97900001,100100000,"gneg"],["q24",5838,6353,100100001,106700000,"gpos50"],["q25",6353,6560,106700001,113200000,"gneg"],["q26",6560,7294,113200001,119900000,"gpos75"],["q27",7294,7577,119900001,122800000,"gneg"],["q28",7577,8440,122800001,138500000,"gpos100"],["q31.1",8440,8813,138500001,140600000,"gneg"],["q31.2",8813,9071,140600001,150200000,"gpos100"],["q31.3",9071,9431,150200001,154600000,"gneg"],["q32",9431,10050,154600001,169200000,"gpos100"],["q33",10050,10281,169200001,171000000,"gneg"],["q34",10281,10732,171000001,182300000,"gpos100"],["q35",10732,11170,182300001,190214555,"gneg"]],"850":[["p16.3",0,220,1,4500000,"gneg"],["p16.2",220,389,4500001,6000000,"gpos25"],["p16.1",389,779,6000001,11300000,"gneg"],["p15.33",779,1066,11300001,15000000,"gpos50"],["p15.32",1066,1286,15000001,17700000,"gneg"],["p15.31",1286,1557,17700001,21300000,"gpos75"],["p15.2",1557,1811,21300001,27700000,"gneg"],["p15.1",1811,2166,27700001,35800000,"gpos100"],["p14",2166,2505,35800001,41200000,"gneg"],["p13",2505,2742,41200001,44600000,"gpos50"],["p12",2742,2877,44600001,48200000,"gneg"],["p11",2877,3046,48200001,50000000,"acen"],["q11",3046,3249,50000001,51800000,"acen"],["q12",3249,3571,51800001,58500000,"gneg"],["q13.1",3571,3910,58500001,65500000,"gpos100"],["q13.2",3910,4062,65500001,69400000,"gneg"],["q13.3",4062,4333,69400001,75300000,"gpos75"],["q21.1",4333,4502,75300001,78000000,"gneg"],["q21.21",4502,4671,78000001,81500000,"gpos50"],["q21.22",4671,4739,81500001,83200000,"gneg"],["q21.23",4739,4874,83200001,86000000,"gpos25"],["q21.3",4874,5145,86000001,87100000,"gneg"],["q22.1",5145,5517,87100001,92800000,"gpos75"],["q22.2",5517,5636,92800001,94200000,"gneg"],["q22.3",5636,5890,94200001,97900000,"gpos75"],["q23",5890,6059,97900001,100100000,"gneg"],["q24",6059,6347,100100001,106700000,"gpos50"],["q25",6347,6685,106700001,113200000,"gneg"],["q26",6685,7040,113200001,119900000,"gpos75"],["q27",7040,7277,119900001,122800000,"gneg"],["q28.1",7277,7565,122800001,127900000,"gpos50"],["q28.2",7565,7734,127900001,130100000,"gneg"],["q28.3",7734,8259,130100001,138500000,"gpos100"],["q31.1",8259,8581,138500001,140600000,"gneg"],["q31.21",8581,8733,140600001,145900000,"gpos25"],["q31.22",8733,8851,145900001,147500000,"gneg"],["q31.23",8851,9004,147500001,150200000,"gpos25"],["q31.3",9004,9207,150200001,154600000,"gneg"],["q32.1",9207,9545,154600001,160800000,"gpos100"],["q32.2",9545,9681,160800001,163600000,"gneg"],["q32.3",9681,9985,163600001,169200000,"gpos100"],["q33",9985,10087,169200001,171000000,"gneg"],["q34.1",10087,10341,171000001,175400000,"gpos75"],["q34.2",10341,10408,175400001,176600000,"gneg"],["q34.3",10408,10628,176600001,182300000,"gpos100"],["q35.1",10628,10967,182300001,186200000,"gneg"],["q35.2",10967,11170,186200001,190214555,"gpos25"]]},"5":{"400":[["p15.3",0,574,1,9900000,"gneg"],["p15.2",574,815,9900001,15000000,"gpos50"],["p15.1",815,1028,15000001,18400000,"gneg"],["p14",1028,1897,18400001,28900000,"gpos100"],["p13",1897,2444,28900001,42500000,"gneg"],["p12",2444,2712,42500001,46100000,"gpos50"],["p11",2712,2845,46100001,48800000,"acen"],["q11.1",2845,2990,48800001,51400000,"acen"],["q11.2",2990,3518,51400001,59600000,"gneg"],["q12",3518,3966,59600001,67400000,"gpos100"],["q13",3966,4691,67400001,77600000,"gneg"],["q14",4691,5496,77600001,93000000,"gpos100"],["q15",5496,5747,93000001,98900000,"gneg"],["q21",5747,6577,98900001,110200000,"gpos100"],["q22",6577,6802,110200001,115900000,"gneg"],["q23",6802,7751,115900001,131200000,"gpos100"],["q31",7751,8740,131200001,145100000,"gneg"],["q32",8740,9189,145100001,150400000,"gpos75"],["q33",9189,9558,150400001,160500000,"gneg"],["q34",9558,10138,160500001,169000000,"gpos100"],["q35",10138,10600,169000001,181538259,"gneg"]],"550":[["p15.3",0,574,1,9900000,"gneg"],["p15.2",574,815,9900001,15000000,"gpos50"],["p15.1",815,1028,15000001,18400000,"gneg"],["p14",1028,1897,18400001,28900000,"gpos100"],["p13.3",1897,2123,28900001,33800000,"gneg"],["p13.2",2123,2301,33800001,38400000,"gpos25"],["p13.1",2301,2444,38400001,42500000,"gneg"],["p12",2444,2712,42500001,46100000,"gpos50"],["p11",2712,2845,46100001,48800000,"acen"],["q11.1",2845,2990,48800001,51400000,"acen"],["q11.2",2990,3518,51400001,59600000,"gneg"],["q12",3518,3966,59600001,67400000,"gpos100"],["q13.1",3966,4249,67400001,69100000,"gneg"],["q13.2",4249,4462,69100001,74000000,"gpos50"],["q13.3",4462,4691,74000001,77600000,"gneg"],["q14",4691,5496,77600001,93000000,"gpos100"],["q15",5496,5747,93000001,98900000,"gneg"],["q21",5747,6577,98900001,110200000,"gpos100"],["q22",6577,6802,110200001,115900000,"gneg"],["q23.1",6802,7130,115900001,122100000,"gpos75"],["q23.2",7130,7513,122100001,127900000,"gneg"],["q23.3",7513,7751,127900001,131200000,"gpos75"],["q31.1",7751,8146,131200001,136900000,"gneg"],["q31.2",8146,8381,136900001,140100000,"gpos25"],["q31.3",8381,8740,140100001,145100000,"gneg"],["q32",8740,9189,145100001,150400000,"gpos75"],["q33.1",9189,9331,150400001,153300000,"gneg"],["q33.2",9331,9432,153300001,156300000,"gpos50"],["q33.3",9432,9558,156300001,160500000,"gneg"],["q34",9558,10138,160500001,169000000,"gpos100"],["q35.1",10138,10271,169000001,173300000,"gneg"],["q35.2",10271,10388,173300001,177100000,"gpos25"],["q35.3",10388,10600,177100001,181538259,"gneg"]],"850":[["p15.33",0,278,1,4400000,"gneg"],["p15.32",278,401,4400001,6300000,"gpos25"],["p15.31",401,555,6300001,9900000,"gneg"],["p15.2",555,802,9900001,15000000,"gpos50"],["p15.1",802,972,15000001,18400000,"gneg"],["p14.3",972,1234,18400001,23300000,"gpos100"],["p14.2",1234,1281,23300001,24600000,"gneg"],["p14.1",1281,1543,24600001,28900000,"gpos100"],["p13.3",1543,1836,28900001,33800000,"gneg"],["p13.2",1836,2068,33800001,38400000,"gpos25"],["p13.1",2068,2253,38400001,42500000,"gneg"],["p12",2253,2407,42500001,46100000,"gpos50"],["p11",2407,2592,46100001,48800000,"acen"],["q11.1",2592,2839,48800001,51400000,"acen"],["q11.2",2839,3271,51400001,59600000,"gneg"],["q12.1",3271,3518,59600001,63600000,"gpos75"],["q12.2",3518,3580,63600001,63900000,"gneg"],["q12.3",3580,3765,63900001,67400000,"gpos75"],["q13.1",3765,4012,67400001,69100000,"gneg"],["q13.2",4012,4197,69100001,74000000,"gpos50"],["q13.3",4197,4397,74000001,77600000,"gneg"],["q14.1",4397,4752,77600001,82100000,"gpos50"],["q14.2",4752,4907,82100001,83500000,"gneg"],["q14.3",4907,5400,83500001,93000000,"gpos100"],["q15",5400,5678,93000001,98900000,"gneg"],["q21.1",5678,5879,98900001,103400000,"gpos100"],["q21.2",5879,5987,103400001,105100000,"gneg"],["q21.3",5987,6295,105100001,110200000,"gpos100"],["q22.1",6295,6419,110200001,112200000,"gneg"],["q22.2",6419,6527,112200001,113800000,"gpos50"],["q22.3",6527,6666,113800001,115900000,"gneg"],["q23.1",6666,6943,115900001,122100000,"gpos100"],["q23.2",6943,7267,122100001,127900000,"gneg"],["q23.3",7267,7468,127900001,131200000,"gpos100"],["q31.1",7468,7807,131200001,136900000,"gneg"],["q31.2",7807,8008,136900001,140100000,"gpos25"],["q31.3",8008,8316,140100001,145100000,"gneg"],["q32",8316,8625,145100001,150400000,"gpos75"],["q33.1",8625,8887,150400001,153300000,"gneg"],["q33.2",8887,9072,153300001,156300000,"gpos50"],["q33.3",9072,9304,156300001,160500000,"gneg"],["q34",9304,9690,160500001,169000000,"gpos100"],["q35.1",9690,9952,169000001,173300000,"gneg"],["q35.2",9952,10183,173300001,177100000,"gpos25"],["q35.3",10183,10600,177100001,181538259,"gneg"]]},"6":{"400":[["p25",0,405,1,7100000,"gneg"],["p24",405,643,7100001,13400000,"gpos100"],["p23",643,1047,13400001,15200000,"gneg"],["p22",1047,1773,15200001,30500000,"gpos100"],["p21.3",1773,2428,30500001,36600000,"gneg"],["p21.2",2428,2571,36600001,40500000,"gpos25"],["p21.1",2571,2999,40500001,46200000,"gneg"],["p12",2999,3618,46200001,57200000,"gpos100"],["p11.2",3618,3714,57200001,58500000,"gneg"],["p11.1",3714,3856,58500001,59800000,"acen"],["q11",3856,3999,59800001,62700000,"acen"],["q12",3999,4439,62700001,69200000,"gpos100"],["q13",4439,4701,69200001,75200000,"gneg"],["q14",4701,5129,75200001,87300000,"gpos100"],["q15",5129,5402,87300001,92500000,"gneg"],["q16",5402,6068,92500001,105000000,"gpos100"],["q21",6068,6746,105000001,114200000,"gneg"],["q22",6746,7793,114200001,130000000,"gpos100"],["q23",7793,8221,130000001,138300000,"gneg"],["q24",8221,8851,138300001,148500000,"gpos100"],["q25",8851,9386,148500001,160600000,"gneg"],["q26",9386,9696,160600001,164100000,"gpos50"],["q27",9696,10100,164100001,170805979,"gneg"]],"550":[["p25",0,405,1,7100000,"gneg"],["p24",405,643,7100001,13400000,"gpos100"],["p23",643,1047,13400001,15200000,"gneg"],["p22.3",1047,1381,15200001,25200000,"gpos75"],["p22.2",1381,1541,25200001,27100000,"gneg"],["p22.1",1541,1773,27100001,30500000,"gpos50"],["p21.3",1773,2428,30500001,36600000,"gneg"],["p21.2",2428,2571,36600001,40500000,"gpos25"],["p21.1",2571,2999,40500001,46200000,"gneg"],["p12",2999,3618,46200001,57200000,"gpos100"],["p11.2",3618,3714,57200001,58500000,"gneg"],["p11.1",3714,3856,58500001,59800000,"acen"],["q11",3856,3999,59800001,62700000,"acen"],["q12",3999,4439,62700001,69200000,"gpos100"],["q13",4439,4701,69200001,75200000,"gneg"],["q14",4701,5129,75200001,87300000,"gpos100"],["q15",5129,5402,87300001,92500000,"gneg"],["q16.1",5402,5742,92500001,98900000,"gpos100"],["q16.2",5742,5807,98900001,100000000,"gneg"],["q16.3",5807,6068,100000001,105000000,"gpos100"],["q21",6068,6746,105000001,114200000,"gneg"],["q22.1",6746,6955,114200001,117900000,"gpos75"],["q22.2",6955,7067,117900001,118100000,"gneg"],["q22.3",7067,7793,118100001,130000000,"gpos100"],["q23.1",7793,7962,130000001,130900000,"gneg"],["q23.2",7962,8096,130900001,134700000,"gpos50"],["q23.3",8096,8221,134700001,138300000,"gneg"],["q24",8221,8851,138300001,148500000,"gpos100"],["q25.1",8851,8996,148500001,152100000,"gneg"],["q25.2",8996,9119,152100001,155200000,"gpos50"],["q25.3",9119,9386,155200001,160600000,"gneg"],["q26",9386,9696,160600001,164100000,"gpos50"],["q27",9696,10100,164100001,170805979,"gneg"]],"850":[["p25.3",0,118,1,2300000,"gneg"],["p25.2",118,207,2300001,4200000,"gpos25"],["p25.1",207,355,4200001,7100000,"gneg"],["p24.3",355,548,7100001,10600000,"gpos50"],["p24.2",548,592,10600001,11600000,"gneg"],["p24.1",592,740,11600001,13400000,"gpos25"],["p23",740,844,13400001,15200000,"gneg"],["p22.3",844,1185,15200001,25200000,"gpos75"],["p22.2",1185,1348,25200001,27100000,"gneg"],["p22.1",1348,1585,27100001,30500000,"gpos50"],["p21.33",1585,1718,30500001,32100000,"gneg"],["p21.32",1718,1836,32100001,33500000,"gpos25"],["p21.31",1836,2162,33500001,36600000,"gneg"],["p21.2",2162,2310,36600001,40500000,"gpos25"],["p21.1",2310,2755,40500001,46200000,"gneg"],["p12.3",2755,3080,46200001,51800000,"gpos100"],["p12.2",3080,3140,51800001,53000000,"gneg"],["p12.1",3140,3377,53000001,57200000,"gpos100"],["p11.2",3377,3421,57200001,58500000,"gneg"],["p11.1",3421,3554,58500001,59800000,"acen"],["q11.1",3554,3658,59800001,62600000,"acen"],["q11.2",3658,3732,62600001,62700000,"gneg"],["q12",3732,4147,62700001,69200000,"gpos100"],["q13",4147,4324,69200001,75200000,"gneg"],["q14.1",4324,4621,75200001,83200000,"gpos50"],["q14.2",4621,4709,83200001,84200000,"gneg"],["q14.3",4709,4917,84200001,87300000,"gpos50"],["q15",4917,5228,87300001,92500000,"gneg"],["q16.1",5228,5613,92500001,98900000,"gpos100"],["q16.2",5613,5687,98900001,100000000,"gneg"],["q16.3",5687,5983,100000001,105000000,"gpos100"],["q21",5983,6531,105000001,114200000,"gneg"],["q22.1",6531,6753,114200001,117900000,"gpos75"],["q22.2",6753,6872,117900001,118100000,"gneg"],["q22.31",6872,7168,118100001,125800000,"gpos100"],["q22.32",7168,7345,125800001,126800000,"gneg"],["q22.33",7345,7642,126800001,130000000,"gpos75"],["q23.1",7642,7923,130000001,130900000,"gneg"],["q23.2",7923,8145,130900001,134700000,"gpos50"],["q23.3",8145,8352,134700001,138300000,"gneg"],["q24.1",8352,8560,138300001,142200000,"gpos75"],["q24.2",8560,8708,142200001,145100000,"gneg"],["q24.3",8708,8886,145100001,148500000,"gpos75"],["q25.1",8886,9078,148500001,152100000,"gneg"],["q25.2",9078,9241,152100001,155200000,"gpos50"],["q25.3",9241,9596,155200001,160600000,"gneg"],["q26",9596,9774,160600001,164100000,"gpos50"],["q27",9774,10100,164100001,170805979,"gneg"]]},"7":{"400":[["p22",0,470,1,7200000,"gneg"],["p21",470,1300,7200001,20900000,"gpos100"],["p15",1300,1894,20900001,28800000,"gneg"],["p14",1894,2339,28800001,43300000,"gpos100"],["p13",2339,2698,43300001,45400000,"gneg"],["p12",2698,3069,45400001,53900000,"gpos100"],["p11.2",3069,3267,53900001,58100000,"gneg"],["p11.1",3267,3391,58100001,60100000,"acen"],["q11.1",3391,3513,60100001,62100000,"acen"],["q11.2",3513,4605,62100001,77900000,"gneg"],["q21",4605,5612,77900001,98400000,"gpos100"],["q22",5612,6292,98400001,107800000,"gneg"],["q31",6292,7517,107800001,127500000,"gpos100"],["q32",7517,7966,127500001,132900000,"gneg"],["q33",7966,8221,132900001,138500000,"gpos50"],["q34",8221,8440,138500001,143400000,"gneg"],["q35",8440,8719,143400001,148200000,"gpos75"],["q36",8719,9350,148200001,159345973,"gneg"]],"550":[["p22",0,470,1,7200000,"gneg"],["p21",470,1300,7200001,20900000,"gpos100"],["p15.3",1300,1555,20900001,25500000,"gneg"],["p15.2",1555,1700,25500001,27900000,"gpos50"],["p15.1",1700,1894,27900001,28800000,"gneg"],["p14",1894,2339,28800001,43300000,"gpos100"],["p13",2339,2698,43300001,45400000,"gneg"],["p12",2698,3069,45400001,53900000,"gpos100"],["p11.2",3069,3267,53900001,58100000,"gneg"],["p11.1",3267,3391,58100001,60100000,"acen"],["q11.1",3391,3513,60100001,62100000,"acen"],["q11.21",3513,3855,62100001,67500000,"gneg"],["q11.22",3855,4093,67500001,72700000,"gpos50"],["q11.23",4093,4605,72700001,77900000,"gneg"],["q21.1",4605,5263,77900001,91500000,"gpos100"],["q21.2",5263,5371,91500001,93300000,"gneg"],["q21.3",5371,5612,93300001,98400000,"gpos75"],["q22",5612,6292,98400001,107800000,"gneg"],["q31.1",6292,6584,107800001,115000000,"gpos75"],["q31.2",6584,6836,115000001,117700000,"gneg"],["q31.3",6836,7517,117700001,127500000,"gpos100"],["q32",7517,7966,127500001,132900000,"gneg"],["q33",7966,8221,132900001,138500000,"gpos50"],["q34",8221,8440,138500001,143400000,"gneg"],["q35",8440,8719,143400001,148200000,"gpos75"],["q36",8719,9350,148200001,159345973,"gneg"]],"850":[["p22.3",0,227,1,2800000,"gneg"],["p22.2",227,397,2800001,4500000,"gpos25"],["p22.1",397,610,4500001,7200000,"gneg"],["p21.3",610,908,7200001,13700000,"gpos100"],["p21.2",908,965,13700001,16500000,"gneg"],["p21.1",965,1121,16500001,20900000,"gpos100"],["p15.3",1121,1419,20900001,25500000,"gneg"],["p15.2",1419,1589,25500001,27900000,"gpos50"],["p15.1",1589,1816,27900001,28800000,"gneg"],["p14.3",1816,1986,28800001,34900000,"gpos75"],["p14.2",1986,2043,34900001,37100000,"gneg"],["p14.1",2043,2327,37100001,43300000,"gpos75"],["p13",2327,2639,43300001,45400000,"gneg"],["p12.3",2639,2838,45400001,49000000,"gpos75"],["p12.2",2838,2909,49000001,50500000,"gneg"],["p12.1",2909,3093,50500001,53900000,"gpos75"],["p11.2",3093,3306,53900001,58100000,"gneg"],["p11.1",3306,3448,58100001,60100000,"acen"],["q11.1",3448,3689,60100001,62100000,"acen"],["q11.21",3689,3973,62100001,67500000,"gneg"],["q11.22",3973,4171,67500001,72700000,"gpos50"],["q11.23",4171,4597,72700001,77900000,"gneg"],["q21.11",4597,4994,77900001,86700000,"gpos100"],["q21.12",4994,5108,86700001,88500000,"gneg"],["q21.13",5108,5292,88500001,91500000,"gpos75"],["q21.2",5292,5406,91500001,93300000,"gneg"],["q21.3",5406,5661,93300001,98400000,"gpos75"],["q22.1",5661,6129,98400001,104200000,"gneg"],["q22.2",6129,6300,104200001,104900000,"gpos50"],["q22.3",6300,6470,104900001,107800000,"gneg"],["q31.1",6470,6683,107800001,115000000,"gpos75"],["q31.2",6683,6867,115000001,117700000,"gneg"],["q31.31",6867,7094,117700001,121400000,"gpos75"],["q31.32",7094,7208,121400001,124100000,"gneg"],["q31.33",7208,7364,124100001,127500000,"gpos75"],["q32.1",7364,7449,127500001,129600000,"gneg"],["q32.2",7449,7576,129600001,130800000,"gpos25"],["q32.3",7576,7803,130800001,132900000,"gneg"],["q33",7803,8031,132900001,138500000,"gpos50"],["q34",8031,8371,138500001,143400000,"gneg"],["q35",8371,8612,143400001,148200000,"gpos75"],["q36.1",8612,8910,148200001,152800000,"gneg"],["q36.2",8910,9080,152800001,155200000,"gpos25"],["q36.3",9080,9350,155200001,159345973,"gneg"]]},"8":{"400":[["p23",0,610,1,12800000,"gneg"],["p22",610,1138,12800001,19200000,"gpos100"],["p21",1138,1656,19200001,29000000,"gneg"],["p12",1656,2266,29000001,36700000,"gpos75"],["p11.2",2266,2611,36700001,43200000,"gneg"],["p11.1",2611,2743,43200001,45200000,"acen"],["q11.1",2743,2891,45200001,47200000,"acen"],["q11.2",2891,3148,47200001,54600000,"gneg"],["q12",3148,3641,54600001,65100000,"gpos100"],["q13",3641,4145,65100001,72000000,"gneg"],["q21.1",4145,4756,72000001,83500000,"gpos100"],["q21.2",4756,4885,83500001,85900000,"gneg"],["q21.3",4885,5506,85900001,92300000,"gpos100"],["q22",5506,6276,92300001,105100000,"gneg"],["q23",6276,7026,105100001,116700000,"gpos100"],["q24.1",7026,7628,116700001,126300000,"gneg"],["q24.2",7628,7885,126300001,138900000,"gpos100"],["q24.3",7885,8250,138900001,145138636,"gneg"]],"550":[["p23.3",0,102,1,2300000,"gneg"],["p23.2",102,293,2300001,6300000,"gpos75"],["p23.1",293,610,6300001,12800000,"gneg"],["p22",610,1138,12800001,19200000,"gpos100"],["p21.3",1138,1288,19200001,23500000,"gneg"],["p21.2",1288,1449,23500001,27500000,"gpos50"],["p21.1",1449,1656,27500001,29000000,"gneg"],["p12",1656,2266,29000001,36700000,"gpos75"],["p11.2",2266,2611,36700001,43200000,"gneg"],["p11.1",2611,2743,43200001,45200000,"acen"],["q11.1",2743,2891,45200001,47200000,"acen"],["q11.21",2891,2961,47200001,51300000,"gneg"],["q11.22",2961,3049,51300001,51700000,"gpos75"],["q11.23",3049,3148,51700001,54600000,"gneg"],["q12",3148,3641,54600001,65100000,"gpos100"],["q13",3641,4145,65100001,72000000,"gneg"],["q21.1",4145,4756,72000001,83500000,"gpos100"],["q21.2",4756,4885,83500001,85900000,"gneg"],["q21.3",4885,5506,85900001,92300000,"gpos100"],["q22.1",5506,5856,92300001,97900000,"gneg"],["q22.2",5856,5996,97900001,100500000,"gpos25"],["q22.3",5996,6276,100500001,105100000,"gneg"],["q23",6276,7026,105100001,116700000,"gpos100"],["q24.1",7026,7628,116700001,126300000,"gneg"],["q24.2",7628,7885,126300001,138900000,"gpos100"],["q24.3",7885,8250,138900001,145138636,"gneg"]],"850":[["p23.3",0,115,1,2300000,"gneg"],["p23.2",115,331,2300001,6300000,"gpos75"],["p23.1",331,690,6300001,12800000,"gneg"],["p22",690,992,12800001,19200000,"gpos100"],["p21.3",992,1179,19200001,23500000,"gneg"],["p21.2",1179,1380,23500001,27500000,"gpos50"],["p21.1",1380,1639,27500001,29000000,"gneg"],["p12",1639,1897,29000001,36700000,"gpos75"],["p11.23",1897,2041,36700001,38500000,"gneg"],["p11.22",2041,2156,38500001,39900000,"gpos25"],["p11.21",2156,2343,39900001,43200000,"gneg"],["p11.1",2343,2472,43200001,45200000,"acen"],["q11.1",2472,2645,45200001,47200000,"acen"],["q11.21",2645,2817,47200001,51300000,"gneg"],["q11.22",2817,3033,51300001,51700000,"gpos75"],["q11.23",3033,3277,51700001,54600000,"gneg"],["q12.1",3277,3493,54600001,60600000,"gpos50"],["q12.2",3493,3622,60600001,61300000,"gneg"],["q12.3",3622,3809,61300001,65100000,"gpos50"],["q13.1",3809,3938,65100001,67100000,"gneg"],["q13.2",3938,4096,67100001,69600000,"gpos50"],["q13.3",4096,4312,69600001,72000000,"gneg"],["q21.11",4312,4545,72000001,74600000,"gpos100"],["q21.12",4545,4628,74600001,74700000,"gneg"],["q21.13",4628,4858,74700001,83500000,"gpos75"],["q21.2",4858,4959,83500001,85900000,"gneg"],["q21.3",4959,5289,85900001,92300000,"gpos100"],["q22.1",5289,5577,92300001,97900000,"gneg"],["q22.2",5577,5692,97900001,100500000,"gpos25"],["q22.3",5692,5922,100500001,105100000,"gneg"],["q23.1",5922,6152,105100001,109500000,"gpos75"],["q23.2",6152,6267,109500001,111100000,"gneg"],["q23.3",6267,6611,111100001,116700000,"gpos100"],["q24.11",6611,6726,116700001,118300000,"gneg"],["q24.12",6726,6942,118300001,121500000,"gpos50"],["q24.13",6942,7244,121500001,126300000,"gneg"],["q24.21",7244,7431,126300001,130400000,"gpos50"],["q24.22",7431,7661,130400001,135400000,"gneg"],["q24.23",7661,7804,135400001,138900000,"gpos75"],["q24.3",7804,8250,138900001,145138636,"gneg"]]},"9":{"400":[["p24",0,355,1,9000000,"gneg"],["p23",355,841,9000001,14200000,"gpos75"],["p22",841,942,14200001,19900000,"gneg"],["p21",942,1661,19900001,33200000,"gpos100"],["p13",1661,2148,33200001,39000000,"gneg"],["p12",2148,2522,39000001,40000000,"gpos50"],["p11",2522,2634,40000001,43000000,"acen"],["q11",2634,2773,43000001,45500000,"acen"],["q12",2773,3695,45500001,61500000,"gvar"],["q13",3695,3864,61500001,65000000,"gneg"],["q21",3864,4865,65000001,87800000,"gpos100"],["q22",4865,5857,87800001,99800000,"gneg"],["q31",5857,6373,99800001,112100000,"gpos100"],["q32",6373,6571,112100001,114900000,"gneg"],["q33",6571,6958,114900001,127500000,"gpos100"],["q34",6958,7950,127500001,138394717,"gneg"]],"550":[["p24",0,355,1,9000000,"gneg"],["p23",355,841,9000001,14200000,"gpos75"],["p22",841,942,14200001,19900000,"gneg"],["p21",942,1661,19900001,33200000,"gpos100"],["p13",1661,2148,33200001,39000000,"gneg"],["p12",2148,2522,39000001,40000000,"gpos50"],["p11",2522,2634,40000001,43000000,"acen"],["q11",2634,2773,43000001,45500000,"acen"],["q12",2773,3695,45500001,61500000,"gvar"],["q13",3695,3864,61500001,65000000,"gneg"],["q21.1",3864,4232,65000001,76600000,"gpos100"],["q21.2",4232,4370,76600001,78500000,"gneg"],["q21.3",4370,4865,78500001,87800000,"gpos100"],["q22.1",4865,5160,87800001,89200000,"gneg"],["q22.2",5160,5283,89200001,91200000,"gpos25"],["q22.3",5283,5857,91200001,99800000,"gneg"],["q31",5857,6373,99800001,112100000,"gpos100"],["q32",6373,6571,112100001,114900000,"gneg"],["q33",6571,6958,114900001,127500000,"gpos100"],["q34.1",6958,7448,127500001,133100000,"gneg"],["q34.2",7448,7559,133100001,134500000,"gpos25"],["q34.3",7559,7950,134500001,138394717,"gneg"]],"850":[["p24.3",0,127,1,2200000,"gneg"],["p24.2",127,268,2200001,4600000,"gpos25"],["p24.1",268,451,4600001,9000000,"gneg"],["p23",451,677,9000001,14200000,"gpos75"],["p22.3",677,846,14200001,16600000,"gneg"],["p22.2",846,987,16600001,18500000,"gpos25"],["p22.1",987,1085,18500001,19900000,"gneg"],["p21.3",1085,1297,19900001,25600000,"gpos100"],["p21.2",1297,1395,25600001,28000000,"gneg"],["p21.1",1395,1621,28000001,33200000,"gpos100"],["p13.3",1621,1917,33200001,36300000,"gneg"],["p13.2",1917,2030,36300001,37900000,"gpos25"],["p13.1",2030,2171,37900001,39000000,"gneg"],["p12",2171,2312,39000001,40000000,"gpos50"],["p11.2",2312,2523,40000001,42200000,"gneg"],["p11.1",2523,2650,42200001,43000000,"acen"],["q11",2650,2876,43000001,45500000,"acen"],["q12",2876,3468,45500001,61500000,"gvar"],["q13",3468,3609,61500001,65000000,"gneg"],["q21.11",3609,3792,65000001,69300000,"gpos25"],["q21.12",3792,3876,69300001,71300000,"gneg"],["q21.13",3876,4060,71300001,76600000,"gpos50"],["q21.2",4060,4229,76600001,78500000,"gneg"],["q21.31",4229,4440,78500001,81500000,"gpos50"],["q21.32",4440,4638,81500001,84300000,"gneg"],["q21.33",4638,4835,84300001,87800000,"gpos50"],["q22.1",4835,5074,87800001,89200000,"gneg"],["q22.2",5074,5173,89200001,91200000,"gpos25"],["q22.31",5173,5314,91200001,93900000,"gneg"],["q22.32",5314,5455,93900001,96500000,"gpos25"],["q22.33",5455,5638,96500001,99800000,"gneg"],["q31.1",5638,5892,99800001,105400000,"gpos100"],["q31.2",5892,6005,105400001,108500000,"gneg"],["q31.3",6005,6146,108500001,112100000,"gpos25"],["q32",6146,6456,112100001,114900000,"gneg"],["q33.1",6456,6681,114900001,119800000,"gpos75"],["q33.2",6681,6822,119800001,123100000,"gneg"],["q33.3",6822,6949,123100001,127500000,"gpos25"],["q34.11",6949,7217,127500001,130600000,"gneg"],["q34.12",7217,7302,130600001,131100000,"gpos25"],["q34.13",7302,7443,131100001,133100000,"gneg"],["q34.2",7443,7555,133100001,134500000,"gpos25"],["q34.3",7555,7950,134500001,138394717,"gneg"]]},"10":{"400":[["p15",0,456,1,6600000,"gneg"],["p14",456,841,6600001,12200000,"gpos75"],["p13",841,1261,12200001,17300000,"gneg"],["p12",1261,1923,17300001,29300000,"gpos100"],["p11.2",1923,2477,29300001,38000000,"gneg"],["p11.1",2477,2620,38000001,39800000,"acen"],["q11.1",2620,2762,39800001,41600000,"acen"],["q11.2",2762,3222,41600001,51100000,"gneg"],["q21",3222,4442,51100001,68800000,"gpos100"],["q22",4442,5388,68800001,80300000,"gneg"],["q23",5388,6096,80300001,95300000,"gpos100"],["q24",6096,6644,95300001,104000000,"gneg"],["q25",6644,7351,104000001,117300000,"gpos100"],["q26",7351,8050,117300001,133797422,"gneg"]],"550":[["p15",0,456,1,6600000,"gneg"],["p14",456,841,6600001,12200000,"gpos75"],["p13",841,1261,12200001,17300000,"gneg"],["p12.3",1261,1658,17300001,22300000,"gpos100"],["p12.2",1658,1711,22300001,24300000,"gneg"],["p12.1",1711,1923,24300001,29300000,"gpos50"],["p11.2",1923,2477,29300001,38000000,"gneg"],["p11.1",2477,2620,38000001,39800000,"acen"],["q11.1",2620,2762,39800001,41600000,"acen"],["q11.2",2762,3222,41600001,51100000,"gneg"],["q21.1",3222,3832,51100001,59400000,"gpos100"],["q21.2",3832,3985,59400001,62800000,"gneg"],["q21.3",3985,4442,62800001,68800000,"gpos100"],["q22.1",4442,4845,68800001,73100000,"gneg"],["q22.2",4845,5047,73100001,75900000,"gpos50"],["q22.3",5047,5388,75900001,80300000,"gneg"],["q23.1",5388,5566,80300001,86100000,"gpos100"],["q23.2",5566,5667,86100001,87700000,"gneg"],["q23.3",5667,6096,87700001,95300000,"gpos100"],["q24.1",6096,6193,95300001,97500000,"gneg"],["q24.2",6193,6371,97500001,100100000,"gpos50"],["q24.3",6371,6644,100100001,104000000,"gneg"],["q25.1",6644,7017,104000001,110100000,"gpos100"],["q25.2",7017,7174,110100001,113100000,"gneg"],["q25.3",7174,7351,113100001,117300000,"gpos75"],["q26.1",7351,7722,117300001,125700000,"gneg"],["q26.2",7722,7852,125700001,128800000,"gpos50"],["q26.3",7852,8050,128800001,133797422,"gneg"]],"850":[["p15.3",0,229,1,3000000,"gneg"],["p15.2",229,329,3000001,3800000,"gpos25"],["p15.1",329,630,3800001,6600000,"gneg"],["p14",630,917,6600001,12200000,"gpos75"],["p13",917,1175,12200001,17300000,"gneg"],["p12.33",1175,1361,17300001,18300000,"gpos75"],["p12.32",1361,1432,18300001,18400000,"gneg"],["p12.31",1432,1604,18400001,22300000,"gpos75"],["p12.2",1604,1662,22300001,24300000,"gneg"],["p12.1",1662,1891,24300001,29300000,"gpos50"],["p11.23",1891,2063,29300001,31100000,"gneg"],["p11.22",2063,2235,31100001,34200000,"gpos25"],["p11.21",2235,2406,34200001,38000000,"gneg"],["p11.1",2406,2621,38000001,39800000,"acen"],["q11.1",2621,2850,39800001,41600000,"acen"],["q11.21",2850,3051,41600001,45500000,"gneg"],["q11.22",3051,3252,45500001,48600000,"gpos25"],["q11.23",3252,3409,48600001,51100000,"gneg"],["q21.1",3409,3753,51100001,59400000,"gpos100"],["q21.2",3753,3839,59400001,62800000,"gneg"],["q21.3",3839,4097,62800001,68800000,"gpos100"],["q22.1",4097,4469,68800001,73100000,"gneg"],["q22.2",4469,4655,73100001,75900000,"gpos50"],["q22.3",4655,4970,75900001,80300000,"gneg"],["q23.1",4970,5200,80300001,86100000,"gpos100"],["q23.2",5200,5331,86100001,87700000,"gneg"],["q23.31",5331,5558,87700001,91100000,"gpos75"],["q23.32",5558,5672,91100001,92300000,"gneg"],["q23.33",5672,5887,92300001,95300000,"gpos50"],["q24.1",5887,5973,95300001,97500000,"gneg"],["q24.2",5973,6131,97500001,100100000,"gpos50"],["q24.31",6131,6202,100100001,101200000,"gneg"],["q24.32",6202,6317,101200001,103100000,"gpos25"],["q24.33",6317,6374,103100001,104000000,"gneg"],["q25.1",6374,6646,104000001,110100000,"gpos100"],["q25.2",6646,6761,110100001,113100000,"gneg"],["q25.3",6761,6890,113100001,117300000,"gpos75"],["q26.11",6890,7090,117300001,119900000,"gneg"],["q26.12",7090,7219,119900001,121400000,"gpos50"],["q26.13",7219,7506,121400001,125700000,"gneg"],["q26.2",7506,7721,125700001,128800000,"gpos50"],["q26.3",7721,8050,128800001,133797422,"gneg"]]},"11":{"400":[["p15",0,1149,1,22000000,"gneg"],["p14",1149,1957,22000001,31000000,"gpos100"],["p13",1957,2262,31000001,36400000,"gneg"],["p12",2262,2639,36400001,43400000,"gpos100"],["p11.2",2639,3186,43400001,48800000,"gneg"],["p11.1",3186,3348,48800001,53400000,"acen"],["q11",3348,3478,53400001,55800000,"acen"],["q12",3478,3999,55800001,63600000,"gpos100"],["q13",3999,4842,63600001,77400000,"gneg"],["q14",4842,5599,77400001,93000000,"gpos100"],["q21",5599,5703,93000001,97400000,"gneg"],["q22",5703,6363,97400001,110600000,"gpos100"],["q23",6363,7311,110600001,121300000,"gneg"],["q24",7311,7658,121300001,130900000,"gpos100"],["q25",7658,7980,130900001,135086622,"gneg"]],"550":[["p15.5",0,212,1,2800000,"gneg"],["p15.4",212,425,2800001,11700000,"gpos50"],["p15.3",425,687,11700001,13800000,"gneg"],["p15.2",687,862,13800001,16900000,"gpos50"],["p15.1",862,1149,16900001,22000000,"gneg"],["p14",1149,1957,22000001,31000000,"gpos100"],["p13",1957,2262,31000001,36400000,"gneg"],["p12",2262,2639,36400001,43400000,"gpos100"],["p11.2",2639,3186,43400001,48800000,"gneg"],["p11.12",3186,3279,48800001,51000000,"gpos75"],["p11.11",3279,3348,51000001,53400000,"acen"],["q11",3348,3478,53400001,55800000,"acen"],["q12",3478,3999,55800001,63600000,"gpos100"],["q13.1",3999,4248,63600001,66100000,"gneg"],["q13.2",4248,4353,66100001,68700000,"gpos25"],["q13.3",4353,4584,68700001,70500000,"gneg"],["q13.4",4584,4708,70500001,75500000,"gpos50"],["q13.5",4708,4842,75500001,77400000,"gneg"],["q14.1",4842,5186,77400001,85900000,"gpos100"],["q14.2",5186,5324,85900001,88600000,"gneg"],["q14.3",5324,5599,88600001,93000000,"gpos100"],["q21",5599,5703,93000001,97400000,"gneg"],["q22.1",5703,5967,97400001,102300000,"gpos100"],["q22.2",5967,6114,102300001,103000000,"gneg"],["q22.3",6114,6363,103000001,110600000,"gpos100"],["q23.1",6363,6585,110600001,112700000,"gneg"],["q23.2",6585,6793,112700001,114600000,"gpos50"],["q23.3",6793,7311,114600001,121300000,"gneg"],["q24",7311,7658,121300001,130900000,"gpos100"],["q25",7658,7980,130900001,135086622,"gneg"]],"850":[["p15.5",0,230,1,2800000,"gneg"],["p15.4",230,461,2800001,11700000,"gpos50"],["p15.3",461,745,11700001,13800000,"gneg"],["p15.2",745,935,13800001,16900000,"gpos50"],["p15.1",935,1246,16900001,22000000,"gneg"],["p14.3",1246,1490,22000001,26200000,"gpos100"],["p14.2",1490,1545,26200001,27200000,"gneg"],["p14.1",1545,1775,27200001,31000000,"gpos75"],["p13",1775,2114,31000001,36400000,"gneg"],["p12",2114,2357,36400001,43400000,"gpos100"],["p11.2",2357,2655,43400001,48800000,"gneg"],["p11.12",2655,2872,48800001,51000000,"gpos75"],["p11.11",2872,3035,51000001,53400000,"acen"],["q11",3035,3197,53400001,55800000,"acen"],["q12.1",3197,3414,55800001,60100000,"gpos75"],["q12.2",3414,3550,60100001,61900000,"gneg"],["q12.3",3550,3685,61900001,63600000,"gpos25"],["q13.1",3685,4037,63600001,66100000,"gneg"],["q13.2",4037,4186,66100001,68700000,"gpos25"],["q13.3",4186,4512,68700001,70500000,"gneg"],["q13.4",4512,4688,70500001,75500000,"gpos50"],["q13.5",4688,4877,75500001,77400000,"gneg"],["q14.1",4877,5148,77400001,85900000,"gpos100"],["q14.2",5148,5257,85900001,88600000,"gneg"],["q14.3",5257,5474,88600001,93000000,"gpos100"],["q21",5474,5690,93000001,97400000,"gneg"],["q22.1",5690,5934,97400001,102300000,"gpos100"],["q22.2",5934,6070,102300001,103000000,"gneg"],["q22.3",6070,6300,103000001,110600000,"gpos100"],["q23.1",6300,6503,110600001,112700000,"gneg"],["q23.2",6503,6693,112700001,114600000,"gpos50"],["q23.3",6693,7167,114600001,121300000,"gneg"],["q24.1",7167,7316,121300001,124000000,"gpos50"],["q24.2",7316,7533,124000001,127900000,"gneg"],["q24.3",7533,7695,127900001,130900000,"gpos50"],["q25",7695,7980,130900001,135086622,"gneg"]]},"12":{"400":[["p13",0,760,1,14600000,"gneg"],["p12",760,1492,14600001,26300000,"gpos100"],["p11.2",1492,1922,26300001,33200000,"gneg"],["p11.1",1922,2105,33200001,35500000,"acen"],["q11",2105,2202,35500001,37800000,"acen"],["q12",2202,2697,37800001,46000000,"gpos100"],["q13",2697,3430,46000001,57700000,"gneg"],["q14",3430,3942,57700001,67300000,"gpos100"],["q15",3942,4286,67300001,71100000,"gneg"],["q21",4286,5293,71100001,92200000,"gpos100"],["q22",5293,5716,92200001,95800000,"gneg"],["q23",5716,6229,95800001,108600000,"gpos100"],["q24.1",6229,6714,108600001,113900000,"gneg"],["q24.2",6714,6917,113900001,120300000,"gpos100"],["q24.3",6917,7500,120300001,133275309,"gneg"]],"550":[["p13.3",0,522,1,10000000,"gneg"],["p13.2",522,665,10000001,12600000,"gpos75"],["p13.1",665,760,12600001,14600000,"gneg"],["p12.3",760,1092,14600001,19800000,"gpos100"],["p12.2",1092,1160,19800001,21100000,"gneg"],["p12.1",1160,1492,21100001,26300000,"gpos100"],["p11.2",1492,1922,26300001,33200000,"gneg"],["p11.1",1922,2105,33200001,35500000,"acen"],["q11",2105,2202,35500001,37800000,"acen"],["q12",2202,2697,37800001,46000000,"gpos100"],["q13.1",2697,3204,46000001,54500000,"gneg"],["q13.2",3204,3340,54500001,56200000,"gpos25"],["q13.3",3340,3430,56200001,57700000,"gneg"],["q14",3430,3942,57700001,67300000,"gpos100"],["q15",3942,4286,67300001,71100000,"gneg"],["q21.1",4286,4460,71100001,75300000,"gpos75"],["q21.2",4460,4664,75300001,79900000,"gneg"],["q21.3",4664,5293,79900001,92200000,"gpos100"],["q22",5293,5716,92200001,95800000,"gneg"],["q23",5716,6229,95800001,108600000,"gpos100"],["q24.1",6229,6714,108600001,113900000,"gneg"],["q24.2",6714,6917,113900001,120300000,"gpos100"],["q24.31",6917,7182,120300001,125400000,"gneg"],["q24.32",7182,7312,125400001,128700000,"gpos50"],["q24.33",7312,7500,128700001,133275309,"gneg"]],"850":[["p13.33",0,216,1,3200000,"gneg"],["p13.32",216,345,3200001,5300000,"gpos25"],["p13.31",345,633,5300001,10000000,"gneg"],["p13.2",633,806,10000001,12600000,"gpos75"],["p13.1",806,921,12600001,14600000,"gneg"],["p12.3",921,1195,14600001,19800000,"gpos100"],["p12.2",1195,1252,19800001,21100000,"gneg"],["p12.1",1252,1526,21100001,26300000,"gpos100"],["p11.23",1526,1655,26300001,27600000,"gneg"],["p11.22",1655,1785,27600001,30500000,"gpos50"],["p11.21",1785,1900,30500001,33200000,"gneg"],["p11.1",1900,2015,33200001,35500000,"acen"],["q11",2015,2116,35500001,37800000,"acen"],["q12",2116,2562,37800001,46000000,"gpos100"],["q13.11",2562,2706,46000001,48700000,"gneg"],["q13.12",2706,2850,48700001,51100000,"gpos25"],["q13.13",2850,3210,51100001,54500000,"gneg"],["q13.2",3210,3383,54500001,56200000,"gpos25"],["q13.3",3383,3498,56200001,57700000,"gneg"],["q14.1",3498,3700,57700001,62700000,"gpos75"],["q14.2",3700,3786,62700001,64700000,"gneg"],["q14.3",3786,3959,64700001,67300000,"gpos50"],["q15",3959,4203,67300001,71100000,"gneg"],["q21.1",4203,4362,71100001,75300000,"gpos75"],["q21.2",4362,4549,75300001,79900000,"gneg"],["q21.31",4549,4837,79900001,86300000,"gpos100"],["q21.32",4837,4894,86300001,88600000,"gneg"],["q21.33",4894,5125,88600001,92200000,"gpos100"],["q22",5125,5355,92200001,95800000,"gneg"],["q23.1",5355,5571,95800001,101200000,"gpos75"],["q23.2",5571,5643,101200001,103500000,"gneg"],["q23.3",5643,5873,103500001,108600000,"gpos50"],["q24.11",5873,6104,108600001,111300000,"gneg"],["q24.12",6104,6219,111300001,111900000,"gpos25"],["q24.13",6219,6334,111900001,113900000,"gneg"],["q24.21",6334,6478,113900001,116400000,"gpos50"],["q24.22",6478,6579,116400001,117700000,"gneg"],["q24.23",6579,6737,117700001,120300000,"gpos50"],["q24.31",6737,7083,120300001,125400000,"gneg"],["q24.32",7083,7255,125400001,128700000,"gpos50"],["q24.33",7255,7500,128700001,133275309,"gneg"]]},"13":{"400":[["p13",0,301,1,4600000,"gvar"],["p12",301,602,4600001,10100000,"stalk"],["p11.2",602,1004,10100001,16500000,"gvar"],["p11.1",1004,1204,16500001,17700000,"acen"],["q11",1204,1351,17700001,18900000,"acen"],["q12",1351,2019,18900001,31600000,"gneg"],["q13",2019,2295,31600001,39500000,"gpos100"],["q14",2295,3028,39500001,54700000,"gneg"],["q21",3028,4093,54700001,72800000,"gpos100"],["q22",4093,4625,72800001,78500000,"gneg"],["q31",4625,5280,78500001,94400000,"gpos100"],["q32",5280,5742,94400001,101100000,"gneg"],["q33",5742,6065,101100001,109600000,"gpos100"],["q34",6065,6510,109600001,114364328,"gneg"]],"550":[["p13",0,301,1,4600000,"gvar"],["p12",301,602,4600001,10100000,"stalk"],["p11.2",602,1004,10100001,16500000,"gvar"],["p11.1",1004,1204,16500001,17700000,"acen"],["q11",1204,1351,17700001,18900000,"acen"],["q12.1",1351,1735,18900001,27200000,"gneg"],["q12.2",1735,1821,27200001,28300000,"gpos25"],["q12.3",1821,2019,28300001,31600000,"gneg"],["q13",2019,2295,31600001,39500000,"gpos100"],["q14.1",2295,2690,39500001,46700000,"gneg"],["q14.2",2690,2841,46700001,50300000,"gpos50"],["q14.3",2841,3028,50300001,54700000,"gneg"],["q21.1",3028,3294,54700001,59000000,"gpos100"],["q21.2",3294,3444,59000001,61800000,"gneg"],["q21.3",3444,4093,61800001,72800000,"gpos100"],["q22",4093,4625,72800001,78500000,"gneg"],["q31",4625,5280,78500001,94400000,"gpos100"],["q32",5280,5742,94400001,101100000,"gneg"],["q33",5742,6065,101100001,109600000,"gpos100"],["q34",6065,6510,109600001,114364328,"gneg"]],"850":[["p13",0,282,1,4600000,"gvar"],["p12",282,620,4600001,10100000,"stalk"],["p11.2",620,1015,10100001,16500000,"gvar"],["p11.1",1015,1198,16500001,17700000,"acen"],["q11",1198,1353,17700001,18900000,"acen"],["q12.11",1353,1536,18900001,22600000,"gneg"],["q12.12",1536,1635,22600001,24900000,"gpos25"],["q12.13",1635,1790,24900001,27200000,"gneg"],["q12.2",1790,1888,27200001,28300000,"gpos25"],["q12.3",1888,2114,28300001,31600000,"gneg"],["q13.1",2114,2255,31600001,33400000,"gpos50"],["q13.2",2255,2367,33400001,34900000,"gneg"],["q13.3",2367,2649,34900001,39500000,"gpos75"],["q14.11",2649,2931,39500001,44600000,"gneg"],["q14.12",2931,3030,44600001,45200000,"gpos25"],["q14.13",3030,3128,45200001,46700000,"gneg"],["q14.2",3128,3311,46700001,50300000,"gpos50"],["q14.3",3311,3537,50300001,54700000,"gneg"],["q21.1",3537,3762,54700001,59000000,"gpos100"],["q21.2",3762,3889,59000001,61800000,"gneg"],["q21.31",3889,4058,61800001,65200000,"gpos75"],["q21.32",4058,4199,65200001,68100000,"gneg"],["q21.33",4199,4439,68100001,72800000,"gpos100"],["q22.1",4439,4565,72800001,74900000,"gneg"],["q22.2",4565,4678,74900001,76700000,"gpos50"],["q22.3",4678,4791,76700001,78500000,"gneg"],["q31.1",4791,5087,78500001,87100000,"gpos100"],["q31.2",5087,5171,87100001,89400000,"gneg"],["q31.3",5171,5355,89400001,94400000,"gpos100"],["q32.1",5355,5510,94400001,97500000,"gneg"],["q32.2",5510,5636,97500001,98700000,"gpos25"],["q32.3",5636,5834,98700001,101100000,"gneg"],["q33.1",5834,5989,101100001,104200000,"gpos100"],["q33.2",5989,6087,104200001,106400000,"gneg"],["q33.3",6087,6256,106400001,109600000,"gpos100"],["q34",6256,6510,109600001,114364328,"gneg"]]},"14":{"400":[["p13",0,305,1,3600000,"gvar"],["p12",305,611,3600001,8000000,"stalk"],["p11.2",611,1018,8000001,16100000,"gvar"],["p11.1",1018,1222,16100001,17200000,"acen"],["q11.1",1222,1421,17200001,18200000,"acen"],["q11.2",1421,1808,18200001,24100000,"gneg"],["q12",1808,2243,24100001,32900000,"gpos100"],["q13",2243,2633,32900001,37400000,"gneg"],["q21",2633,3441,37400001,50400000,"gpos100"],["q22",3441,3894,50400001,57600000,"gneg"],["q23",3894,4169,57600001,67400000,"gpos100"],["q24",4169,5084,67400001,78800000,"gneg"],["q31",5084,5599,78800001,89300000,"gpos100"],["q32",5599,6300,89300001,107043718,"gneg"]],"550":[["p13",0,305,1,3600000,"gvar"],["p12",305,611,3600001,8000000,"stalk"],["p11.2",611,1018,8000001,16100000,"gvar"],["p11.1",1018,1222,16100001,17200000,"acen"],["q11.1",1222,1421,17200001,18200000,"acen"],["q11.2",1421,1808,18200001,24100000,"gneg"],["q12",1808,2243,24100001,32900000,"gpos100"],["q13",2243,2633,32900001,37400000,"gneg"],["q21",2633,3441,37400001,50400000,"gpos100"],["q22",3441,3894,50400001,57600000,"gneg"],["q23",3894,4169,57600001,67400000,"gpos100"],["q24.1",4169,4587,67400001,69800000,"gneg"],["q24.2",4587,4786,69800001,73300000,"gpos50"],["q24.3",4786,5084,73300001,78800000,"gneg"],["q31",5084,5599,78800001,89300000,"gpos100"],["q32.1",5599,5798,89300001,95800000,"gneg"],["q32.2",5798,5881,95800001,100900000,"gpos50"],["q32.3",5881,6300,100900001,107043718,"gneg"]],"850":[["p13",0,284,1,3600000,"gvar"],["p12",284,624,3600001,8000000,"stalk"],["p11.2",624,1249,8000001,16100000,"gvar"],["p11.1",1249,1433,16100001,17200000,"acen"],["q11.1",1433,1660,17200001,18200000,"acen"],["q11.2",1660,2043,18200001,24100000,"gneg"],["q12",2043,2313,24100001,32900000,"gpos100"],["q13.1",2313,2469,32900001,34800000,"gneg"],["q13.2",2469,2582,34800001,36100000,"gpos50"],["q13.3",2582,2724,36100001,37400000,"gneg"],["q21.1",2724,2923,37400001,43000000,"gpos100"],["q21.2",2923,3008,43000001,46700000,"gneg"],["q21.3",3008,3264,46700001,50400000,"gpos100"],["q22.1",3264,3491,50400001,53600000,"gneg"],["q22.2",3491,3604,53600001,55000000,"gpos25"],["q22.3",3604,3718,55000001,57600000,"gneg"],["q23.1",3718,3916,57600001,61600000,"gpos75"],["q23.2",3916,4044,61600001,64300000,"gneg"],["q23.3",4044,4186,64300001,67400000,"gpos50"],["q24.1",4186,4484,67400001,69800000,"gneg"],["q24.2",4484,4626,69800001,73300000,"gpos50"],["q24.3",4626,4839,73300001,78800000,"gneg"],["q31.1",4839,5051,78800001,83100000,"gpos100"],["q31.2",5051,5094,83100001,84400000,"gneg"],["q31.3",5094,5349,84400001,89300000,"gpos100"],["q32.11",5349,5406,89300001,91400000,"gneg"],["q32.12",5406,5505,91400001,94200000,"gpos25"],["q32.13",5505,5619,94200001,95800000,"gneg"],["q32.2",5619,5732,95800001,100900000,"gpos50"],["q32.31",5732,5903,100900001,102700000,"gneg"],["q32.32",5903,6016,102700001,103500000,"gpos50"],["q32.33",6016,6300,103500001,107043718,"gneg"]]},"15":{"400":[["p13",0,319,1,4200000,"gvar"],["p12",319,637,4200001,9700000,"stalk"],["p11.2",637,1062,9700001,17500000,"gvar"],["p11.1",1062,1275,17500001,19000000,"acen"],["q11.1",1275,1498,19000001,20500000,"acen"],["q11.2",1498,1657,20500001,25500000,"gneg"],["q12",1657,1862,25500001,27800000,"gpos50"],["q13",1862,2043,27800001,33400000,"gneg"],["q14",2043,2411,33400001,39800000,"gpos75"],["q15",2411,2832,39800001,44500000,"gneg"],["q21",2832,3600,44500001,58800000,"gpos100"],["q22",3600,4203,58800001,67200000,"gneg"],["q23",4203,4471,67200001,72400000,"gpos25"],["q24",4471,5002,72400001,78000000,"gneg"],["q25",5002,5381,78000001,88500000,"gpos100"],["q26",5381,6070,88500001,101991189,"gneg"]],"550":[["p13",0,319,1,4200000,"gvar"],["p12",319,637,4200001,9700000,"stalk"],["p11.2",637,1062,9700001,17500000,"gvar"],["p11.1",1062,1275,17500001,19000000,"acen"],["q11.1",1275,1498,19000001,20500000,"acen"],["q11.2",1498,1657,20500001,25500000,"gneg"],["q12",1657,1862,25500001,27800000,"gpos50"],["q13",1862,2043,27800001,33400000,"gneg"],["q14",2043,2411,33400001,39800000,"gpos75"],["q15",2411,2832,39800001,44500000,"gneg"],["q21.1",2832,3121,44500001,49200000,"gpos75"],["q21.2",3121,3312,49200001,52600000,"gneg"],["q21.3",3312,3600,52600001,58800000,"gpos75"],["q22.1",3600,3724,58800001,59000000,"gneg"],["q22.2",3724,3820,59000001,63400000,"gpos25"],["q22.3",3820,4203,63400001,67200000,"gneg"],["q23",4203,4471,67200001,72400000,"gpos25"],["q24",4471,5002,72400001,78000000,"gneg"],["q25",5002,5381,78000001,88500000,"gpos100"],["q26.1",5381,5650,88500001,93800000,"gneg"],["q26.2",5650,5861,93800001,98000000,"gpos50"],["q26.3",5861,6070,98000001,101991189,"gneg"]],"850":[["p13",0,270,1,4200000,"gvar"],["p12",270,631,4200001,9700000,"stalk"],["p11.2",631,1142,9700001,17500000,"gvar"],["p11.1",1142,1382,17500001,19000000,"acen"],["q11.1",1382,1487,19000001,20500000,"acen"],["q11.2",1487,1773,20500001,25500000,"gneg"],["q12",1773,1968,25500001,27800000,"gpos50"],["q13.1",1968,2164,27800001,30000000,"gneg"],["q13.2",2164,2284,30000001,30900000,"gpos50"],["q13.3",2284,2524,30900001,33400000,"gneg"],["q14",2524,2765,33400001,39800000,"gpos75"],["q15.1",2765,2975,39800001,42500000,"gneg"],["q15.2",2975,3065,42500001,43300000,"gpos25"],["q15.3",3065,3245,43300001,44500000,"gneg"],["q21.1",3245,3471,44500001,49200000,"gpos75"],["q21.2",3471,3621,49200001,52600000,"gneg"],["q21.3",3621,3846,52600001,58800000,"gpos75"],["q22.1",3846,3982,58800001,59000000,"gneg"],["q22.2",3982,4087,59000001,63400000,"gpos25"],["q22.31",4087,4252,63400001,66900000,"gneg"],["q22.32",4252,4357,66900001,67000000,"gpos25"],["q22.33",4357,4507,67000001,67200000,"gneg"],["q23",4507,4613,67200001,72400000,"gpos25"],["q24.1",4613,4748,72400001,74900000,"gneg"],["q24.2",4748,4808,74900001,76300000,"gpos25"],["q24.3",4808,4928,76300001,78000000,"gneg"],["q25.1",4928,5048,78000001,81400000,"gpos50"],["q25.2",5048,5169,81400001,84700000,"gneg"],["q25.3",5169,5379,84700001,88500000,"gpos50"],["q26.1",5379,5649,88500001,93800000,"gneg"],["q26.2",5649,5860,93800001,98000000,"gpos50"],["q26.3",5860,6070,98000001,101991189,"gneg"]]},"16":{"400":[["p13.3",0,410,1,7800000,"gneg"],["p13.2",410,638,7800001,10400000,"gpos50"],["p13.1",638,1012,10400001,16700000,"gneg"],["p12",1012,1522,16700001,28500000,"gpos100"],["p11.2",1522,2060,28500001,35300000,"gneg"],["p11.1",2060,2187,35300001,36800000,"acen"],["q11.1",2187,2310,36800001,38400000,"acen"],["q11.2",2310,2811,38400001,47000000,"gvar"],["q12.1",2811,2969,47000001,52600000,"gneg"],["q12.2",2969,3118,52600001,56000000,"gpos50"],["q13",3118,3364,56000001,57300000,"gneg"],["q21",3364,3750,57300001,66600000,"gpos100"],["q22",3750,4189,66600001,74100000,"gneg"],["q23",4189,4655,74100001,84100000,"gpos100"],["q24",4655,5120,84100001,90338345,"gneg"]],"550":[["p13.3",0,410,1,7800000,"gneg"],["p13.2",410,638,7800001,10400000,"gpos50"],["p13.1",638,1012,10400001,16700000,"gneg"],["p12",1012,1522,16700001,28500000,"gpos100"],["p11.2",1522,2060,28500001,35300000,"gneg"],["p11.1",2060,2187,35300001,36800000,"acen"],["q11.1",2187,2310,36800001,38400000,"acen"],["q11.2",2310,2811,38400001,47000000,"gvar"],["q12.1",2811,2969,47000001,52600000,"gneg"],["q12.2",2969,3118,52600001,56000000,"gpos50"],["q13",3118,3364,56000001,57300000,"gneg"],["q21",3364,3750,57300001,66600000,"gpos100"],["q22",3750,4189,66600001,74100000,"gneg"],["q23",4189,4655,74100001,84100000,"gpos100"],["q24",4655,5120,84100001,90338345,"gneg"]],"850":[["p13.3",0,352,1,7800000,"gneg"],["p13.2",352,596,7800001,10400000,"gpos50"],["p13.13",596,813,10400001,12500000,"gneg"],["p13.12",813,948,12500001,14700000,"gpos50"],["p13.11",948,1070,14700001,16700000,"gneg"],["p12.3",1070,1246,16700001,21200000,"gpos50"],["p12.2",1246,1409,21200001,24200000,"gneg"],["p12.1",1409,1558,24200001,28500000,"gpos50"],["p11.2",1558,1856,28500001,35300000,"gneg"],["p11.1",1856,2045,35300001,36800000,"acen"],["q11.1",2045,2194,36800001,38400000,"acen"],["q11.2",2194,2709,38400001,47000000,"gvar"],["q12.1",2709,2953,47000001,52600000,"gneg"],["q12.2",2953,3142,52600001,56000000,"gpos50"],["q13",3142,3346,56000001,57300000,"gneg"],["q21",3346,3657,57300001,66600000,"gpos100"],["q22.1",3657,4023,66600001,70800000,"gneg"],["q22.2",4023,4118,70800001,72800000,"gpos50"],["q22.3",4118,4294,72800001,74100000,"gneg"],["q23.1",4294,4551,74100001,79200000,"gpos75"],["q23.2",4551,4659,79200001,81600000,"gneg"],["q23.3",4659,4768,81600001,84100000,"gpos50"],["q24.1",4768,4930,84100001,87000000,"gneg"],["q24.2",4930,5025,87000001,88700000,"gpos25"],["q24.3",5025,5120,88700001,90338345,"gneg"]]},"17":{"400":[["p13",0,602,1,10800000,"gneg"],["p12",602,1051,10800001,16100000,"gpos75"],["p11.2",1051,1492,16100001,22700000,"gneg"],["p11.1",1492,1618,22700001,25100000,"acen"],["q11.1",1618,1762,25100001,27400000,"acen"],["q11.2",1762,2050,27400001,33500000,"gneg"],["q12",2050,2383,33500001,39800000,"gpos50"],["q21",2383,3149,39800001,52100000,"gneg"],["q22",3149,3680,52100001,59500000,"gpos75"],["q23",3680,3950,59500001,64600000,"gneg"],["q24",3950,4441,64600001,72900000,"gpos100"],["q25",4441,4950,72900001,83257441,"gneg"]],"550":[["p13",0,602,1,10800000,"gneg"],["p12",602,1051,10800001,16100000,"gpos75"],["p11.2",1051,1492,16100001,22700000,"gneg"],["p11.1",1492,1618,22700001,25100000,"acen"],["q11.1",1618,1762,25100001,27400000,"acen"],["q11.2",1762,2050,27400001,33500000,"gneg"],["q12",2050,2383,33500001,39800000,"gpos50"],["q21.1",2383,2554,39800001,40200000,"gneg"],["q21.2",2554,2669,40200001,42800000,"gpos25"],["q21.3",2669,3149,42800001,52100000,"gneg"],["q22",3149,3680,52100001,59500000,"gpos75"],["q23",3680,3950,59500001,64600000,"gneg"],["q24",3950,4441,64600001,72900000,"gpos100"],["q25",4441,4950,72900001,83257441,"gneg"]],"850":[["p13.3",0,385,1,3400000,"gneg"],["p13.2",385,550,3400001,6500000,"gpos50"],["p13.1",550,784,6500001,10800000,"gneg"],["p12",784,990,10800001,16100000,"gpos75"],["p11.2",990,1499,16100001,22700000,"gneg"],["p11.1",1499,1664,22700001,25100000,"acen"],["q11.1",1664,1815,25100001,27400000,"acen"],["q11.2",1815,2104,27400001,33500000,"gneg"],["q12",2104,2255,33500001,39800000,"gpos50"],["q21.1",2255,2461,39800001,40200000,"gneg"],["q21.2",2461,2599,40200001,42800000,"gpos25"],["q21.31",2599,2874,42800001,46800000,"gneg"],["q21.32",2874,3025,46800001,49300000,"gpos25"],["q21.33",3025,3176,49300001,52100000,"gneg"],["q22",3176,3383,52100001,59500000,"gpos75"],["q23.1",3383,3451,59500001,60200000,"gneg"],["q23.2",3451,3658,60200001,63100000,"gpos75"],["q23.3",3658,3781,63100001,64600000,"gneg"],["q24.1",3781,3850,64600001,66200000,"gpos50"],["q24.2",3850,4001,66200001,69100000,"gneg"],["q24.3",4001,4166,69100001,72900000,"gpos75"],["q25.1",4166,4400,72900001,76800000,"gneg"],["q25.2",4400,4510,76800001,77200000,"gpos25"],["q25.3",4510,4950,77200001,83257441,"gneg"]]},"18":{"400":[["p11.3",0,623,1,7200000,"gpos100"],["p11.2",623,1190,7200001,15400000,"gneg"],["p11.1",1190,1301,15400001,18500000,"acen"],["q11.1",1301,1433,18500001,21500000,"acen"],["q11.2",1433,1862,21500001,27500000,"gneg"],["q12",1862,2721,27500001,45900000,"gpos100"],["q21",2721,3449,45900001,63900000,"gneg"],["q22",3449,4229,63900001,75400000,"gpos100"],["q23",4229,4650,75400001,80373285,"gneg"]],"550":[["p11.32",0,231,1,2900000,"gneg"],["p11.31",231,623,2900001,7200000,"gpos50"],["p11.2",623,1190,7200001,15400000,"gneg"],["p11.1",1190,1301,15400001,18500000,"acen"],["q11.1",1301,1433,18500001,21500000,"acen"],["q11.2",1433,1862,21500001,27500000,"gneg"],["q12.1",1862,2223,27500001,35100000,"gpos100"],["q12.2",2223,2419,35100001,39500000,"gneg"],["q12.3",2419,2721,39500001,45900000,"gpos75"],["q21.1",2721,3010,45900001,50700000,"gneg"],["q21.2",3010,3183,50700001,56200000,"gpos75"],["q21.3",3183,3449,56200001,63900000,"gneg"],["q22",3449,4229,63900001,75400000,"gpos100"],["q23",4229,4650,75400001,80373285,"gneg"]],"850":[["p11.32",0,159,1,2900000,"gneg"],["p11.31",159,430,2900001,7200000,"gpos50"],["p11.23",430,526,7200001,8500000,"gneg"],["p11.22",526,685,8500001,10900000,"gpos25"],["p11.21",685,1035,10900001,15400000,"gneg"],["p11.1",1035,1290,15400001,18500000,"acen"],["q11.1",1290,1561,18500001,21500000,"acen"],["q11.2",1561,1847,21500001,27500000,"gneg"],["q12.1",1847,2229,27500001,35100000,"gpos100"],["q12.2",2229,2436,35100001,39500000,"gneg"],["q12.3",2436,2755,39500001,45900000,"gpos75"],["q21.1",2755,3153,45900001,50700000,"gneg"],["q21.2",3153,3392,50700001,56200000,"gpos75"],["q21.31",3392,3519,56200001,58600000,"gneg"],["q21.32",3519,3663,58600001,61300000,"gpos50"],["q21.33",3663,3758,61300001,63900000,"gneg"],["q22.1",3758,4077,63900001,69100000,"gpos100"],["q22.2",4077,4204,69100001,71000000,"gneg"],["q22.3",4204,4411,71000001,75400000,"gpos25"],["q23",4411,4650,75400001,80373285,"gneg"]]},"19":{"400":[["p13.3",0,668,1,6900000,"gneg"],["p13.2",668,1069,6900001,12600000,"gpos25"],["p13.1",1069,1461,12600001,19900000,"gneg"],["p12",1461,1746,19900001,24200000,"gvar"],["p11",1746,1880,24200001,26200000,"acen"],["q11",1880,2019,26200001,28100000,"acen"],["q12",2019,2342,28100001,31900000,"gvar"],["q13.1",2342,2943,31900001,38200000,"gneg"],["q13.2",2943,3344,38200001,42900000,"gpos100"],["q13.3",3344,3710,42900001,50900000,"gneg"],["q13.4",3710,4120,50900001,58617616,"gpos100"]],"550":[["p13.3",0,668,1,6900000,"gneg"],["p13.2",668,1069,6900001,12600000,"gpos25"],["p13.1",1069,1461,12600001,19900000,"gneg"],["p12",1461,1746,19900001,24200000,"gvar"],["p11",1746,1880,24200001,26200000,"acen"],["q11",1880,2019,26200001,28100000,"acen"],["q12",2019,2342,28100001,31900000,"gvar"],["q13.1",2342,2943,31900001,38200000,"gneg"],["q13.2",2943,3344,38200001,42900000,"gpos100"],["q13.3",3344,3710,42900001,50900000,"gneg"],["q13.4",3710,4120,50900001,58617616,"gpos100"]],"850":[["p13.3",0,578,1,6900000,"gneg"],["p13.2",578,870,6900001,12600000,"gpos25"],["p13.13",870,1034,12600001,13800000,"gneg"],["p13.12",1034,1216,13800001,16100000,"gpos25"],["p13.11",1216,1581,16100001,19900000,"gneg"],["p12",1581,1809,19900001,24200000,"gvar"],["p11",1809,1992,24200001,26200000,"acen"],["q11",1992,2159,26200001,28100000,"acen"],["q12",2159,2372,28100001,31900000,"gvar"],["q13.11",2372,2569,31900001,35100000,"gneg"],["q13.12",2569,2737,35100001,37800000,"gpos25"],["q13.13",2737,2949,37800001,38200000,"gneg"],["q13.2",2949,3101,38200001,42900000,"gpos25"],["q13.31",3101,3193,42900001,44700000,"gneg"],["q13.32",3193,3390,44700001,47500000,"gpos25"],["q13.33",3390,3649,47500001,50900000,"gneg"],["q13.41",3649,3770,50900001,53100000,"gpos25"],["q13.42",3770,3938,53100001,55800000,"gneg"],["q13.43",3938,4120,55800001,58617616,"gpos25"]]},"20":{"400":[["p13",0,471,1,5100000,"gneg"],["p12",471,1005,5100001,17900000,"gpos100"],["p11.2",1005,1593,17900001,25700000,"gneg"],["p11.1",1593,1729,25700001,28100000,"acen"],["q11.1",1729,1870,28100001,30400000,"acen"],["q11.2",1870,2362,30400001,39000000,"gneg"],["q12",2362,2732,39000001,43100000,"gpos75"],["q13.1",2732,3075,43100001,51200000,"gneg"],["q13.2",3075,3409,51200001,56400000,"gpos75"],["q13.3",3409,3770,56400001,64444167,"gneg"]],"550":[["p13",0,471,1,5100000,"gneg"],["p12",471,1005,5100001,17900000,"gpos100"],["p11.2",1005,1593,17900001,25700000,"gneg"],["p11.1",1593,1729,25700001,28100000,"acen"],["q11.1",1729,1870,28100001,30400000,"acen"],["q11.2",1870,2362,30400001,39000000,"gneg"],["q12",2362,2732,39000001,43100000,"gpos75"],["q13.1",2732,3075,43100001,51200000,"gneg"],["q13.2",3075,3409,51200001,56400000,"gpos75"],["q13.3",3409,3770,56400001,64444167,"gneg"]],"850":[["p13",0,333,1,5100000,"gneg"],["p12.3",333,513,5100001,9200000,"gpos75"],["p12.2",513,624,9200001,12000000,"gneg"],["p12.1",624,915,12000001,17900000,"gpos75"],["p11.23",915,1164,17900001,21300000,"gneg"],["p11.22",1164,1275,21300001,22300000,"gpos25"],["p11.21",1275,1441,22300001,25700000,"gneg"],["p11.1",1441,1608,25700001,28100000,"acen"],["q11.1",1608,1774,28100001,30400000,"acen"],["q11.21",1774,1927,30400001,33500000,"gneg"],["q11.22",1927,2051,33500001,35800000,"gpos25"],["q11.23",2051,2232,35800001,39000000,"gneg"],["q12",2232,2439,39000001,43100000,"gpos75"],["q13.11",2439,2578,43100001,43500000,"gneg"],["q13.12",2578,2758,43500001,47800000,"gpos25"],["q13.13",2758,3077,47800001,51200000,"gneg"],["q13.2",3077,3299,51200001,56400000,"gpos75"],["q13.31",3299,3382,56400001,57800000,"gneg"],["q13.32",3382,3493,57800001,59700000,"gpos50"],["q13.33",3493,3770,59700001,64444167,"gneg"]]},"21":{"400":[["p13",0,301,1,3100000,"gvar"],["p12",301,601,3100001,7000000,"stalk"],["p11.2",601,1002,7000001,10900000,"gvar"],["p11.1",1002,1203,10900001,12000000,"acen"],["q11.1",1203,1341,12000001,13000000,"acen"],["q11.2",1341,1514,13000001,15000000,"gneg"],["q21",1514,2204,15000001,30200000,"gpos100"],["q22",2204,3200,30200001,46709983,"gneg"]],"550":[["p13",0,301,1,3100000,"gvar"],["p12",301,601,3100001,7000000,"stalk"],["p11.2",601,1002,7000001,10900000,"gvar"],["p11.1",1002,1203,10900001,12000000,"acen"],["q11.1",1203,1341,12000001,13000000,"acen"],["q11.2",1341,1514,13000001,15000000,"gneg"],["q21",1514,2204,15000001,30200000,"gpos100"],["q22.1",2204,2631,30200001,38300000,"gneg"],["q22.2",2631,2808,38300001,41200000,"gpos50"],["q22.3",2808,3200,41200001,46709983,"gneg"]],"850":[["p13",0,311,1,3100000,"gvar"],["p12",311,683,3100001,7000000,"stalk"],["p11.2",683,1056,7000001,10900000,"gvar"],["p11.1",1056,1274,10900001,12000000,"acen"],["q11.1",1274,1367,12000001,13000000,"acen"],["q11.2",1367,1584,13000001,15000000,"gneg"],["q21.1",1584,2019,15000001,22600000,"gpos100"],["q21.2",2019,2144,22600001,25500000,"gneg"],["q21.3",2144,2330,25500001,30200000,"gpos75"],["q22.11",2330,2485,30200001,34400000,"gneg"],["q22.12",2485,2610,34400001,36400000,"gpos50"],["q22.13",2610,2703,36400001,38300000,"gneg"],["q22.2",2703,2858,38300001,41200000,"gpos50"],["q22.3",2858,3200,41200001,46709983,"gneg"]]},"22":{"400":[["p13",0,308,1,4300000,"gvar"],["p12",308,604,4300001,9400000,"stalk"],["p11.2",604,1093,9400001,13700000,"gvar"],["p11.1",1093,1232,13700001,15000000,"acen"],["q11.1",1232,1371,15000001,17400000,"acen"],["q11.2",1371,1887,17400001,25500000,"gneg"],["q12",1887,2287,25500001,37200000,"gpos100"],["q13",2287,3400,37200001,50818468,"gneg"]],"550":[["p13",0,308,1,4300000,"gvar"],["p12",308,604,4300001,9400000,"stalk"],["p11.2",604,1093,9400001,13700000,"gvar"],["p11.1",1093,1232,13700001,15000000,"acen"],["q11.1",1232,1371,15000001,17400000,"acen"],["q11.2",1371,1887,17400001,25500000,"gneg"],["q12.1",1887,2000,25500001,29200000,"gpos50"],["q12.2",2000,2123,29200001,31800000,"gneg"],["q12.3",2123,2287,31800001,37200000,"gpos50"],["q13.1",2287,2596,37200001,40600000,"gneg"],["q13.2",2596,2782,40600001,43800000,"gpos50"],["q13.3",2782,3400,43800001,50818468,"gneg"]],"850":[["p13",0,260,1,4300000,"gvar"],["p12",260,576,4300001,9400000,"stalk"],["p11.2",576,836,9400001,13700000,"gvar"],["p11.1",836,1015,13700001,15000000,"acen"],["q11.1",1015,1234,15000001,17400000,"acen"],["q11.21",1234,1563,17400001,21700000,"gneg"],["q11.22",1563,1700,21700001,23100000,"gpos25"],["q11.23",1700,1878,23100001,25500000,"gneg"],["q12.1",1878,2029,25500001,29200000,"gpos50"],["q12.2",2029,2194,29200001,31800000,"gneg"],["q12.3",2194,2413,31800001,37200000,"gpos50"],["q13.1",2413,2687,37200001,40600000,"gneg"],["q13.2",2687,2852,40600001,43800000,"gpos50"],["q13.31",2852,3181,43800001,48100000,"gneg"],["q13.32",3181,3290,48100001,49100000,"gpos50"],["q13.33",3290,3400,49100001,50818468,"gneg"]]},"X":{"400":[["p22.3",0,428,1,9600000,"gneg"],["p22.2",428,642,9600001,17400000,"gpos100"],["p22.1",642,1131,17400001,24900000,"gneg"],["p21",1131,1977,24900001,37800000,"gpos100"],["p11.4",1977,2252,37800001,42500000,"gneg"],["p11.3",2252,2446,42500001,47600000,"gpos75"],["p11.2",2446,3108,47600001,58100000,"gneg"],["p11.1",3108,3241,58100001,61000000,"acen"],["q11",3241,3341,61000001,65400000,"acen"],["q12",3341,3672,65400001,68500000,"gpos50"],["q13",3672,4405,68500001,76800000,"gneg"],["q21",4405,5559,76800001,99100000,"gpos100"],["q22",5559,5951,99100001,109400000,"gneg"],["q23",5951,6352,109400001,117400000,"gpos75"],["q24",6352,6653,117400001,121800000,"gneg"],["q25",6653,7195,121800001,129500000,"gpos100"],["q26",7195,7647,129500001,138900000,"gneg"],["q27",7647,8168,138900001,148000000,"gpos100"],["q28",8168,8610,148000001,156040895,"gneg"]],"550":[["p22.3",0,428,1,9600000,"gneg"],["p22.2",428,642,9600001,17400000,"gpos100"],["p22.1",642,1131,17400001,24900000,"gneg"],["p21.3",1131,1454,24900001,29300000,"gpos100"],["p21.2",1454,1575,29300001,31500000,"gneg"],["p21.1",1575,1977,31500001,37800000,"gpos100"],["p11.4",1977,2252,37800001,42500000,"gneg"],["p11.3",2252,2446,42500001,47600000,"gpos75"],["p11.23",2446,2815,47600001,50100000,"gneg"],["p11.22",2815,3021,50100001,54800000,"gpos25"],["p11.21",3021,3108,54800001,58100000,"gneg"],["p11.1",3108,3241,58100001,61000000,"acen"],["q11",3241,3341,61000001,65400000,"acen"],["q12",3341,3672,65400001,68500000,"gpos50"],["q13",3672,4405,68500001,76800000,"gneg"],["q21.1",4405,4740,76800001,85400000,"gpos100"],["q21.2",4740,4830,85400001,87000000,"gneg"],["q21.3",4830,5559,87000001,99100000,"gpos100"],["q22.1",5559,5730,99100001,103300000,"gneg"],["q22.2",5730,5820,103300001,104500000,"gpos50"],["q22.3",5820,5951,104500001,109400000,"gneg"],["q23",5951,6352,109400001,117400000,"gpos75"],["q24",6352,6653,117400001,121800000,"gneg"],["q25",6653,7195,121800001,129500000,"gpos100"],["q26",7195,7647,129500001,138900000,"gneg"],["q27",7647,8168,138900001,148000000,"gpos100"],["q28",8168,8610,148000001,156040895,"gneg"]],"850":[["p22.33",0,323,1,4400000,"gneg"],["p22.32",323,504,4400001,6100000,"gpos50"],["p22.31",504,866,6100001,9600000,"gneg"],["p22.2",866,1034,9600001,17400000,"gpos50"],["p22.13",1034,1345,17400001,19200000,"gneg"],["p22.12",1345,1448,19200001,21900000,"gpos50"],["p22.11",1448,1577,21900001,24900000,"gneg"],["p21.3",1577,1784,24900001,29300000,"gpos100"],["p21.2",1784,1862,29300001,31500000,"gneg"],["p21.1",1862,2120,31500001,37800000,"gpos100"],["p11.4",2120,2430,37800001,42500000,"gneg"],["p11.3",2430,2624,42500001,47600000,"gpos75"],["p11.23",2624,2948,47600001,50100000,"gneg"],["p11.22",2948,3129,50100001,54800000,"gpos25"],["p11.21",3129,3206,54800001,58100000,"gneg"],["p11.1",3206,3297,58100001,61000000,"acen"],["q11.1",3297,3491,61000001,63800000,"acen"],["q11.2",3491,3620,63800001,65400000,"gneg"],["q12",3620,3827,65400001,68500000,"gpos50"],["q13.1",3827,4137,68500001,73000000,"gneg"],["q13.2",4137,4292,73000001,74700000,"gpos50"],["q13.3",4292,4447,74700001,76800000,"gneg"],["q21.1",4447,4732,76800001,85400000,"gpos100"],["q21.2",4732,4809,85400001,87000000,"gneg"],["q21.31",4809,5107,87000001,92700000,"gpos100"],["q21.32",5107,5184,92700001,94300000,"gneg"],["q21.33",5184,5430,94300001,99100000,"gpos75"],["q22.1",5430,5701,99100001,103300000,"gneg"],["q22.2",5701,5843,103300001,104500000,"gpos50"],["q22.3",5843,6050,104500001,109400000,"gneg"],["q23",6050,6322,109400001,117400000,"gpos75"],["q24",6322,6619,117400001,121800000,"gneg"],["q25",6619,7059,121800001,129500000,"gpos100"],["q26.1",7059,7253,129500001,131300000,"gneg"],["q26.2",7253,7395,131300001,134500000,"gpos25"],["q26.3",7395,7602,134500001,138900000,"gneg"],["q27.1",7602,7808,138900001,141200000,"gpos75"],["q27.2",7808,7886,141200001,143000000,"gneg"],["q27.3",7886,8145,143000001,148000000,"gpos100"],["q28",8145,8610,148000001,156040895,"gneg"]]},"Y":{"400":[["p11.3",0,286,1,600000,"gpos100"],["p11.2",286,751,600001,10300000,"gneg"],["p11.1",751,883,10300001,10400000,"acen"],["q11.1",883,1002,10400001,10600000,"acen"],["q11.2",1002,2169,10600001,26600000,"gneg"],["q12",2169,3650,26600001,57227415,"gvar"]],"550":[["p11.3",0,286,1,600000,"gpos100"],["p11.2",286,751,600001,10300000,"gneg"],["p11.1",751,883,10300001,10400000,"acen"],["q11.1",883,1002,10400001,10600000,"acen"],["q11.21",1002,1144,10600001,12400000,"gneg"],["q11.221",1144,1485,12400001,17100000,"gpos50"],["q11.222",1485,1666,17100001,19600000,"gneg"],["q11.223",1666,1968,19600001,23800000,"gpos50"],["q11.23",1968,2169,23800001,26600000,"gneg"],["q12",2169,3650,26600001,57227415,"gvar"]],"850":[["p11.32",0,149,1,300000,"gneg"],["p11.31",149,298,300001,600000,"gpos50"],["p11.2",298,1043,600001,10300000,"gneg"],["p11.1",1043,1117,10300001,10400000,"acen"],["q11.1",1117,1266,10400001,10600000,"acen"],["q11.21",1266,1397,10600001,12400000,"gneg"],["q11.221",1397,1713,12400001,17100000,"gpos50"],["q11.222",1713,1881,17100001,19600000,"gneg"],["q11.223",1881,2160,19600001,23800000,"gpos50"],["q11.23",2160,2346,23800001,26600000,"gneg"],["q12",2346,3650,26600001,57227415,"gvar"]]}};
-const ORDER = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","X","Y"];
-const GROUPS = [
-  [["A",["1","2","3"]],["B",["4","5"]]],
-  [["C",["6","7","8","9","10","11","12","X"]]],
-  [["D",["13","14","15"]],["E",["16","17","18"]],["F",["19","20"]],["G",["21","22","Y"]]]
-];
 const GENES = {"1":[{"n":"MUTYH","bp":45329163,"end":45340893,"band":"1p34.1","note":"MUTYH-associated polyposis"},{"n":"NRAS","bp":114704469,"end":114716771,"band":"1p13.2","note":"RAS oncogene"},{"n":"CKS1B","bp":154974653,"end":154979251,"band":"1q21.3","note":"1q21 gain in myeloma"}],"2":[{"n":"MYCN","bp":15940550,"end":15947007,"band":"2p24.3","note":"Amplified in neuroblastoma"},{"n":"ALK","bp":29192774,"end":29921586,"band":"2p23.2–p23.1","note":"ALK fusions (ALCL, lung)"},{"n":"MSH2","bp":47403067,"end":47663146,"band":"2p21–p16.3","note":"Lynch syndrome"}],"3":[{"n":"VHL","bp":10141778,"end":10153667,"band":"3p25.3","note":"Von Hippel–Lindau"},{"n":"MLH1","bp":36993226,"end":37050896,"band":"3p22.2","note":"Lynch syndrome"},{"n":"MECOM","bp":169083499,"end":169663775,"band":"3q26.2","note":"inv(3)/t(3;3) AML"}],"4":[{"n":"FGFR3","bp":1793293,"end":1808872,"band":"4p16.3","note":"Achondroplasia; t(4;14) myeloma"},{"n":"KIT","bp":54657267,"end":54740783,"band":"4q12","note":"GIST, mastocytosis"},{"n":"TET2","bp":105145875,"end":105279816,"band":"4q24","note":"Myeloid neoplasms"}],"5":[{"n":"APC","bp":112707518,"end":112846239,"band":"5q22.2","note":"Familial adenomatous polyposis"},{"n":"NPM1","bp":171387116,"end":171411810,"band":"5q35.1","note":"Mutated in AML"},{"n":"NSD1","bp":177131830,"end":177300213,"band":"5q35.3","note":"Sotos syndrome"}],"6":[{"n":"DEK","bp":18223860,"end":18264548,"band":"6p22.3","note":"t(6;9) DEK::NUP214 AML"},{"n":"HLA-A","bp":29941260,"end":29949572,"band":"6p22.1","note":"MHC class I region"},{"n":"MYB","bp":135181308,"end":135219173,"band":"6q23.3","note":"MYB oncogene"}],"7":[{"n":"EGFR","bp":55019017,"end":55211628,"band":"7p11.2","note":"Lung cancer, glioma"},{"n":"ELN","bp":74027789,"end":74069907,"band":"7q11.23","note":"Williams–Beuren region"},{"n":"CFTR","bp":117287120,"end":117715971,"band":"7q31.2–q31.31","note":"Cystic fibrosis"}],"8":[{"n":"FGFR1","bp":38400215,"end":38468834,"band":"8p11.23","note":"8p11 myeloid/lymphoid neoplasms"},{"n":"RUNX1T1","bp":91954972,"end":92103286,"band":"8q21.3","note":"t(8;21) RUNX1::RUNX1T1 AML"},{"n":"MYC","bp":127735434,"end":127742951,"band":"8q24.21","note":"t(8;14) Burkitt lymphoma"}],"9":[{"n":"JAK2","bp":4984390,"end":5129948,"band":"9p24.1","note":"V617F in MPN"},{"n":"CDKN2A","bp":21967752,"end":21995301,"band":"9p21.3","note":"9p21 deletion"},{"n":"ABL1","bp":130713043,"end":130887675,"band":"9q34.12","note":"t(9;22) BCR::ABL1"}],"10":[{"n":"RET","bp":43077064,"end":43130351,"band":"10q11.21","note":"MEN2"},{"n":"PTEN","bp":87862638,"end":87971930,"band":"10q23.31","note":"PTEN hamartoma tumour syndrome"}],"11":[{"n":"WT1","bp":32387775,"end":32435564,"band":"11p13","note":"Wilms tumour, WAGR"},{"n":"CCND1","bp":69641156,"end":69654474,"band":"11q13.3","note":"t(11;14) mantle cell lymphoma"},{"n":"ATM","bp":108223044,"end":108369102,"band":"11q22.3","note":"Ataxia-telangiectasia; del(11q) CLL"},{"n":"KMT2A","bp":118436456,"end":118526832,"band":"11q23.3","note":"11q23 KMT2A rearrangements"}],"12":[{"n":"ETV6","bp":11649674,"end":11895377,"band":"12p13.2","note":"t(12;21) ETV6::RUNX1 ALL"},{"n":"KRAS","bp":25205246,"end":25250936,"band":"12p12.1","note":"RAS oncogene"},{"n":"PAH","bp":102836889,"end":102958410,"band":"12q23.2","note":"Phenylketonuria"}],"13":[{"n":"FLT3","bp":28003274,"end":28100592,"band":"13q12.2","note":"FLT3-ITD in AML"},{"n":"BRCA2","bp":32315086,"end":32400268,"band":"13q13.1","note":"Hereditary breast/ovarian cancer"},{"n":"RB1","bp":48303744,"end":48599436,"band":"13q14.2","note":"Retinoblastoma; del(13q14)"}],"14":[{"n":"SERPINA1","bp":94376747,"end":94390693,"band":"14q32.13","note":"Alpha-1 antitrypsin deficiency"},{"n":"IGH","bp":105851705,"end":105856218,"band":"14q32.33","note":"IGH locus; t(8;14), t(11;14), t(14;18)"}],"15":[{"n":"SNRPN","bp":24823637,"end":24978723,"band":"15q11.2","note":"Prader–Willi / Angelman region"},{"n":"FBN1","bp":48408313,"end":48645721,"band":"15q21.1","note":"Marfan syndrome"},{"n":"PML","bp":73994673,"end":74047827,"band":"15q24.1","note":"t(15;17) PML::RARA APL"}],"16":[{"n":"TSC2","bp":2047967,"end":2089491,"band":"16p13.3","note":"Tuberous sclerosis"},{"n":"MYH11","bp":15703135,"end":15857028,"band":"16p13.11","note":"inv(16) CBFB::MYH11"},{"n":"CBFB","bp":67028984,"end":67101058,"band":"16q22.1","note":"inv(16)/t(16;16) AML"}],"17":[{"n":"TP53","bp":7661779,"end":7687538,"band":"17p13.1","note":"del(17p); Li–Fraumeni"},{"n":"NF1","bp":31094927,"end":31382116,"band":"17q11.2","note":"Neurofibromatosis type 1"},{"n":"RARA","bp":40309180,"end":40357643,"band":"17q21.2","note":"t(15;17) PML::RARA APL"},{"n":"BRCA1","bp":43044295,"end":43170245,"band":"17q21.31","note":"Hereditary breast/ovarian cancer"}],"18":[{"n":"SMAD4","bp":51028528,"end":51085045,"band":"18q21.2","note":"Juvenile polyposis"},{"n":"BCL2","bp":63123346,"end":63320128,"band":"18q21.33","note":"t(14;18) follicular lymphoma"}],"19":[{"n":"STK11","bp":1177558,"end":1228431,"band":"19p13.3","note":"Peutz–Jeghers syndrome"},{"n":"LDLR","bp":11089418,"end":11133820,"band":"19p13.2","note":"Familial hypercholesterolaemia"},{"n":"CEBPA","bp":33299934,"end":33302534,"band":"19q13.11","note":"Mutated in AML"}],"20":[{"n":"JAG1","bp":10637684,"end":10673999,"band":"20p12.2","note":"Alagille syndrome"},{"n":"ASXL1","bp":32358330,"end":32439319,"band":"20q11.21","note":"Myeloid neoplasms"},{"n":"GNAS","bp":58839718,"end":58911192,"band":"20q13.32","note":"McCune–Albright; pseudohypoparathyroidism"}],"21":[{"n":"APP","bp":25880535,"end":26171128,"band":"21q21.3","note":"Early-onset Alzheimer disease"},{"n":"RUNX1","bp":34787801,"end":36004667,"band":"21q22.12","note":"t(8;21), t(12;21); familial platelet disorder"},{"n":"ERG","bp":38380027,"end":38661780,"band":"21q22.2","note":"ERG fusions"}],"22":[{"n":"TBX1","bp":19756703,"end":19783593,"band":"22q11.21","note":"22q11.2 deletion region"},{"n":"BCR","bp":23179704,"end":23318037,"band":"22q11.23","note":"t(9;22) BCR::ABL1"},{"n":"NF2","bp":29603556,"end":29698598,"band":"22q12.2","note":"NF2-related schwannomatosis"}],"X":[{"n":"SHOX","bp":624344,"end":659411,"band":"Xp22.33","note":"PAR1; short stature"},{"n":"DMD","bp":31097677,"end":33339609,"band":"Xp21.2–p21.1","note":"Duchenne / Becker"},{"n":"AR","bp":67544021,"end":67730619,"band":"Xq12","note":"Androgen insensitivity"},{"n":"XIST","bp":73820649,"end":73852723,"band":"Xq13.2","note":"X-inactivation centre"},{"n":"FMR1","bp":147911919,"end":147951125,"band":"Xq27.3","note":"Fragile X (FRAXA)"},{"n":"MECP2","bp":154021573,"end":154137103,"band":"Xq28","note":"Rett syndrome; Xq28 duplication"}],"Y":[{"n":"SRY","bp":2786855,"end":2787682,"band":"Yp11.2","note":"Testis determination"},{"n":"USP9Y","bp":12537650,"end":12860839,"band":"Yq11.221","note":"AZFa region"},{"n":"DAZ1","bp":23129355,"end":23199010,"band":"Yq11.223","note":"AZFc region"}]};
-const TOP = 18, CW = 30;
-const LVNAME = lv => lv==="850" ? "~700" : lv;   // data key "850" holds the GRCh38 idiogram, which ISCN 2024 says best fits the 700-band level
-const state = {chr:"X", levels:new Set(["400","550","850"]), kgLevel:"400", mode:"R", showGenes:true, sel:null};
+const ORDER = SITE.ORDER;
+const GROUPS = [["A",["1","2","3"]],["B",["4","5"]],["C",["6","7","8","9","10","11","12","X"]],["D",["13","14","15"]],["E",["16","17","18"]],["F",["19","20"]],["G",["21","22","Y"]]];
+const TOP = 16, CW = 28;
+const LVNAME = lv => lv==="850" ? "~700" : lv;   // data key "850" holds the GRCh38 idiogram (ISCN 2024: best fits the 700-band level)
+const state = {chr:SITE.initialChr("1"), levels:new Set(["400","550","850"]), kgLevel:"400", mode:SITE.store.get("mode","R")==="G"?"G":"R", showGenes:true, sel:null};
 
 const R_FILL = s => s==="gneg"?"var(--ink)":s==="gpos25"?"var(--r25)":s==="gpos50"?"var(--r50)":s==="gpos75"?"var(--r75)":s==="acen"?"var(--acen)":s==="gvar"?"url(#hatch)":s==="stalk"?"var(--stalk)":"var(--paper)";
 const G_FILL = s => s==="gneg"?"var(--paper)":s==="gpos25"?"var(--g25)":s==="gpos50"?"var(--g50)":s==="gpos75"?"var(--g75)":s==="acen"?"var(--acen)":s==="gvar"?"url(#hatch)":s==="stalk"?"var(--stalk)":"var(--ink)";
-const R_DESC = s => s==="gneg"?"R-positive (dark)":s==="gpos25"?"Intermediate":s==="gpos50"?"Weakly stained":s==="gpos75"?"Faint":s==="acen"?"Centromere":s==="gvar"?"Variable heterochromatin":s==="stalk"?"Stalk (NOR region)":"R-negative (pale)";
-const G_DESC = s => s==="gneg"?"G-negative (pale)":s==="gpos25"?"Faint":s==="gpos50"?"Moderately stained":s==="gpos75"?"Darkly stained":s==="acen"?"Centromere":s==="gvar"?"Variable heterochromatin":s==="stalk"?"Stalk (NOR region)":"G-positive (dark)";
+const R_DESC = s => s==="gneg"?"R-positive (dark)":s==="gpos25"?"Intermediate":s==="gpos50"?"Weakly stained":s==="gpos75"?"Faint":s==="acen"?"Centromere":s==="gvar"?"Variable heterochromatin":s==="stalk"?"Stalk (NOR)":"R-negative (pale)";
+const G_DESC = s => s==="gneg"?"G-negative (pale)":s==="gpos25"?"Faint":s==="gpos50"?"Moderate":s==="gpos75"?"Dark":s==="acen"?"Centromere":s==="gvar"?"Variable heterochromatin":s==="stalk"?"Stalk (NOR)":"G-positive (dark)";
 const FILL = () => state.mode==="R" ? R_FILL : G_FILL;
 const SW = (s,f) => s==="gvar"?'<span class="swatch sw-gvar"></span>':`<span class="swatch" style="background:${f(s)}"></span>`;
 function renderLegend(){
   const R=state.mode==="R";
-  const rows = R ? [["var(--ink)","R-positive (G-negative)"],["var(--r25)","Intermediate (G gpos25)"],["var(--r50)","Weak (G gpos50)"],["var(--r75)","Faint (G gpos75)"],["var(--paper)","R-negative (G gpos100)"]]
-                 : [["var(--ink)","G-positive (gpos100)"],["var(--g75)","Dark (gpos75)"],["var(--g50)","Medium (gpos50)"],["var(--g25)","Light (gpos25)"],["var(--paper)","G-negative (gneg)"]];
-  document.getElementById("legend").innerHTML = `<div class="legend-title">${R?"R":"G"}-band appearance</div>`
-    + rows.map(([c,l])=>`<div><span class="swatch" style="background:${c}"></span>${l}</div>`).join("")
-    + '<div><span class="swatch" style="background:var(--acen)"></span>Centromere</div><div><span class="swatch sw-gvar"></span>Variable heterochromatin</div><div><span class="swatch" style="background:var(--stalk)"></span>Stalk (acrocentric p12)</div>'
-    + '<div><span class="swatch" style="background:var(--green);border-color:var(--green)"></span>Landmark gene</div>';
+  const rows = R ? [["var(--ink)","R+ (G−)"],["var(--r25)","G gpos25"],["var(--r50)","G gpos50"],["var(--r75)","G gpos75"],["var(--paper)","R− (G gpos100)"]]
+                 : [["var(--ink)","gpos100"],["var(--g75)","gpos75"],["var(--g50)","gpos50"],["var(--g25)","gpos25"],["var(--paper)","gneg"]];
+  document.getElementById("legend").innerHTML = rows.map(([c,l])=>`<div><span class="swatch" style="background:${c}"></span>${l}</div>`).join("")
+    + '<div><span class="swatch" style="background:var(--acen)"></span>Centromere</div><div><span class="swatch sw-gvar"></span>Heterochromatin</div><div><span class="swatch" style="background:var(--stalk)"></span>Stalk</div><div><span class="swatch" style="background:var(--green);border-color:var(--green)"></span>Gene</div>';
 }
 const mb = v => (v/1e6).toFixed(1);
 const NS = "http://www.w3.org/2000/svg";
 const el = (t,a={},p) => {const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;};
-
 function addHatch(svg){
   const pat=el("pattern",{id:"hatch",width:5,height:5,patternUnits:"userSpaceOnUse",patternTransform:"rotate(45)"},el("defs",{},svg));
-  el("rect",{width:5,height:5,fill:"var(--paper)"},pat);
-  el("rect",{width:2,height:5,fill:"var(--gvar)"},pat);
+  el("rect",{width:5,height:5,fill:"var(--paper)"},pat); el("rect",{width:2,height:5,fill:"var(--gvar)"},pat);
 }
-function bpToIscn(bands,bp){
-  for(const b of bands){ if(bp>=b[3]&&bp<=b[4]) return b[1]+(b[2]-b[1])*(bp-b[3])/(b[4]-b[3]); }
-  return null;
-}
+function bpToIscn(bands,bp){ for(const b of bands){ if(bp>=b[3]&&bp<=b[4]) return b[1]+(b[2]-b[1])*(bp-b[3])/(b[4]-b[3]); } return null; }
 // silhouette: follows band widths (stalks narrow, centromere pinched), rounded ends
 function outline(bands,x,w,top,scale){
   const Y=v=>top+v*scale, M=x+w/2, pinch=w*0.28, stalkW=w*0.42;
   const ac=bands.filter(b=>b[5]==="acen"), cm = ac.length ? ac[0][1]+(ac[ac.length-1][2]-ac[0][1])/2 : null;
-  const pts=[]; // [y, halfWidth]
+  const pts=[];
   for(const b of bands){
     const y0=b[1], y1=b[2];
-    if(b[5]==="acen"){
-      const hw0 = y0<cm ? w/2 : pinch/2, hw1 = y1<=cm ? pinch/2 : w/2;
-      if(y0<cm && y1>cm){ pts.push([y0,w/2],[cm,pinch/2],[y1,w/2]); }
-      else pts.push([y0,hw0],[y1,hw1]);
-    } else if(b[5]==="stalk"){ pts.push([y0,stalkW/2],[y1,stalkW/2]); }
+    if(b[5]==="acen"){ const hw0 = y0<cm ? w/2 : pinch/2, hw1 = y1<=cm ? pinch/2 : w/2;
+      if(y0<cm && y1>cm) pts.push([y0,w/2],[cm,pinch/2],[y1,w/2]); else pts.push([y0,hw0],[y1,hw1]); }
+    else if(b[5]==="stalk") pts.push([y0,stalkW/2],[y1,stalkW/2]);
     else pts.push([y0,w/2],[y1,w/2]);
   }
   const total=bands[bands.length-1][2];
-  const r=Math.min(w/2, (bands[0][2]-bands[0][1])*scale, 9);
-  const rb=Math.min(w/2, (bands[bands.length-1][2]-bands[bands.length-1][1])*scale, 9);
-  const hwTop=pts[0][1], hwBot=pts[pts.length-1][1];
+  const r=Math.min(w/2,(bands[0][2]-bands[0][1])*scale,9), rb=Math.min(w/2,(bands.at(-1)[2]-bands.at(-1)[1])*scale,9);
+  const hwTop=pts[0][1], hwBot=pts.at(-1)[1];
   let d=`M${M-hwTop},${Y(0)+r} Q${M-hwTop},${Y(0)} ${M},${Y(0)} Q${M+hwTop},${Y(0)} ${M+hwTop},${Y(0)+r}`;
   for(const [y,hw] of pts){ const yy=Math.min(Math.max(Y(y),Y(0)+r),Y(total)-rb); d+=` L${M+hw},${yy}`; }
   d+=` L${M+hwBot},${Y(total)-rb} Q${M+hwBot},${Y(total)} ${M},${Y(total)} Q${M-hwBot},${Y(total)} ${M-hwBot},${Y(total)-rb}`;
@@ -304,54 +337,42 @@ function outline(bands,x,w,top,scale){
 }
 function spread(items,gap,minY,maxY){
   items.sort((a,b)=>a.y-b.y);
-  for(let i=0;i<items.length;i++){ items[i].ly=Math.max(items[i].y, i?items[i-1].ly+gap:minY); }
+  for(let i=0;i<items.length;i++) items[i].ly=Math.max(items[i].y, i?items[i-1].ly+gap:minY);
   for(let i=items.length-1;i>=0;i--){ const lim=i<items.length-1?items[i+1].ly-gap:maxY; if(items[i].ly>lim) items[i].ly=lim; }
   return items;
 }
 let uid=0;
 function drawChromosome(svg,bands,x,w,top,scale,fill,attrs){
-  const id="clip"+(uid++);
-  const d=outline(bands,x,w,top,scale);
+  const id="clip"+(uid++), d=outline(bands,x,w,top,scale);
   el("path",{d},el("clipPath",{id},el("defs",{},svg)));
   const g=el("g",{"clip-path":`url(#${id})`},svg);
-  for(const b of bands){
-    const r=el("rect",{x,y:top+b[1]*scale,width:w,height:Math.max((b[2]-b[1])*scale,.5),fill:fill(b[5])},g);
-    if(attrs) attrs(r,b);
-  }
+  for(const b of bands){ const r=el("rect",{x,y:top+b[1]*scale,width:w,height:Math.max((b[2]-b[1])*scale,.5),fill:fill(b[5])},g); if(attrs) attrs(r,b); }
   el("path",{d,fill:"none",stroke:"var(--outline)","stroke-width":w<20?0.8:1.2,"stroke-linejoin":"round"},svg);
 }
-
 function detailHeight(chr){
   const n=Math.max(...[...state.levels].map(l=>DATA[chr][l].length));
-  return Math.min(Math.max(Math.ceil(n*12.2)+24,440),820);
+  return Math.min(Math.max(Math.ceil(n*12)+20,420),800);
 }
 function drawLevel(chr,lv,H){
-  const bands=DATA[chr][lv], total=bands[bands.length-1][2], scale=H/total;
+  const bands=DATA[chr][lv], total=bands.at(-1)[2], scale=H/total;
   const genes=(state.showGenes&&GENES[chr])||null;
-  const geneW = genes?78:6, gW = 0, labW=70;
-  const W = geneW + gW + CW + 12 + labW;
+  const geneW = genes?74:6, labW=66, W = geneW + CW + 12 + labW;
   const box=document.createElement("div"); box.className="level";
-  box.innerHTML=`<h3>${LVNAME(lv)} bands${lv==="850"?' <span class="sub">GRCh38</span>':""}</h3><div class="sub">${bands.length} bands on ${chr}</div>`;
-  const svg=el("svg",{width:W,height:H+TOP*2,viewBox:`0 0 ${W} ${H+TOP*2}`,role:"img","aria-label":`Chromosome ${chr} ${state.mode}-banded idiogram at ${LVNAME(lv)}-band level`},box);
+  box.innerHTML=`<h3>${LVNAME(lv)}${lv==="850"?' <span class="sub">GRCh38</span>':""}</h3><div class="sub">${bands.length} bands</div>`;
+  const svg=el("svg",{width:W,height:H+TOP*2,viewBox:`0 0 ${W} ${H+TOP*2}`,role:"img","aria-label":`Chromosome ${chr}, ${state.mode}-banded, ${LVNAME(lv)} bands`},box);
   addHatch(svg);
-  drawChromosome(svg,bands,geneW,CW,TOP,scale,FILL(),(r,b)=>{
-    r.setAttribute("class","band"); r.dataset.lv=lv; r.dataset.name=b[0]; r.setAttribute("tabindex","0");
-    el("title",{},r).textContent=`${chr}${b[0]}`;
-  });
-  const rx=geneW+gW+CW;
-  const items=spread(bands.map(b=>({b,y:TOP+((b[1]+b[2])/2)*scale})),11,TOP+4,TOP+H-2);
-  for(const it of items){
-    const lx=rx+22;
-    el("path",{d:`M${rx+2},${it.y} L${rx+10},${it.y} L${lx-3},${it.ly}`,class:"lead","data-lv":lv,"data-name":it.b[0]},svg);
+  drawChromosome(svg,bands,geneW,CW,TOP,scale,FILL(),(r,b)=>{ r.setAttribute("class","band"); r.dataset.lv=lv; r.dataset.name=b[0]; r.setAttribute("tabindex","0"); el("title",{},r).textContent=`${chr}${b[0]}`; });
+  const rx=geneW+CW;
+  for(const it of spread(bands.map(b=>({b,y:TOP+((b[1]+b[2])/2)*scale})),11,TOP+4,TOP+H-2)){
+    const lx=rx+20;
+    el("path",{d:`M${rx+2},${it.y} L${rx+9},${it.y} L${lx-3},${it.ly}`,class:"lead","data-lv":lv,"data-name":it.b[0]},svg);
     const t=el("text",{x:lx,y:it.ly+3.5,class:"lbl","data-lv":lv,"data-name":it.b[0]},svg); t.textContent=it.b[0];
   }
   if(genes){
     const gx=geneW-4;
-    const gi=spread(genes.map(g=>({g,y:TOP+bpToIscn(bands,g.bp)*scale})),12,TOP+4,TOP+H-2);
-    for(const it of gi){
+    for(const it of spread(genes.map(g=>({g,y:TOP+bpToIscn(bands,g.bp)*scale})),12,TOP+4,TOP+H-2)){
       const y2=TOP+bpToIscn(bands,it.g.end)*scale;
-      if(y2-it.y>3) el("line",{x1:gx,x2:gx,y1:it.y,y2,class:"gene-tick"},svg);
-      else el("line",{x1:gx-4,x2:gx,y1:it.y,y2:it.y,class:"gene-tick"},svg);
+      if(y2-it.y>3) el("line",{x1:gx,x2:gx,y1:it.y,y2,class:"gene-tick"},svg); else el("line",{x1:gx-4,x2:gx,y1:it.y,y2:it.y,class:"gene-tick"},svg);
       el("path",{d:`M${gx-5},${it.y} L${gx-10},${it.ly}`,class:"lead"},svg);
       const t=el("text",{x:gx-12,y:it.ly+3.5,"text-anchor":"end",class:"gene"},svg); t.textContent=it.g.n;
       el("title",{},t).textContent=`${it.g.n} · ${it.g.band} · ${it.g.note}`;
@@ -359,53 +380,44 @@ function drawLevel(chr,lv,H){
   }
   return box;
 }
-
-function cenOf(bands){ const ac=bands.filter(b=>b[5]==="acen"); return ac.length? (ac[0][1]+ac.at(-1)[2])/2 : 0; }
+const cenOf = bands => { const ac=bands.filter(b=>b[5]==="acen"); return ac.length? (ac[0][1]+ac.at(-1)[2])/2 : 0; };
 function renderKaryogram(){
   const kg=document.getElementById("kg"); kg.innerHTML="";
-  const PX=0.0165, w=15;
-  for(const row of GROUPS){
-    const rowEl=document.createElement("div"); rowEl.className="kg-row";
-    const all=row.flatMap(([,cs])=>cs.map(c=>DATA[c][state.kgLevel]));
-    const maxP=Math.max(...all.map(cenOf)), maxQ=Math.max(...all.map(b=>b.at(-1)[2]-cenOf(b)));
-    const rowH=(maxP+maxQ)*PX+4;
-    for(const [g,cs] of row){
-      const ge=document.createElement("div"); ge.className="kg-group"; ge.dataset.g=g;
-      for(const c of cs){
-        const bands=DATA[c][state.kgLevel];
-        const btn=document.createElement("button"); btn.className="kg-chr"; btn.dataset.chr=c;
-        btn.setAttribute("aria-pressed",String(c===state.chr)); btn.setAttribute("aria-label",`Chromosome ${c}`);
-        const svg=el("svg",{width:w+4,height:rowH,viewBox:`0 0 ${w+4} ${rowH}`,"aria-hidden":"true"});
-        addHatch(svg);
-        drawChromosome(svg,bands,2,w,2+(maxP-cenOf(bands))*PX,PX,FILL());
-        btn.appendChild(svg);
-        const s=document.createElement("span"); s.textContent=c; btn.appendChild(s);
-        btn.addEventListener("click",()=>selectChr(c));
-        ge.appendChild(btn);
-      }
-      rowEl.appendChild(ge);
+  const all=ORDER.map(c=>DATA[c][state.kgLevel]);
+  const maxP=Math.max(...all.map(cenOf)), maxQ=Math.max(...all.map(b=>b.at(-1)[2]-cenOf(b)));
+  const PX=Math.min(0.0125, 150/(maxP+maxQ)), w=12, rowH=(maxP+maxQ)*PX+4;
+  for(const [g,cs] of GROUPS){
+    const ge=document.createElement("div"); ge.className="kg-group"; ge.dataset.g=g;
+    for(const c of cs){
+      const bands=DATA[c][state.kgLevel];
+      const btn=document.createElement("button"); btn.className="kg-chr"; btn.dataset.chr=c;
+      btn.setAttribute("aria-pressed",String(c===state.chr)); btn.setAttribute("aria-label",`Chromosome ${c}`);
+      const svg=el("svg",{width:w+4,height:rowH,viewBox:`0 0 ${w+4} ${rowH}`,"aria-hidden":"true"});
+      addHatch(svg); drawChromosome(svg,bands,2,w,2+(maxP-cenOf(bands))*PX,PX,FILL());
+      btn.appendChild(svg);
+      const s=document.createElement("span"); s.textContent=c; btn.appendChild(s);
+      btn.addEventListener("click",()=>selectChr(c));
+      ge.appendChild(btn);
     }
-    kg.appendChild(rowEl);
+    kg.appendChild(ge);
   }
 }
-
 function render(){
   const chr=state.chr, plate=document.getElementById("plate"); plate.innerHTML="";
   document.getElementById("plateTitle").textContent=`Chromosome ${chr}`;
-  const sl=document.getElementById("simLink"); if(sl){ sl.href=SIM_HREF+"#chr"+chr; sl.querySelector("span").textContent=`View chr ${chr} under the microscope`; }
+  document.getElementById("simLink").href="simulator.html?v=4e2991d6#chr"+chr;
+  document.getElementById("fishLink").href="fish.html?v=4e2991d6#chr"+chr;
   const H=detailHeight(chr);
   for(const lv of ["400","550","850"]) if(state.levels.has(lv)) plate.appendChild(drawLevel(chr,lv,H));
   if(state.sel) highlight(state.sel);
 }
+function idleInfo(){ document.getElementById("info").innerHTML='<p class="muted" style="margin:0;font-size:13px">Hover or tap a band. The same interval is outlined at every level.</p>'; }
 function selectChr(c){
-  state.chr=c; state.sel=null;
+  state.chr=c; state.sel=null; SITE.rememberChr(c);
   document.querySelectorAll(".kg-chr").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.chr===c)));
-  try{ history.replaceState(null,"","#chr"+c); }catch(e){}
-  render();
-  document.getElementById("info").innerHTML='<p class="hint">Hover or tap a band. The same genomic interval is outlined at every level shown.</p>';
+  render(); idleInfo();
 }
-
-function overlapping(lv,s,e){ return DATA[state.chr][lv].filter(b=>b[3]<e && b[4]>s); }
+const overlapping = (lv,s,e) => DATA[state.chr][lv].filter(b=>b[3]<e && b[4]>s);
 function highlight(sel){
   document.querySelectorAll("#plate .hl").forEach(n=>n.classList.remove("hl"));
   if(!sel) return;
@@ -416,29 +428,23 @@ function showInfo(lv,name){
   const chr=state.chr, b=DATA[chr][lv].find(x=>x[0]===name); if(!b) return;
   const s=b[3], e=b[4];
   state.sel={lv,name,s,e}; highlight(state.sel);
-  const others=["400","550","850"].filter(l=>l!==lv).map(l=>`<dt>${LVNAME(l)} level</dt><dd>${overlapping(l,s,e).map(x=>chr+x[0]).join(", ")}</dd>`).join("");
-  const gl=(GENES[chr]||[]).filter(g=>g.end>=s && g.bp<=e).map(g=>`<b>${g.n}</b> <span style="color:var(--muted)">${g.band} · ${g.note}</span>`).join("<br>");
-  const warn = b[5]==="gvar" ? '<p class="warn">Heterochromatic and polymorphic in size. Shown as a hatch because its appearance is not a simple inversion between G- and R-banding.</p>'
-             : b[5]==="stalk" ? '<p class="warn">Nucleolar organizer stalk. Length and staining vary between homologues and individuals.</p>' : "";
+  const others=["400","550","850"].filter(l=>l!==lv).map(l=>`<dt>${LVNAME(l)}</dt><dd>${overlapping(l,s,e).map(x=>x[0]).join(", ")}</dd>`).join("");
+  const gl=(GENES[chr]||[]).filter(g=>g.end>=s && g.bp<=e).map(g=>`<b>${g.n}</b> <span class="muted">${g.note}</span>`).join("<br>");
+  const warn = b[5]==="gvar" ? '<p class="warn">Heterochromatin: size and staining vary between people and methods.</p>' : b[5]==="stalk" ? '<p class="warn">NOR stalk: length and staining vary between homologues.</p>' : "";
   document.getElementById("info").innerHTML=`
-    <div class="eyebrow">${LVNAME(lv)}-band level${lv==="850"?" · GRCh38":""}</div>
-    <h3>${chr}${b[0]}</h3>
-    <dl class="kv" style="margin-top:10px">
-      ${state.mode==="R"
-        ? `<dt>R-banding</dt><dd>${SW(b[5],R_FILL)}${R_DESC(b[5])}</dd><dt>G-banding</dt><dd>${SW(b[5],G_FILL)}${G_DESC(b[5])}</dd>`
-        : `<dt>G-banding</dt><dd>${SW(b[5],G_FILL)}${G_DESC(b[5])}</dd><dt>R-banding</dt><dd>${SW(b[5],R_FILL)}${R_DESC(b[5])}</dd>`}
-      <dt>NCBI stain</dt><dd><span class="pill">${b[5]}</span></dd>
+    <h3>${chr}${b[0]} <span class="lab">${LVNAME(lv)}</span></h3>
+    <dl class="kv" style="margin-top:8px">
+      ${state.mode==="R" ? `<dt>R</dt><dd>${SW(b[5],R_FILL)}${R_DESC(b[5])}</dd><dt>G</dt><dd>${SW(b[5],G_FILL)}${G_DESC(b[5])}</dd>`
+                         : `<dt>G</dt><dd>${SW(b[5],G_FILL)}${G_DESC(b[5])}</dd><dt>R</dt><dd>${SW(b[5],R_FILL)}${R_DESC(b[5])}</dd>`}
+      <dt>NCBI</dt><dd><span class="pill">${b[5]}</span></dd>
       <dt>GRCh38</dt><dd>chr${chr}:${mb(s)}–${mb(e)} Mb</dd>
       <dt>Size</dt><dd>${mb(e-s)} Mb · ${b[2]-b[1]} ISCN units</dd>
       ${others}
-      <dt>Landmarks</dt><dd>${gl||"—"}</dd>
-    </dl>${warn?'<div style="margin-top:10px">'+warn+'</div>':""}`;
+      ${gl?`<dt>Genes</dt><dd>${gl}</dd>`:""}
+    </dl>${warn}`;
 }
-
 const plate=document.getElementById("plate");
-["mouseover","click","focusin"].forEach(ev=>plate.addEventListener(ev,e=>{
-  const t=e.target.closest(".band"); if(t) showInfo(t.dataset.lv,t.dataset.name);
-}));
+["mouseover","click","focusin"].forEach(ev=>plate.addEventListener(ev,e=>{ const t=e.target.closest(".band"); if(t) showInfo(t.dataset.lv,t.dataset.name); }));
 document.querySelectorAll(".lvc").forEach(c=>c.addEventListener("click",()=>{
   const lv=c.dataset.lv;
   if(state.levels.has(lv)){ if(state.levels.size===1) return; state.levels.delete(lv); c.setAttribute("aria-pressed","false"); }
@@ -446,27 +452,43 @@ document.querySelectorAll(".lvc").forEach(c=>c.addEventListener("click",()=>{
   render();
 }));
 document.querySelectorAll(".kgl").forEach(c=>c.addEventListener("click",()=>{
-  state.kgLevel=c.dataset.lv;
-  document.querySelectorAll(".kgl").forEach(x=>x.setAttribute("aria-pressed",String(x===c)));
-  renderKaryogram();
+  state.kgLevel=c.dataset.lv; document.querySelectorAll(".kgl").forEach(x=>x.setAttribute("aria-pressed",String(x===c))); renderKaryogram();
 }));
 function setMode(m){
-  state.mode=m;
-  document.querySelectorAll(".seg button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mode===m)));
-  document.getElementById("h1mode").innerHTML = m==="R"?"R&#8209;banding":"G&#8209;banding";
-  document.getElementById("kgTitle").textContent = `Karyogram, ${m}-banded`;
-  document.getElementById("eyebrow").textContent = `ISCN idiograms · ${m==="R"?"RHG":"GTG"} pattern · GRCh38`;
-  try{ localStorage.setItem("banding-mode",m); }catch(e){}
+  state.mode=m; SITE.store.set("mode",m);
+  document.querySelectorAll("[data-mode]").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.mode===m)));
   renderLegend(); renderKaryogram(); render();
   if(state.sel) showInfo(state.sel.lv,state.sel.name);
 }
-document.querySelectorAll(".seg button").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
+document.querySelectorAll("[data-mode]").forEach(b=>b.addEventListener("click",()=>setMode(b.dataset.mode)));
 document.getElementById("showGenes").addEventListener("change",e=>{state.showGenes=e.target.checked;render();});
 
-const fromHash=(location.hash||"").replace(/^#chr/i,"").toUpperCase();
-if(ORDER.includes(fromHash)) state.chr=fromHash;
-let saved=null; try{ saved=localStorage.getItem("banding-mode"); }catch(e){}
-setMode(saved==="G"?"G":"R");
+// search: "9", "chr9", "9q34", "9q34.1", "Xp21" or a landmark gene symbol
+document.getElementById("search").addEventListener("submit",e=>{
+  e.preventDefault();
+  const q=document.getElementById("q").value.trim(), msg=document.getElementById("qmsg"); msg.textContent="";
+  if(!q) return;
+  const up=q.toUpperCase().replace(/^CHR/,"");
+  let m=up.match(/^(\d{1,2}|X|Y)(?:([PQ])([\d.]*))?$/);
+  if(m && ORDER.includes(m[1])){
+    selectChr(m[1]);
+    if(m[2]){ const name=m[2].toLowerCase()+m[3];
+      for(const lv of ["850","550","400"]){ if(!state.levels.has(lv)) continue;
+        const b=DATA[m[1]][lv].find(x=>x[0]===name) || DATA[m[1]][lv].find(x=>x[0].startsWith(name));
+        if(b){ showInfo(lv,b[0]); document.querySelector(`#plate [data-lv="${lv}"][data-name="${b[0]}"]`)?.scrollIntoView({block:"nearest",behavior:"smooth"}); return; } }
+      msg.textContent="No such band";
+    }
+    return;
+  }
+  for(const c of ORDER) for(const g of (GENES[c]||[])) if(g.n.toUpperCase()===up){
+    selectChr(c);
+    for(const lv of ["850","550","400"]) if(state.levels.has(lv)){ const b=DATA[c][lv].find(x=>g.bp>=x[3]&&g.bp<=x[4]); if(b){ showInfo(lv,b[0]); return; } }
+    return;
+  }
+  msg.textContent="Not found (landmark genes only)";
+});
+window.addEventListener("hashchange",()=>{ const c=SITE.initialChr(state.chr); if(c!==state.chr) selectChr(c); });
+setMode(state.mode); idleInfo(); SITE.rememberChr(state.chr);
 </script>
 
 </body>
