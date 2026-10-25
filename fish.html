@@ -119,6 +119,10 @@ dialog.faq::backdrop{background:rgba(0,0,0,.45)}
 .side input[type=search]{width:100%}
 .filters{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .filters select{width:100%;min-width:0}
+.chrs{display:grid;grid-template-columns:repeat(12,1fr);gap:2px}
+.chrs .chip{padding:2px 0;font-size:11px;text-align:center;border-radius:5px}
+.chrhead{display:flex;justify-content:space-between;align-items:center;padding:0 2px}
+.chrhead button{border:0;background:none;color:var(--accent);font-size:11.5px;cursor:pointer;padding:0}
 .count{font:11px var(--f-mono);color:var(--muted);padding:0 2px}
 .list{overflow-y:auto;flex:1;min-height:0;margin:0 -4px;padding:0 4px}
 @media (max-width:900px){.list{max-height:240px}}
@@ -173,7 +177,7 @@ dialog.faq::backdrop{background:rgba(0,0,0,.45)}
 .cap{font:11.5px var(--f-mono);color:var(--muted)}
 .empty{color:var(--muted);font-size:13px;padding:10px}
 </style>
-<nav class="appbar" aria-label="Site"><div class="appbar-in"><a class="brand" href="index.html?v=4e2991d6"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Idiograms</span></a><div class="tabs"><a href="index.html?v=4e2991d6" data-chr-link><span class="lg">Idiograms</span><span class="sm">Ideo</span></a><a href="simulator.html?v=4e2991d6" data-chr-link><span class="lg">Microscope</span><span class="sm">Scope</span></a><a href="abnormalities.html?v=4e2991d6" data-chr-link><span class="lg">Abnormalities</span><span class="sm">Abn</span></a><a href="fish.html?v=4e2991d6" data-chr-link aria-current="page"><span class="lg">FISH probes</span><span class="sm">FISH</span></a><a href="catalogue.html?v=4e2991d6" data-chr-link><span class="lg">Probe catalogue</span><span class="sm">Catalogue</span></a></div><button class="faq-btn" id="faqBtn" type="button" aria-haspopup="dialog"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg><span>FAQ</span></button></div></nav>
+<nav class="appbar" aria-label="Site"><div class="appbar-in"><a class="brand" href="index.html?v=a4e49a20"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Idiograms</span></a><div class="tabs"><a href="index.html?v=a4e49a20" data-chr-link><span class="lg">Idiograms</span><span class="sm">Ideo</span></a><a href="simulator.html?v=a4e49a20" data-chr-link><span class="lg">Microscope</span><span class="sm">Scope</span></a><a href="abnormalities.html?v=a4e49a20" data-chr-link><span class="lg">Abnormalities</span><span class="sm">Abn</span></a><a href="fish.html?v=a4e49a20" data-chr-link aria-current="page"><span class="lg">FISH probes</span><span class="sm">FISH</span></a><a href="catalogue.html?v=a4e49a20" data-chr-link><span class="lg">Probe catalogue</span><span class="sm">Catalogue</span></a></div><button class="faq-btn" id="faqBtn" type="button" aria-haspopup="dialog"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg><span>FAQ</span></button></div></nav>
 <main class="page">
   <div class="fish">
     <aside class="card side" aria-label="Probes">
@@ -182,6 +186,8 @@ dialog.faq::backdrop{background:rgba(0,0,0,.45)}
         <select id="fGroup" aria-label="Group"><option value="">All groups</option></select>
         <select id="fVendor" aria-label="Vendor"><option value="">All vendors</option></select>
       </div>
+      <div class="chrhead"><span class="lab" title="Show probes that target every selected chromosome">Chromosomes</span><button id="chrClear" hidden>clear</button></div>
+      <div class="chrs" id="chrs" role="group" aria-label="Chromosomes the probe must target"></div>
       <div class="count" id="count"></div>
       <nav class="list" id="list" aria-label="Probe list"></nav>
     </aside>
@@ -993,9 +999,15 @@ const hay = new Map(PROBES.map(p=>[p.id,[p.name,p.id,p.vendor,p.group,DESIGN[p.d
 const groups=[...new Set(PROBES.map(p=>p.group))], vendors=[...new Set(PROBES.map(p=>p.vendor))];
 for(const g of groups) document.getElementById("fGroup").add(new Option(g,g));
 for(const v of vendors) document.getElementById("fVendor").add(new Option(v,v));
+// chromosome chips: a probe must have a component on every selected chromosome
+const chrSel=new Set(), chrsOf=new Map(PROBES.map(p=>[p.id,new Set(p.comps.flatMap(c=>c.segs.map(s=>s[0])))]));
+const chrBox=document.getElementById("chrs");
+for(const c of ORDER){ const b=document.createElement("button"); b.className="chip"; b.textContent=c; b.dataset.chr=c; b.setAttribute("aria-pressed","false");
+  b.addEventListener("click",()=>{ chrSel.has(c)?chrSel.delete(c):chrSel.add(c); b.setAttribute("aria-pressed",String(chrSel.has(c))); renderList(); }); chrBox.appendChild(b); }
+document.getElementById("chrClear").addEventListener("click",()=>{ chrSel.clear(); chrBox.querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed","false")); renderList(); });
 function renderList(){
   const q=document.getElementById("q").value.trim().toLowerCase().split(/\s+/).filter(Boolean), g=document.getElementById("fGroup").value, v=document.getElementById("fVendor").value;
-  const shown=PROBES.filter(p=>(!g||p.group===g)&&(!v||p.vendor===v)&&q.every(w=>hay.get(p.id).includes(w))).sort((a,b)=>groups.indexOf(a.group)-groups.indexOf(b.group));
+  const shown=PROBES.filter(p=>(!g||p.group===g)&&(!v||p.vendor===v)&&[...chrSel].every(c=>chrsOf.get(p.id).has(c))&&q.every(w=>hay.get(p.id).includes(w))).sort((a,b)=>groups.indexOf(a.group)-groups.indexOf(b.group));
   const list=document.getElementById("list"); list.innerHTML="";
   let last=null;
   for(const p of shown){
@@ -1006,7 +1018,8 @@ function renderList(){
     b.addEventListener("click",()=>select(p.id,true));
     list.appendChild(b);
   }
-  document.getElementById("count").textContent=`${shown.length} of ${PROBES.length} probes`;
+  document.getElementById("count").textContent=`${shown.length} of ${PROBES.length} probes${chrSel.size?" on chr "+[...chrSel].sort((a,b)=>ORDER.indexOf(a)-ORDER.indexOf(b)).join(" + "):""}`;
+  document.getElementById("chrClear").hidden=!chrSel.size;
   if(!shown.length) list.innerHTML='<p class="empty">No probe matches. The catalogue tab lists every vendor.</p>';
 }
 ["q","fGroup","fVendor"].forEach(id=>document.getElementById(id).addEventListener("input",renderList));
@@ -1144,7 +1157,7 @@ function renderPatterns(){
   p.patterns.forEach((pat,pi)=>{
     const cell=cellOf(pat), code=FISH.code(p,cell), iscn=FISH.iscn(p,cell,NORMAL);
     const card=document.createElement("button"); card.className="pat"; card.setAttribute("aria-pressed",String(pi===st.pat)); card.title="Show this pattern in metaphase";
-    const kar = pat.karyo ? `<div class="ka">${esc(pat.karyo)} · <a href="abnormalities.html?v=4e2991d6#k=${encodeURIComponent("46,XX,"+pat.karyo)}" onclick="event.stopPropagation()">karyotype ›</a></div>` : "";
+    const kar = pat.karyo ? `<div class="ka">${esc(pat.karyo)} · <a href="abnormalities.html?v=a4e49a20#k=${encodeURIComponent("46,XX,"+pat.karyo)}" onclick="event.stopPropagation()">karyotype ›</a></div>` : "";
     card.innerHTML=`<div class="t"><b>${esc(pat.name)}</b><span class="src ${pat.src==="vendor"?"v":""}" title="${pat.src==="vendor"?"Pattern described by the manufacturer":"Textbook pattern for this design"}">${pat.src}</span></div>
       <div class="cells"></div><div class="code">${esc(code)}</div><div class="iscn">${esc(iscn)}</div>${kar}${pat.note?`<div class="pn">${esc(pat.note)}</div>`:""}`;
     const cells=card.querySelector(".cells");

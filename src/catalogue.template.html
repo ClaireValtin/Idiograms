@@ -30,6 +30,7 @@ td.f a{font:11.5px var(--f-mono);white-space:nowrap}
   <div class="card filters">
     <input type="search" id="q" placeholder="Search name, gene, band, catalogue number…" aria-label="Search the catalogue" autocomplete="off" spellcheck="false">
     <select id="fChr" aria-label="Chromosome"><option value="">Any chromosome</option></select>
+    <select id="fChr2" aria-label="Second chromosome"><option value="">and any</option></select>
     <select id="fStatus" aria-label="Regulatory status"><option value="">Any status</option></select>
     <label class="toggle"><input type="checkbox" id="fCustom" checked><span>Custom designs</span></label>
     <div class="vend" id="vend" role="group" aria-label="Vendors"></div>
@@ -61,12 +62,12 @@ const vbox=document.getElementById("vend");
 for(const v of vendors){ const b=document.createElement("button"); b.className="chip"; b.setAttribute("aria-pressed","true"); b.innerHTML=`${esc(SHORT(v))}<small>${CAT.counts[v]}</small>`; b.title=v;
   b.addEventListener("click",()=>{ st.vendors.has(v)?st.vendors.delete(v):st.vendors.add(v); if(!st.vendors.size) vendors.forEach(x=>st.vendors.add(x));
     vbox.querySelectorAll(".chip").forEach((x,i)=>x.setAttribute("aria-pressed",String(st.vendors.has(vendors[i])))); st.limit=150; render(); }); vbox.appendChild(b); }
-for(const c of SITE.ORDER) document.getElementById("fChr").add(new Option("chr"+c,c));
+for(const c of SITE.ORDER){ document.getElementById("fChr").add(new Option("chr"+c,c)); document.getElementById("fChr2").add(new Option("and chr"+c,c)); }
 for(const s of [...new Set(ITEMS.flatMap(i=>i.status||[]))].sort()) document.getElementById("fStatus").add(new Option(s,s));
 const onChr=(it,c)=> (it.chroms||[]).includes(c) || new RegExp(`(^|[^0-9a-z])${c}[pq]\\d|(cep|cen)\\s?${c}(?![0-9])|chromosome ${c}(?![0-9])`,"i").test(it.name+" "+(it.targets||""));
 function filtered(){
-  const q=document.getElementById("q").value.trim().toLowerCase().split(/\s+/).filter(Boolean), c=document.getElementById("fChr").value, s=document.getElementById("fStatus").value, cu=document.getElementById("fCustom").checked;
-  const out=ITEMS.filter(it=>st.vendors.has(it.vendor) && (cu||!it.custom) && (!s||(it.status||[]).includes(s)) && (!c||onChr(it,c)) && q.every(w=>it.hay.includes(w)));
+  const q=document.getElementById("q").value.trim().toLowerCase().split(/\s+/).filter(Boolean), c=document.getElementById("fChr").value, c2=document.getElementById("fChr2").value, s=document.getElementById("fStatus").value, cu=document.getElementById("fCustom").checked;
+  const out=ITEMS.filter(it=>st.vendors.has(it.vendor) && (cu||!it.custom) && (!s||(it.status||[]).includes(s)) && (!c||onChr(it,c)) && (!c2||onChr(it,c2)) && q.every(w=>it.hay.includes(w)));
   const key=st.sort; out.sort((a,b)=>(a[key]||"").localeCompare(b[key]||"",undefined,{numeric:true,sensitivity:"base"})*st.dir || a.name.localeCompare(b.name,undefined,{numeric:true}));
   return out;
 }
@@ -84,7 +85,7 @@ function render(){
   document.getElementById("more").hidden = all.length<=st.limit;
 }
 document.getElementById("more").addEventListener("click",()=>{ st.limit+=300; render(); });
-["q","fChr","fStatus","fCustom"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{ st.limit=150; render(); }));
+["q","fChr","fChr2","fStatus","fCustom"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{ st.limit=150; render(); }));
 document.querySelectorAll("[data-sort]").forEach(b=>b.addEventListener("click",()=>{ const k=b.dataset.sort; st.dir = st.sort===k ? -st.dir : 1; st.sort=k; render(); }));
 const hq=decodeURIComponent((location.hash||"").replace(/^#q=/,"")); if(location.hash.startsWith("#q=")) document.getElementById("q").value=hq;
 render();
