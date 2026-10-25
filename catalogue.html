@@ -137,11 +137,12 @@ td.f a{font:11.5px var(--f-mono);white-space:nowrap}
 .foot{display:flex;align-items:center;justify-content:center;gap:12px;padding:10px;font:12px var(--f-mono);color:var(--muted)}
 @media (max-width:760px){td.c,th.c,td.t,th.t{display:none}}
 </style>
-<nav class="appbar" aria-label="Site"><div class="appbar-in"><a class="brand" href="index.html?v=4e2991d6"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Idiograms</span></a><div class="tabs"><a href="index.html?v=4e2991d6" data-chr-link><span class="lg">Idiograms</span><span class="sm">Ideo</span></a><a href="simulator.html?v=4e2991d6" data-chr-link><span class="lg">Microscope</span><span class="sm">Scope</span></a><a href="abnormalities.html?v=4e2991d6" data-chr-link><span class="lg">Abnormalities</span><span class="sm">Abn</span></a><a href="fish.html?v=4e2991d6" data-chr-link><span class="lg">FISH probes</span><span class="sm">FISH</span></a><a href="catalogue.html?v=4e2991d6" data-chr-link aria-current="page"><span class="lg">Probe catalogue</span><span class="sm">Catalogue</span></a></div><button class="faq-btn" id="faqBtn" type="button" aria-haspopup="dialog"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg><span>FAQ</span></button></div></nav>
+<nav class="appbar" aria-label="Site"><div class="appbar-in"><a class="brand" href="index.html?v=a4e49a20"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Idiograms</span></a><div class="tabs"><a href="index.html?v=a4e49a20" data-chr-link><span class="lg">Idiograms</span><span class="sm">Ideo</span></a><a href="simulator.html?v=a4e49a20" data-chr-link><span class="lg">Microscope</span><span class="sm">Scope</span></a><a href="abnormalities.html?v=a4e49a20" data-chr-link><span class="lg">Abnormalities</span><span class="sm">Abn</span></a><a href="fish.html?v=a4e49a20" data-chr-link><span class="lg">FISH probes</span><span class="sm">FISH</span></a><a href="catalogue.html?v=a4e49a20" data-chr-link aria-current="page"><span class="lg">Probe catalogue</span><span class="sm">Catalogue</span></a></div><button class="faq-btn" id="faqBtn" type="button" aria-haspopup="dialog"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg><span>FAQ</span></button></div></nav>
 <main class="page">
   <div class="card filters">
     <input type="search" id="q" placeholder="Search name, gene, band, catalogue number…" aria-label="Search the catalogue" autocomplete="off" spellcheck="false">
     <select id="fChr" aria-label="Chromosome"><option value="">Any chromosome</option></select>
+    <select id="fChr2" aria-label="Second chromosome"><option value="">and any</option></select>
     <select id="fStatus" aria-label="Regulatory status"><option value="">Any status</option></select>
     <label class="toggle"><input type="checkbox" id="fCustom" checked><span>Custom designs</span></label>
     <div class="vend" id="vend" role="group" aria-label="Vendors"></div>
@@ -266,12 +267,12 @@ const vbox=document.getElementById("vend");
 for(const v of vendors){ const b=document.createElement("button"); b.className="chip"; b.setAttribute("aria-pressed","true"); b.innerHTML=`${esc(SHORT(v))}<small>${CAT.counts[v]}</small>`; b.title=v;
   b.addEventListener("click",()=>{ st.vendors.has(v)?st.vendors.delete(v):st.vendors.add(v); if(!st.vendors.size) vendors.forEach(x=>st.vendors.add(x));
     vbox.querySelectorAll(".chip").forEach((x,i)=>x.setAttribute("aria-pressed",String(st.vendors.has(vendors[i])))); st.limit=150; render(); }); vbox.appendChild(b); }
-for(const c of SITE.ORDER) document.getElementById("fChr").add(new Option("chr"+c,c));
+for(const c of SITE.ORDER){ document.getElementById("fChr").add(new Option("chr"+c,c)); document.getElementById("fChr2").add(new Option("and chr"+c,c)); }
 for(const s of [...new Set(ITEMS.flatMap(i=>i.status||[]))].sort()) document.getElementById("fStatus").add(new Option(s,s));
 const onChr=(it,c)=> (it.chroms||[]).includes(c) || new RegExp(`(^|[^0-9a-z])${c}[pq]\\d|(cep|cen)\\s?${c}(?![0-9])|chromosome ${c}(?![0-9])`,"i").test(it.name+" "+(it.targets||""));
 function filtered(){
-  const q=document.getElementById("q").value.trim().toLowerCase().split(/\s+/).filter(Boolean), c=document.getElementById("fChr").value, s=document.getElementById("fStatus").value, cu=document.getElementById("fCustom").checked;
-  const out=ITEMS.filter(it=>st.vendors.has(it.vendor) && (cu||!it.custom) && (!s||(it.status||[]).includes(s)) && (!c||onChr(it,c)) && q.every(w=>it.hay.includes(w)));
+  const q=document.getElementById("q").value.trim().toLowerCase().split(/\s+/).filter(Boolean), c=document.getElementById("fChr").value, c2=document.getElementById("fChr2").value, s=document.getElementById("fStatus").value, cu=document.getElementById("fCustom").checked;
+  const out=ITEMS.filter(it=>st.vendors.has(it.vendor) && (cu||!it.custom) && (!s||(it.status||[]).includes(s)) && (!c||onChr(it,c)) && (!c2||onChr(it,c2)) && q.every(w=>it.hay.includes(w)));
   const key=st.sort; out.sort((a,b)=>(a[key]||"").localeCompare(b[key]||"",undefined,{numeric:true,sensitivity:"base"})*st.dir || a.name.localeCompare(b.name,undefined,{numeric:true}));
   return out;
 }
@@ -284,12 +285,12 @@ function render(){
     <td class="t">${esc(it.targets||"")}</td>
     <td class="l">${(it.labels||[]).map(l=>COL[l]?`<i style="background:${COL[l]}" title="${CN[l]}"></i>`:esc(l)).join("")}</td>
     <td class="s">${(it.status||[]).map(s=>`<span>${esc(s)}</span>`).join("")}</td>
-    <td class="f">${it.fish?`<a href="fish.html?v=4e2991d6#${esc(it.fish)}" title="Open the signal patterns">FISH ›</a>`:""}</td></tr>`).join("") || '<tr><td colspan="7" class="muted" style="padding:16px">No probe matches.</td></tr>';
+    <td class="f">${it.fish?`<a href="fish.html?v=a4e49a20#${esc(it.fish)}" title="Open the signal patterns">FISH ›</a>`:""}</td></tr>`).join("") || '<tr><td colspan="7" class="muted" style="padding:16px">No probe matches.</td></tr>';
   document.getElementById("cnt").textContent=`${rows.length} of ${all.length} shown · ${ITEMS.length} in total`;
   document.getElementById("more").hidden = all.length<=st.limit;
 }
 document.getElementById("more").addEventListener("click",()=>{ st.limit+=300; render(); });
-["q","fChr","fStatus","fCustom"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{ st.limit=150; render(); }));
+["q","fChr","fChr2","fStatus","fCustom"].forEach(id=>document.getElementById(id).addEventListener("input",()=>{ st.limit=150; render(); }));
 document.querySelectorAll("[data-sort]").forEach(b=>b.addEventListener("click",()=>{ const k=b.dataset.sort; st.dir = st.sort===k ? -st.dir : 1; st.sort=k; render(); }));
 const hq=decodeURIComponent((location.hash||"").replace(/^#q=/,"")); if(location.hash.startsWith("#q=")) document.getElementById("q").value=hq;
 render();

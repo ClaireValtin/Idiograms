@@ -7,6 +7,10 @@
 .side input[type=search]{width:100%}
 .filters{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .filters select{width:100%;min-width:0}
+.chrs{display:grid;grid-template-columns:repeat(12,1fr);gap:2px}
+.chrs .chip{padding:2px 0;font-size:11px;text-align:center;border-radius:5px}
+.chrhead{display:flex;justify-content:space-between;align-items:center;padding:0 2px}
+.chrhead button{border:0;background:none;color:var(--accent);font-size:11.5px;cursor:pointer;padding:0}
 .count{font:11px var(--f-mono);color:var(--muted);padding:0 2px}
 .list{overflow-y:auto;flex:1;min-height:0;margin:0 -4px;padding:0 4px}
 @media (max-width:900px){.list{max-height:240px}}
@@ -70,6 +74,8 @@
         <select id="fGroup" aria-label="Group"><option value="">All groups</option></select>
         <select id="fVendor" aria-label="Vendor"><option value="">All vendors</option></select>
       </div>
+      <div class="chrhead"><span class="lab" title="Show probes that target every selected chromosome">Chromosomes</span><button id="chrClear" hidden>clear</button></div>
+      <div class="chrs" id="chrs" role="group" aria-label="Chromosomes the probe must target"></div>
       <div class="count" id="count"></div>
       <nav class="list" id="list" aria-label="Probe list"></nav>
     </aside>
@@ -115,9 +121,15 @@ const hay = new Map(PROBES.map(p=>[p.id,[p.name,p.id,p.vendor,p.group,DESIGN[p.d
 const groups=[...new Set(PROBES.map(p=>p.group))], vendors=[...new Set(PROBES.map(p=>p.vendor))];
 for(const g of groups) document.getElementById("fGroup").add(new Option(g,g));
 for(const v of vendors) document.getElementById("fVendor").add(new Option(v,v));
+// chromosome chips: a probe must have a component on every selected chromosome
+const chrSel=new Set(), chrsOf=new Map(PROBES.map(p=>[p.id,new Set(p.comps.flatMap(c=>c.segs.map(s=>s[0])))]));
+const chrBox=document.getElementById("chrs");
+for(const c of ORDER){ const b=document.createElement("button"); b.className="chip"; b.textContent=c; b.dataset.chr=c; b.setAttribute("aria-pressed","false");
+  b.addEventListener("click",()=>{ chrSel.has(c)?chrSel.delete(c):chrSel.add(c); b.setAttribute("aria-pressed",String(chrSel.has(c))); renderList(); }); chrBox.appendChild(b); }
+document.getElementById("chrClear").addEventListener("click",()=>{ chrSel.clear(); chrBox.querySelectorAll(".chip").forEach(b=>b.setAttribute("aria-pressed","false")); renderList(); });
 function renderList(){
   const q=document.getElementById("q").value.trim().toLowerCase().split(/\s+/).filter(Boolean), g=document.getElementById("fGroup").value, v=document.getElementById("fVendor").value;
-  const shown=PROBES.filter(p=>(!g||p.group===g)&&(!v||p.vendor===v)&&q.every(w=>hay.get(p.id).includes(w))).sort((a,b)=>groups.indexOf(a.group)-groups.indexOf(b.group));
+  const shown=PROBES.filter(p=>(!g||p.group===g)&&(!v||p.vendor===v)&&[...chrSel].every(c=>chrsOf.get(p.id).has(c))&&q.every(w=>hay.get(p.id).includes(w))).sort((a,b)=>groups.indexOf(a.group)-groups.indexOf(b.group));
   const list=document.getElementById("list"); list.innerHTML="";
   let last=null;
   for(const p of shown){
@@ -128,7 +140,8 @@ function renderList(){
     b.addEventListener("click",()=>select(p.id,true));
     list.appendChild(b);
   }
-  document.getElementById("count").textContent=`${shown.length} of ${PROBES.length} probes`;
+  document.getElementById("count").textContent=`${shown.length} of ${PROBES.length} probes${chrSel.size?" on chr "+[...chrSel].sort((a,b)=>ORDER.indexOf(a)-ORDER.indexOf(b)).join(" + "):""}`;
+  document.getElementById("chrClear").hidden=!chrSel.size;
   if(!shown.length) list.innerHTML='<p class="empty">No probe matches. The catalogue tab lists every vendor.</p>';
 }
 ["q","fGroup","fVendor"].forEach(id=>document.getElementById(id).addEventListener("input",renderList));

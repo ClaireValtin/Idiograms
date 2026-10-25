@@ -155,7 +155,7 @@ svg text{font-family:var(--f-mono)}
 .go:hover{border-color:var(--muted)}
 @media (max-width:700px){.search{margin-left:0;width:100%}.search input{flex:1}}
 </style>
-<nav class="appbar" aria-label="Site"><div class="appbar-in"><a class="brand" href="index.html?v=4e2991d6"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Idiograms</span></a><div class="tabs"><a href="index.html?v=4e2991d6" data-chr-link aria-current="page"><span class="lg">Idiograms</span><span class="sm">Ideo</span></a><a href="simulator.html?v=4e2991d6" data-chr-link><span class="lg">Microscope</span><span class="sm">Scope</span></a><a href="abnormalities.html?v=4e2991d6" data-chr-link><span class="lg">Abnormalities</span><span class="sm">Abn</span></a><a href="fish.html?v=4e2991d6" data-chr-link><span class="lg">FISH probes</span><span class="sm">FISH</span></a><a href="catalogue.html?v=4e2991d6" data-chr-link><span class="lg">Probe catalogue</span><span class="sm">Catalogue</span></a></div><button class="faq-btn" id="faqBtn" type="button" aria-haspopup="dialog"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg><span>FAQ</span></button></div></nav>
+<nav class="appbar" aria-label="Site"><div class="appbar-in"><a class="brand" href="index.html?v=a4e49a20"><span class="brand-mark" aria-hidden="true"></span><span class="brand-name">Idiograms</span></a><div class="tabs"><a href="index.html?v=a4e49a20" data-chr-link aria-current="page"><span class="lg">Idiograms</span><span class="sm">Ideo</span></a><a href="simulator.html?v=a4e49a20" data-chr-link><span class="lg">Microscope</span><span class="sm">Scope</span></a><a href="abnormalities.html?v=a4e49a20" data-chr-link><span class="lg">Abnormalities</span><span class="sm">Abn</span></a><a href="fish.html?v=a4e49a20" data-chr-link><span class="lg">FISH probes</span><span class="sm">FISH</span></a><a href="catalogue.html?v=a4e49a20" data-chr-link><span class="lg">Probe catalogue</span><span class="sm">Catalogue</span></a></div><button class="faq-btn" id="faqBtn" type="button" aria-haspopup="dialog"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg><span>FAQ</span></button></div></nav>
 <main class="page">
   <div class="card bar" role="group" aria-label="Display options">
     <div class="seg" role="group" aria-label="Banding">
@@ -180,7 +180,7 @@ svg text{font-family:var(--f-mono)}
   <div class="main">
     <div class="card plate">
       <div class="plate-head"><h2 id="plateTitle">Chromosome 1</h2>
-        <div class="grp"><a class="go" id="simLink" href="simulator.html?v=4e2991d6">Microscope ›</a><a class="go" id="fishLink" href="fish.html?v=4e2991d6">FISH probes ›</a></div></div>
+        <div class="grp"><a class="go" id="simLink" href="simulator.html?v=a4e49a20">Microscope ›</a><a class="go" id="fishLink" href="fish.html?v=a4e49a20">FISH probes ›</a></div></div>
       <div class="plate-scroll"><div class="plate-inner" id="plate"></div></div>
     </div>
     <aside class="card panel" aria-live="polite">
@@ -405,8 +405,8 @@ function renderKaryogram(){
 function render(){
   const chr=state.chr, plate=document.getElementById("plate"); plate.innerHTML="";
   document.getElementById("plateTitle").textContent=`Chromosome ${chr}`;
-  document.getElementById("simLink").href="simulator.html?v=4e2991d6#chr"+chr;
-  document.getElementById("fishLink").href="fish.html?v=4e2991d6#chr"+chr;
+  document.getElementById("simLink").href="simulator.html?v=a4e49a20#chr"+chr;
+  document.getElementById("fishLink").href="fish.html?v=a4e49a20#chr"+chr;
   const H=detailHeight(chr);
   for(const lv of ["400","550","850"]) if(state.levels.has(lv)) plate.appendChild(drawLevel(chr,lv,H));
   if(state.sel) highlight(state.sel);
